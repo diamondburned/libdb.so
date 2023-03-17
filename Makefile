@@ -1,20 +1,26 @@
-.PHONY: all clean build-init
+.PHONY: all clean dev
 
-all: build
+SITE      = $(shell find site -type f) node_modules vite.config.ts package*.json
+NIXOS     = $(shell find nixos -type f) $(shell find nix -type f)
+TOOLCHAIN = $(shell find toolchain -type f)
+
+# phony
+
+all: dist
+
+dev: nixos/result
+	vite dev
 
 clean:
 	rm -r build
 
-build: build-init build/vm build/toolchain build/site
+# real
 
-build-init:
-	mkdir -p build
+dist: nixos/result $(SITE)
+	vite build
 
-build/vm:
-	# nix-build -o ./build/vm ./vm
+nixos/result: nixos/packages/kernel/v86.base.config $(NIXOS) $(TOOLCHAIN)
+	cd nixos && nix-build
 
-build/toolchain:
-	go build -v ./toolchain/...
-
-build/site: site node_modules vite.config.ts package.json package-lock.json
-	vite build --outDir $$PROJECT_ROOT/build/site
+nixos/packages/kernel/v86.base.config:
+	cd nixos/packages/kernel && make

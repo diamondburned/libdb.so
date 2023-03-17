@@ -10,5 +10,17 @@
         "type": "tarball",
         "url": "https://github.com/NixOS/nixpkgs/archive/ac718d02867a84b42522a0ece52d841188208f2c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "not-os": {
+        "branch": "compat-fix",
+        "description": "An operating system generator, based on NixOS, that, given a config, outputs a small (47 MB), read-only squashfs for a runit-based operating system, with support for iPXE and signed boot.",
+        "homepage": "",
+        "owner": "Mic92",
+        "repo": "not-os",
+        "rev": "9dbd509335bc8f5bdc4bd4cc31925b9152a2680a",
+        "sha256": "1ajayf23mxjdxyc3irbv75jvjzclrjpq51y1ki5hi6hwzhis9y35",
+        "type": "tarball",
+        "url": "https://github.com/Mic92/not-os/archive/9dbd509335bc8f5bdc4bd4cc31925b9152a2680a.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
