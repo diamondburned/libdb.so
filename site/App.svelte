@@ -7,15 +7,26 @@
   import Terminal from "#/libdb.so/site/components/Terminal.svelte";
 
   let terminal: xterm.Terminal;
+  let screen: HTMLElement;
 
-  svelte.onMount(async () => {
-    const vm = await import("#/libdb.so/site/lib/vm.js");
-    vm.spawn();
+  async function init() {
+    const libvm = await import("#/libdb.so/site/lib/vm.js");
+
+    const vm = new libvm.VM();
+    return vm.start(terminal, screen);
+  }
+
+  svelte.onMount(() => {
+    init().catch((err) => console.error(err));
   });
 </script>
 
 <main>
   <Terminal id="terminal" bind:terminal />
+  <div id="screen" style="display: none" bind:this={screen}>
+    <div style="white-space: pre; font: 14px monospace; line-height: 14px" />
+    <canvas style="display: none" />
+  </div>
 </main>
 
 <style global>
@@ -29,7 +40,14 @@
   }
 
   #terminal {
-    width: calc(100% - 2rem);
+    width: calc(100% - 1rem);
     height: calc(100% - 2rem);
+  }
+
+  #screen {
+    position: absolute;
+    border: 2px solid aliceblue;
+    border-radius: 8px;
+    padding: 4px;
   }
 </style>
