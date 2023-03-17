@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "nodenext",
+    "esModuleInterop": true,
+    "types": [
+      "vite/client"
+    ],
+    "paths": {
+      "#/libdb.so/*": [
+        "./*"
+      ]
+    }
+  }
+}
