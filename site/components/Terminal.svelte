@@ -1,18 +1,26 @@
 <script lang="ts">
+  import "xterm/css/xterm.css";
+
   import { WebglAddon as WebGLAddon } from "xterm-addon-webgl";
   import { FitAddon } from "xterm-addon-fit";
-  import * as xterm from "xterm";
   import * as svelte from "svelte";
+  import type * as xterm from "xterm";
 
   let terminalElement: HTMLElement;
 
   export let id: string;
-  export let terminal = new xterm.Terminal({
-    fontFamily: "monospace",
-    allowTransparency: true,
-  });
+  export let terminal: xterm.Terminal;
 
-  svelte.onMount(() => {
+  svelte.onMount(async () => {
+    const xterm = await import("xterm");
+
+    terminal = new xterm.Terminal({
+      fontFamily: "monospace",
+      fontWeight: "500",
+      fontWeightBold: "700",
+      allowTransparency: true,
+    });
+
     const webglAddon = new WebGLAddon();
     webglAddon.onContextLoss(() => webglAddon.dispose());
 
@@ -22,7 +30,7 @@
     // terminal.loadAddon(webglAddon);
     terminal.loadAddon(fitAddon);
     terminal.open(terminalElement);
-    terminal.write("Initializing...");
+    terminal.write("Initializing VM...\r\n");
 
     onResize();
     window.addEventListener("resize", onResize);

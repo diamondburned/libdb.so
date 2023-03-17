@@ -8,32 +8,32 @@ import sveltePreprocess from "svelte-preprocess";
 const root = path.resolve(__dirname);
 
 export default defineConfig({
+  // Why the FUCK is clearScreen true by default? That is fucking stupid.
+  clearScreen: false,
   plugins: [
+    wasm(),
     svelte({
       preprocess: sveltePreprocess(),
     }),
-    wasm(),
   ],
   root: path.join(root, "site"),
-  envPrefix: ["BUILD_"],
-  publicDir: path.join(root, "site", "public"),
+  publicDir: path.join(root, "dist"),
   server: {
     port: 5000,
   },
   build: {
+    outDir: path.join(root, "dist"),
     emptyOutDir: true,
     rollupOptions: {
       output: {
         format: "esm",
-        manualChunks: {
-          vm: ["v86"],
-          vmmisc: [],
-          terminal: ["xterm", /xterm-addon-.*/],
-        },
       },
-      external: ["node_modules/v86/build/v86.wasm"],
     },
     target: "esnext",
+    sourcemap: true,
+  },
+  esbuild: {
+    sourcemap: true,
   },
   // https://github.com/vitejs/vite/issues/7385#issuecomment-1286606298
   resolve: {
@@ -42,3 +42,8 @@ export default defineConfig({
     },
   },
 });
+
+if (import.meta.hot) {
+  // always reload the page on change because v86 is fragile
+  import.meta.hot.accept(() => import.meta.hot!.invalidate());
+}

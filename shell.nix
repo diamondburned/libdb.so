@@ -10,6 +10,7 @@ pkgs.mkShell rec {
 		nodejs
 		niv
 		go_1_20
+		caddy
 	];
 
 	shellHook = ''
