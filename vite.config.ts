@@ -1,8 +1,8 @@
 import { defineConfig, loadEnv } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
-import wasm from "vite-plugin-wasm";
 import type * as vite from "vite";
 import * as path from "path";
+import viteCompression from "vite-plugin-compression";
 import sveltePreprocess from "svelte-preprocess";
 
 const root = path.resolve(__dirname);
@@ -11,7 +11,7 @@ export default defineConfig({
   // Why the FUCK is clearScreen true by default? That is fucking stupid.
   clearScreen: false,
   plugins: [
-    wasm(),
+    viteCompression(),
     svelte({
       preprocess: sveltePreprocess(),
     }),
