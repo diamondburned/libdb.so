@@ -1,14 +1,13 @@
 .PHONY: all clean dev
 
-SITE      = $(shell find site -type f) node_modules vite.config.ts package*.json
-NIXOS     = $(shell find nixos -type f) $(shell find nix -type f)
-TOOLCHAIN = $(shell find toolchain -type f)
+SITE    = $(shell find site -type f) node_modules vite.config.ts package*.json
+GOFILES = $(shell find console -type f) $(shell find cmd -type f) go.mod go.sum
 
 # phony
 
-all: dist
+all: build/dist
 
-dev: nixos/result
+dev: build/console.wasm
 	vite dev
 
 clean:
@@ -16,8 +15,9 @@ clean:
 
 # real
 
-dist: nixos/result $(SITE) $(NIXOS) $(TOOLCHAIN)
+build/dist: build/console.wasm $(SITE)
 	vite build
 
-nixos/result: $(NIXOS) $(TOOLCHAIN)
-	cd nixos && nix-build
+build/console.wasm: $(GOFILES)
+	mkdir -p build
+	tinygo build -o build/console.wasm -target wasm ./cmd/console-wasm/
