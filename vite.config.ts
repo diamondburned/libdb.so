@@ -17,12 +17,12 @@ export default defineConfig({
     }),
   ],
   root: path.join(root, "site"),
-  publicDir: path.join(root, "dist"),
+  publicDir: path.join(root, "site", "public"),
   server: {
     port: 5000,
   },
   build: {
-    outDir: path.join(root, "dist"),
+    outDir: path.join(root, "build", "dist"),
     emptyOutDir: true,
     rollupOptions: {
       output: {
