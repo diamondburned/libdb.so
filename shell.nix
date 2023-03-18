@@ -18,7 +18,7 @@ pkgs.mkShell rec {
 
 	shellHook = ''
 		export PATH="$PATH:${PROJECT_ROOT}/node_modules/.bin"
-		export NIX_PATH="''${NIX_PATH:-"$HOME/.nix-defexpr/channels"}:libdb.so=${PROJECT_ROOT}:libdb.so/nixpkgs=${sources.nixpkgs}"
+		export NIX_PATH="''${NIX_PATH:-"$HOME/.nix-defexpr/channels"}:libdb.so=${PROJECT_ROOT}"
 	'';
 
 	PROJECT_ROOT = builtins.toString ./.;
