@@ -16,11 +16,8 @@ clean:
 
 # real
 
-dist: nixos/result $(SITE)
+dist: nixos/result $(SITE) $(NIXOS) $(TOOLCHAIN)
 	vite build
 
-nixos/result: nixos/packages/kernel/v86.base.config $(NIXOS) $(TOOLCHAIN)
+nixos/result: $(NIXOS) $(TOOLCHAIN)
 	cd nixos && nix-build
-
-nixos/packages/kernel/v86.base.config:
-	cd nixos/packages/kernel && make

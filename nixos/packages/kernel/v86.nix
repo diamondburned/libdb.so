@@ -25,7 +25,7 @@ let base = linuxKernel.kernels.linux_6_1; # https://endoflife.date/linux
 		inherit (base) src version;
 		configfile = combineConfigs [
 			./v86.config
-			./v86.base.config
+			./v86.browser-vm.config
 		];
 		allowImportFromDerivation = true;
 	};
