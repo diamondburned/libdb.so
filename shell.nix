@@ -3,13 +3,20 @@
 let sources = import ./nix/sources.nix;
 	ourPkgs = import sources.nixpkgs { };
 
+	lib = pkgs.lib;
+
+	tinygo = ourPkgs.callPackage ./nix/packages/tinygo { };
+
 in
 
 pkgs.mkShell rec {
 	buildInputs = with ourPkgs; [
 		nodejs
 		niv
-		go_1_20
+		# We're stuck with Go 1.19 until we get tinygo 1.27.0, which I cannot
+		# for the life of me get to build.
+		go_1_19
+		tinygo
 		caddy
 		nixos-generators
 		jq
