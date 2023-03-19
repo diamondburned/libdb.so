@@ -56,7 +56,7 @@ jobs:
           auto-optimise: true
 
       - name: Build
-        run: cp -r "$(nix-build)" result
+        run: mkdir -p /tmp/result && cp -r $(nix-build)/. /tmp/result
 
       - name: Upload artifact(s)
         uses: actions/upload-pages-artifact@v1
