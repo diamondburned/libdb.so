@@ -32,6 +32,7 @@
       allowTransparency: true,
       convertEol: true,
       theme: colors,
+      drawBoldTextInBrightColors: false,
     });
 
     const webglAddon = new WebGLAddon();
