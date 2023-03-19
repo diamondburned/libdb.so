@@ -10,15 +10,9 @@ import (
 	"syscall/js"
 	"unsafe"
 
+	"libdb.so/cmd/internal/global"
 	"libdb.so/console"
-	"libdb.so/console/fs"
 	"libdb.so/console/programs"
-	"libdb.so/public"
-
-	_ "libdb.so/console/programs/coreutils"
-	_ "libdb.so/console/programs/hewwo"
-	_ "libdb.so/console/programs/spew"
-	_ "libdb.so/console/programs/termio"
 )
 
 var input io.Writer // js writes to this
@@ -29,14 +23,17 @@ var terminal *console.Terminal
 func main() {
 	terminal = console.NewTerminal(newIO(), console.TerminalQuery{})
 
+	ctx := context.Background()
 	env := console.Environment{
 		Terminal:   terminal,
-		Filesystem: fs.ReadOnlyFS(public.FS),
 		Programs:   programs.All(),
-		Cwd:        "/",
+		Filesystem: global.Filesystem,
+		Cwd:        global.InitialCwd,
 	}
 
-	interp, err := console.NewInterpreter(&env, console.InterpreterOpts{})
+	interp, err := console.NewInterpreter(&env, console.InterpreterOpts{
+		RunCommands: global.RC,
+	})
 	if err != nil {
 		log.Panicln("cannot make new interpreter:", err)
 	}
@@ -46,12 +43,9 @@ func main() {
 	global.Set("console_update_terminal", js.FuncOf(update_terminal))
 	global.Set("console_start", js.FuncOf(start))
 
-	log.Println("console-wasm: ready!")
-
 	<-startCh
 
-	log.Println("console-wasm: starting...")
-	if err := interp.Run(context.Background()); err != nil {
+	if err := interp.Run(ctx); err != nil {
 		log.Panicln(err)
 	}
 }
