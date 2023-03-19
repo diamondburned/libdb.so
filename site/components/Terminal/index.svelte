@@ -33,6 +33,11 @@
       convertEol: true,
       theme: colors,
       drawBoldTextInBrightColors: false,
+      linkHandler: {
+        activate: (event: MouseEvent, uri: string) => {
+          window.open(uri, "_blank");
+        },
+      },
     });
 
     const webglAddon = new WebGLAddon();
