@@ -1,11 +1,17 @@
 let sources = import ./nix/sources.nix;
-	lockedPkgs = import sources.nixpkgs {
+	ourPkgs = import sources.nixpkgs {
 		overlays = import ./nix/overlays.nix;
 	};
+
+	systemPkgs = with builtins.tryEval <nixpkgs>;
+		if success then
+			import value {}
+		else
+			ourPkgs;
 in
 
 {
-	pkgs ? import <nixpkgs> {},
+	pkgs ? systemPkgs,
 	lib ? pkgs.lib,
 	src ? builtins.filterSource
 		(path: type:
@@ -21,9 +27,9 @@ let stdenv = pkgs.stdenv;
 in
 
 # use our nixpkgs for everything except stdenv
-let pkgs = lockedPkgs;
+let pkgs = ourPkgs;
 
-	buildGoWasmModule = lockedPkgs.buildGoModule.override {
+	buildGoWasmModule = pkgs.buildGoModule.override {
 		go = pkgs.go // {
 			GOOS = "js";
 			GOARCH = "wasm";

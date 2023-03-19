@@ -1,13 +1,23 @@
-{ pkgs ? import <nixpkgs> {} }:
+let sources = import ./nix/sources.nix;
+	ourPkgs = import sources.nixpkgs {
+		overlays = import ./nix/overlays.nix;
+	};
+
+	systemPkgs = with builtins.tryEval <nixpkgs>;
+		if success then
+			import value {}
+		else
+			ourPkgs;
+in
+
+{ pkgs ? systemPkgs }:
 
 let sources = import ./nix/sources.nix;
 	mkShell = pkgs.mkShell;
 in
 
-let pkgs = import sources.nixpkgs {
-		overlays = import ./nix/overlays.nix;
-	};
-
+# prefer our Nixpkgs
+let pkgs = ourPkgs;
 	lib = pkgs.lib;
 
 	tinygo = pkgs.callPackage ./nix/packages/tinygo { };
