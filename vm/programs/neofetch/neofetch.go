@@ -55,6 +55,10 @@ func info() string {
 	printLink(&b, "@diamond@hachyderm.io", "https://hachyderm.io/@diamond")
 	b.WriteByte('\n')
 
+	fpcolor(&b, "Source Code: ", color.FgYellow, color.Bold)
+	printLink(&b, "diamondburned/libdb.so", "https://libdb.so/libdb.so")
+	b.WriteByte('\n')
+
 	b.WriteByte('\n')
 
 	fmt.Fprintln(&b, spcolor("Go:", color.FgHiCyan), strings.Replace(runtime.Version(), "go", "v", 1))
