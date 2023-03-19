@@ -10,8 +10,8 @@ function scanDir() {
 			objs["${n}/"]="$obj"
 		elif [[ -f "$f" ]]; then
 			obj=$(jq --null-input \
-				--arg size "$(stat -c%s "$f")" \
-				--arg hash "$(sha256sum "$f" | cut -d' ' -f1)" \
+				--argjson size "$(stat -c%s "$f")" \
+				--arg hash "$(sha256File "$f")" \
 				'{ $size, $hash }')
 			objs["$n"]="$obj"
 		else
@@ -23,6 +23,10 @@ function scanDir() {
 
 function basename() {
 	echo "${1##*/}"
+}
+
+function sha256File() {
+	openssl dgst --binary --sha256 "$1" | openssl base64 -A
 }
 
 # jsonobj varname
