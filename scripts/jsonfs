@@ -11,8 +11,7 @@ function scanDir() {
 		elif [[ -f "$f" ]]; then
 			obj=$(jq --null-input \
 				--argjson size "$(stat -c%s "$f")" \
-				--arg hash "$(sha256File "$f")" \
-				'{ $size, $hash }')
+				'{ $size }')
 			objs["$n"]="$obj"
 		else
 			echo "Skipping $f since it's neither a file nor a directory" >&2
@@ -23,10 +22,6 @@ function scanDir() {
 
 function basename() {
 	echo "${1##*/}"
-}
-
-function sha256File() {
-	openssl dgst --binary --sha256 "$1" | openssl base64 -A
 }
 
 # jsonobj varname

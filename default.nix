@@ -74,7 +74,6 @@ stdenv.mkDerivation {
 		bash
 		jq
 		nodejs
-		openssl
 	];
 
 	preBuild = ''
