@@ -37,7 +37,7 @@ func NewState() *State {
 }
 
 // NewStateStdin initializes a new *State with the given stdin.
-func NewStateStdin(stdin io.Reader, winszFunc func() (uint16, uint16, bool)) *State {
+func NewStateStdin(stdin io.Reader, winszFunc func() (row, col uint16, ok bool)) *State {
 	var s State
 	s.r = bufio.NewReader(stdin)
 	s.getWinSize = winszFunc
