@@ -22,6 +22,9 @@ type DirFS interface {
 	// Mkdir creates a new directory with the specified name and permission
 	// bits.
 	Mkdir(name string, perm fs.FileMode) error
+	// MkdirAll creates a directory named path, along with any necessary
+	// parents, and returns nil, or else returns an error.
+	MkdirAll(name string, perm fs.FileMode) error
 	// RemoveAll removes path and any children it contains. It removes
 	// everything it can and returns errors using errors.Join.
 	RemoveAll(name string) error
@@ -32,3 +35,10 @@ type File interface {
 	fs.File
 	io.Writer
 }
+
+// Type aliases.
+type (
+	FileInfo = fs.FileInfo
+	DirEntry = fs.DirEntry
+	FileMode = fs.FileMode
+)

@@ -3,40 +3,96 @@ package main
 import (
 	"context"
 	"io"
+	"log"
+	"os"
+	"reflect"
+	"runtime"
+	"syscall/js"
+	"unsafe"
 
 	"libdb.so/console"
+	"libdb.so/console/fs"
 	"libdb.so/console/programs"
+	"libdb.so/public"
+
+	_ "libdb.so/console/programs/coreutils"
+	_ "libdb.so/console/programs/hewwo"
 )
 
-var terminal *io.PipeReader // js reads from this
-var input *io.PipeWriter    // js writes to this
+var input io.Writer // js writes to this
 
-var interp *console.Interpreter
+var startCh = make(chan struct{}, 1)
+var terminal *console.Terminal
 
 func main() {
-	rr, rw := io.Pipe()
-	terminal = rr
+	terminal = console.NewTerminal(newIO(), console.TerminalQuery{})
 
+	env := console.Environment{
+		Terminal:   terminal,
+		Filesystem: fs.ReadOnlyFS(public.FS),
+		Programs:   programs.All(),
+		Cwd:        "/",
+	}
+
+	interp, err := console.NewInterpreter(&env, console.InterpreterOpts{})
+	if err != nil {
+		log.Panicln("cannot make new interpreter:", err)
+	}
+
+	global := js.Global()
+	global.Set("console_write_stdin", js.FuncOf(write_stdin))
+	global.Set("console_update_terminal", js.FuncOf(update_terminal))
+	global.Set("console_start", js.FuncOf(start))
+
+	log.Println("console-wasm: ready!")
+
+	<-startCh
+
+	log.Println("console-wasm: starting...")
+	if err := interp.Run(context.Background()); err != nil {
+		log.Panicln(err)
+	}
+}
+
+func newIO() console.IO {
 	wr, ww := io.Pipe()
 	input = ww
 
-	io := console.IO{
+	return console.IO{
 		Stdin:  wr,
-		Stdout: rw,
-		Stderr: rw,
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
 	}
+}
 
-	inst, err := console.NewInterpreter(io, console.InterpreterOpts{
-		Programs: programs.All(),
+// start unblocks main and starts the interpreter loop. The JS side must have
+// called update_terminal before calling this function.
+func start(this js.Value, args []js.Value) any {
+	startCh <- struct{}{}
+	return nil
+}
+
+// write_stdin writes the given bytes pointer that is of len size into the stdin
+// pipe. It returns false if the write failed. In most cases, the program should
+// panic if that is the case.
+//
+// Note: the function MUST block until the write is complete. It also must not
+// hold onto the bytes pointer after the write is complete.
+func write_stdin(this js.Value, args []js.Value) any { // (string) => void
+	s := args[0].String()
+	b := unsafe.Slice((*byte)(unsafe.Pointer((*reflect.StringHeader)(unsafe.Pointer(&s)).Data)), len(s))
+	input.Write(b)
+	runtime.KeepAlive(s)
+	return nil
+}
+
+func update_terminal(this js.Value, args []js.Value) any { // ({row, col, xpixel, ypixel, sixel}) => void
+	terminal.UpdateQuery(console.TerminalQuery{
+		Width:  args[0].Get("row").Int(),
+		Height: args[0].Get("col").Int(),
+		XPixel: args[0].Get("xpixel").Int(),
+		YPixel: args[0].Get("ypixel").Int(),
+		SIXEL:  args[0].Get("sixel").Bool(),
 	})
-	if err != nil {
-		panic(err)
-	}
-
-	interp = inst
-	defer interp.Close()
-
-	if err := interp.Run(context.Background()); err != nil {
-		panic(err)
-	}
+	return nil
 }
