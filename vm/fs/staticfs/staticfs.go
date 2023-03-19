@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	stdfs "io/fs"
+
+	"libdb.so/vm/fs/internal/fsutil"
 )
 
 // Directory is a read-only directory constructed from a map of file contents.
@@ -119,12 +121,19 @@ func (fs FS) Open(path string) (stdfs.File, error) {
 }
 
 func (fs FS) at(fpath string) (DirEntry, string, error) {
-	if fpath == "/" {
+	parts := fsutil.Split(fpath)
+	if len(parts) == 0 {
 		return Directory(fs), ".", nil
 	}
-	parts := strings.Split(path.Clean(fpath), "/")
-	if len(parts) > 0 && parts[0] == "" {
-		parts = parts[1:]
-	}
+
 	return Directory(fs).at(parts)
+
+	// if fpath == "/" {
+	// 	return Directory(fs), ".", nil
+	// }
+	// parts := strings.Split(path.Clean(fpath), "/")
+	// if len(parts) > 0 && parts[0] == "" {
+	// 	parts = parts[1:]
+	// }
+	// return Directory(fs).at(parts)
 }
