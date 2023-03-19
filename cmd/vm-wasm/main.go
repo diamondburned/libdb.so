@@ -47,6 +47,7 @@ func main() {
 
 	interp, err := vm.NewInterpreter(&env, vm.InterpreterOpts{
 		RunCommands: global.RC,
+		Prompt:      global.PromptColored(),
 	})
 	if err != nil {
 		log.Panicln("cannot make new interpreter:", err)
@@ -104,8 +105,8 @@ func set_public_fs(this js.Value, args []js.Value) any { // (string) => void
 
 func update_terminal(this js.Value, args []js.Value) any { // ({row, col, xpixel, ypixel, sixel}) => void
 	terminal.UpdateQuery(vm.TerminalQuery{
-		Width:  args[0].Get("row").Int(),
-		Height: args[0].Get("col").Int(),
+		Width:  args[0].Get("col").Int(),
+		Height: args[0].Get("row").Int(),
 		XPixel: args[0].Get("xpixel").Int(),
 		YPixel: args[0].Get("ypixel").Int(),
 		SIXEL:  args[0].Get("sixel").Bool(),

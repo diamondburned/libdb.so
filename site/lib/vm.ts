@@ -46,8 +46,8 @@ class TerminalProxy {
       }
     };
 
-    this.onDataDisposer = this.terminal.onData(this.onData);
-    this.onResizeDisposer = this.terminal.onResize(this.onResize);
+    this.onDataDisposer = this.terminal.onData(this.onData.bind(this));
+    this.onResizeDisposer = this.terminal.onResize(this.onResize.bind(this));
   }
 
   reset() {
@@ -76,7 +76,7 @@ class TerminalProxy {
         col: termsz.cols,
         xpixel: 0,
         ypixel: 0,
-        sixel: false,
+        sixel: true,
       });
     } else {
       console.log("update_terminal is not ready yet");

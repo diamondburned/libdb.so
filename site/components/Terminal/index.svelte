@@ -113,11 +113,15 @@
 
   div.terminal {
     flex: 1;
-    padding: 8px 6px;
+    padding: 8px 2px;
     background-color: var(--background);
   }
 
   div.terminal > :global(*) {
     height: 100%;
+  }
+
+  div.terminal :global(.xterm-screen) {
+    margin: auto;
   }
 </style>
