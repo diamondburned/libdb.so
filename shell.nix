@@ -17,10 +17,8 @@ pkgs.mkShell rec {
 		niv
 		go
 		gopls
-		caddy
 		jq
 		openssl
-		node2nix
 		gomod2nix
 		# tinygo
 	];

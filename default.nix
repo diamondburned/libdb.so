@@ -58,12 +58,12 @@ stdenv.mkDerivation {
 	inherit version src;
 	pname = "libdb.so";
 
-	buildInputs = with pkgs; [
+	nativeBuildInputs = with pkgs; [
 		coreutils
 		bash
 		jq
-		# go
 		nodejs
+		openssl
 	];
 
 	preBuild = ''
