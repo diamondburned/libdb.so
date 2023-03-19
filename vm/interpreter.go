@@ -7,6 +7,7 @@ import (
 	"log"
 	"sort"
 	"strings"
+	"text/tabwriter"
 
 	stderrors "errors"
 	stdfs "io/fs"
@@ -44,6 +45,12 @@ type InterpreterOpts struct {
 	Prompt PromptFunc
 }
 
+var builtinCommands = []string{
+	"true", "false", "exit", "set", "shift", "unset", "echo", "printf", "pwd",
+	"cd", "source", "command", "umask", "alias", "unalias", "eval", "test",
+	"exec", "read", "readarray", "shopt",
+}
+
 // NewInterpreter creates a new interpreter.
 func NewInterpreter(env *Environment, opts InterpreterOpts) (*Interpreter, error) {
 	inst := Interpreter{
@@ -52,16 +59,10 @@ func NewInterpreter(env *Environment, opts InterpreterOpts) (*Interpreter, error
 	}
 
 	inst.progNames = make([]string, 0, len(env.Programs))
-	inst.progNames = append(inst.progNames,
-		"true", "false", "exit", "set", "shift", "unset", "echo", "printf",
-		"pwd", "cd", "source", "command", "umask", "alias", "unalias", "eval",
-		"test", "exec", "read", "readarray", "shopt",
-	)
-
+	inst.progNames = append(inst.progNames, builtinCommands...)
 	for name := range env.Programs {
 		inst.progNames = append(inst.progNames, name)
 	}
-
 	sort.Strings(inst.progNames)
 
 	if inst.opts.Prompt == nil {
@@ -227,11 +228,6 @@ func (inst *Interpreter) execHandler(ctx context.Context, args []string) error {
 		return nil
 	}
 
-	prog, ok := inst.env.Programs[args[0]]
-	if !ok {
-		return fmt.Errorf("unknown command: %q", args[0])
-	}
-
 	handler := interp.HandlerCtx(ctx)
 
 	env := *inst.env
@@ -242,8 +238,17 @@ func (inst *Interpreter) execHandler(ctx context.Context, args []string) error {
 		Stderr: handler.Stderr,
 	})
 
-	ctx = context.WithValue(ctx, environmentKey, &env)
+	switch args[0] {
+	case "help":
+		return inst.help(env)
+	}
 
+	prog, ok := inst.env.Programs[args[0]]
+	if !ok {
+		return fmt.Errorf("unknown command: %q", args[0])
+	}
+
+	ctx = context.WithValue(ctx, environmentKey, &env)
 	return prog.Run(ctx, env, args)
 }
 
@@ -444,4 +449,22 @@ func shNodeCovers(node syntax.Node, pos int) bool {
 
 func justSpace(str string) bool {
 	return strings.TrimSpace(str) == ""
+}
+
+func (inst *Interpreter) help(env Environment) error {
+	fmt.Fprint(env.Terminal.Stdout, "Available commands:\n\n")
+	w := tabwriter.NewWriter(env.Terminal.Stdout, 0, 0, 1, ' ', 0)
+	fmt.Fprintf(w, "help\tShow this help\n")
+	for _, name := range inst.progNames {
+		prog, ok := inst.env.Programs[name]
+		if !ok {
+			continue
+		}
+		if usager, ok := prog.(ProgramUsager); ok {
+			fmt.Fprintf(w, "%s\t%s\n", usager.Name(), usager.Usage())
+		} else {
+			fmt.Fprintf(w, "%s\t\n", prog.Name())
+		}
+	}
+	return w.Flush()
 }

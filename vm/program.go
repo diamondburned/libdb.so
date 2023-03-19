@@ -22,6 +22,14 @@ type Program interface {
 	Run(ctx context.Context, env Environment, args []string) error
 }
 
+// ProgramUsager is an optional interface that a Program can implement to
+// provide a custom usage string.
+type ProgramUsager interface {
+	Program
+	// Usage returns the usage of the program.
+	Usage() string
+}
+
 // ProgramAutocompleter defines a program that supports autocompletion.
 type ProgramAutocompleter interface {
 	Program
