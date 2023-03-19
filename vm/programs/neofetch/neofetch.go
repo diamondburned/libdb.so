@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"regexp"
 	"runtime"
 	"strings"
 
 	_ "embed"
 
 	"github.com/fatih/color"
+	"github.com/leaanthony/go-ansi-parser"
 	"libdb.so/vm"
 	"libdb.so/vm/programs"
 )
@@ -89,25 +91,54 @@ func printFgColors(b *strings.Builder, from, to int) {
 	b.WriteByte('\n')
 }
 
+var ansiLinkRe = regexp.MustCompile(`(?m)\x1b]8;;([^\x1b]*)\x1b\\([^\x1b]*)\x1b]8;;\x1b\\`)
+
+const ansiLinkf = "\x1b]8;;%s\x1b\\%s\x1b]8;;\x1b\\"
+
+func init() {
+	// keep in sync with the regex
+	if !ansiLinkRe.MatchString(ansiLinkf) {
+		panic("ansiLinkf is not in sync with ansiLinkRe")
+	}
+}
+
 func printLink(b *strings.Builder, text, url string) {
-	fmt.Fprintf(b, "\x1b]8;;%s\x1b\\%s\x1b]8;;\x1b\\", url, text)
+	fmt.Fprintf(b, ansiLinkf, url, text)
 }
 
 func printInfo(env vm.Environment, str string) {
+	const pad = 2
 	const up = 16
 	const right = 36
 
-	// go up
-	env.Printf("\x1b[%dA", up)
-
 	lines := strings.Split(str, "\n")
+	var maxLine int
 	for _, line := range lines {
-		env.Printf("\x1b[%dC", right)
-		env.Println(line)
+		// Replace all ANSI links with their text.
+		line = ansiLinkRe.ReplaceAllString(line, "$2")
+		// Count the length excluding ANSI codes.
+		llen, _ := ansi.Length(line)
+		if llen > maxLine {
+			maxLine = llen
+		}
 	}
 
-	// go down delta lines
-	if len(lines) < up {
-		env.Printf("\x1b[%dB", up-len(lines))
+	if q := env.Terminal.Query(); q.Width > (right + pad + maxLine) {
+		// go up
+		env.Printf("\x1b[%dA", up)
+
+		for _, line := range lines {
+			env.Printf("\x1b[%dC", right)
+			env.Println(line)
+		}
+
+		// go down delta lines
+		if len(lines) < up {
+			env.Printf("\x1b[%dB", up-len(lines))
+		}
+	} else {
+		// No space, just print it.
+		env.Println()
+		env.Println(str)
 	}
 }
