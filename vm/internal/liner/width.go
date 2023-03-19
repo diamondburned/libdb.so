@@ -1,6 +1,7 @@
 package liner
 
 import (
+	"strings"
 	"unicode"
 
 	"github.com/leaanthony/go-ansi-parser"
@@ -23,9 +24,14 @@ var zeroWidth = []*unicode.RangeTable{
 func countGlyphs(runes []rune) int {
 	s := string(runes)
 
-	n, err := ansi.Length(s)
+	newline := strings.LastIndexByte(s, '\n')
+	if newline == -1 {
+		newline = 0
+	}
+
+	n, err := ansi.Length(s[newline:])
 	if err != nil {
-		return runewidth.StringWidth(s)
+		panic(err)
 	}
 
 	return n

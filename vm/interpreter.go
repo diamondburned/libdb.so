@@ -128,7 +128,7 @@ func NewInterpreter(env *Environment, opts InterpreterOpts) (*Interpreter, error
 		inst.env.Terminal.IO.Stdin,
 		func() (row, col uint16, ok bool) {
 			q := inst.env.Terminal.Query()
-			return uint16(q.Width), uint16(q.Height), true
+			return uint16(q.Height), uint16(q.Width), true
 		},
 	)
 
@@ -160,7 +160,9 @@ func (inst *Interpreter) Run(ctx context.Context) error {
 	inst.exec(ctx, inst.opts.RunCommands)
 	inst.prompter.SetWordCompleter(inst.wordCompleter(ctx))
 	inst.prompter.SetTabCompletionStyle(liner.TabPrints)
-	inst.prompter.SetCtrlCAborts(false)
+	// Fully aborting lets us draw the entire prompt instead of just the
+	// incomplete line.
+	inst.prompter.SetCtrlCAborts(true)
 
 	for {
 		inst.env.Cwd = inst.shRunner.Dir
@@ -176,6 +178,9 @@ func (inst *Interpreter) Run(ctx context.Context) error {
 
 		line, err := inst.prompter.Prompt(promptLines[len(promptLines)-1])
 		if err != nil {
+			if errors.Is(err, liner.ErrPromptAborted) {
+				continue
+			}
 			return errors.Wrap(err, "failed to read line")
 		}
 
