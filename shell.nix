@@ -30,7 +30,6 @@ mkShell rec {
 		go
 		gopls
 		jq
-		openssl
 		gomod2nix
 		# tinygo
 	];

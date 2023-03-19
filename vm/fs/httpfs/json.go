@@ -15,8 +15,7 @@ func (FileTree) fileTreeValue() {}
 
 // FileInfo is the information of a file.
 type FileInfo struct {
-	Size int64  `json:"size"`
-	Hash []byte `json:"hash"`
+	Size int64 `json:"size"`
 }
 
 // FileTree is a tree of files and directories. Directories will have its keys
