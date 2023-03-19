@@ -12,8 +12,7 @@ in
 
 { pkgs ? systemPkgs }:
 
-let sources = import ./nix/sources.nix;
-	mkShell = pkgs.mkShell;
+let mkShell = pkgs.mkShell;
 in
 
 # prefer our Nixpkgs
@@ -38,7 +37,7 @@ mkShell rec {
 
 	shellHook = ''
 		export PATH="$PATH:${PROJECT_ROOT}/node_modules/.bin"
-		export NIX_PATH="''${NIX_PATH:-"$HOME/.nix-defexpr/channels"}:libdb.so=${PROJECT_ROOT}"
+		export NIX_PATH="''${NIX_PATH:-"nixpkgs=${sources.nixpkgs}"}:libdb.so=${PROJECT_ROOT}"
 	'';
 
 	PROJECT_ROOT = builtins.toString ./.;
