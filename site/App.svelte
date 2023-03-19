@@ -20,6 +20,19 @@
 </main>
 
 <style global>
+  @import "normalize.css";
+  @import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;500;600;700&display=swap");
+  @import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap");
+
+  body {
+    font-family: "Lato", "Source Sans Pro", "Noto Sans", "Helvetica", "Segoe UI",
+      sans-serif;
+  }
+
+  .monospace {
+    font-family: "Inconsolata", "Noto Mono", "Source Code Pro", monospace;
+  }
+
   main {
     width: 100vw;
     height: 100vh;
