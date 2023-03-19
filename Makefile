@@ -7,7 +7,7 @@ GOFILES = $(shell find . -type f -name '*.go') go.mod go.sum
 
 all: build/dist
 
-dev: build/color-schemes.json build/vm.wasm $(SITE)
+dev: site/components/Terminal/color-schemes.json build/vm.wasm $(SITE)
 	vite dev
 
 clean:
@@ -16,6 +16,7 @@ clean:
 # real
 
 build/dist: site/components/Terminal/color-schemes.json build/vm.wasm $(SITE)
+	npm i
 	vite build
 
 site/components/Terminal/color-schemes.json: ./scripts/xtermjs-colors
