@@ -24,7 +24,10 @@ jobs:
         id: gomod2nix
         run: |-
           gomod2nix
-          [[ $(git status --porcelain) ]] && echo "updated=1" >> $GITHUB_OUTPUT
+
+          if [[ $(git status --porcelain) ]]; then
+            echo "updated=1" >> $GITHUB_OUTPUT
+          fi
 
       - name: Commit changes (if any)
         id: commit
