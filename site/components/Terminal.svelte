@@ -2,6 +2,7 @@
   import "xterm/css/xterm.css";
 
   import { WebglAddon as WebGLAddon } from "xterm-addon-webgl";
+  import { ImageAddon, IImageAddonOptions } from "xterm-addon-image";
   import { FitAddon } from "xterm-addon-fit";
   import * as svelte from "svelte";
   import type * as xterm from "xterm";
@@ -10,6 +11,14 @@
 
   export let id: string;
   export let done: (_: xterm.Terminal) => void;
+
+  const imageAddonSettings: IImageAddonOptions = {
+    enableSizeReports: true,
+    sixelSupport: true,
+    sixelScrolling: true,
+    sixelPaletteLimit: 4096,
+    showPlaceholder: true,
+  };
 
   svelte.onMount(async () => {
     const xterm = await import("xterm");
@@ -28,8 +37,11 @@
     const fitAddon = new FitAddon();
     const onResize = () => fitAddon.fit();
 
+    const imageAddon = new ImageAddon(imageAddonSettings);
+
     // terminal.loadAddon(webglAddon);
     terminal.loadAddon(fitAddon);
+    terminal.loadAddon(imageAddon);
     terminal.open(terminalElement);
     terminal.write("Initializing VM...\r\n");
 
