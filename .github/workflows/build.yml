@@ -17,6 +17,9 @@ jobs:
           shell-file: shell.nix
           auto-optimise: true
 
+      - name: Tidy Go modules
+        run: go mod tidy
+
       - name: Update gomod2nix
         id: gomod2nix
         run: |-
