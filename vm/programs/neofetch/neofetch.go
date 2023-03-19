@@ -26,6 +26,8 @@ type program struct{}
 
 func (program) Name() string { return "neofetch" }
 
+func (program) Usage() string { return "print my information" }
+
 func (program) Run(ctx context.Context, env vm.Environment, args []string) error {
 	if len(args) != 1 {
 		return &vm.UsageError{Usage: "neofetch"}
