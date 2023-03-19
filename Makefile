@@ -1,13 +1,13 @@
 .PHONY: all clean dev
 
 SITE    = $(shell find site -type f) node_modules vite.config.ts package*.json
-GOFILES = $(shell find console -type f) $(shell find cmd -type f) go.mod go.sum
+GOFILES = $(shell find . -type f -name '*.go') go.mod go.sum
 
 # phony
 
 all: build/dist
 
-dev: build/color-schemes.json build/console.wasm $(SITE)
+dev: build/color-schemes.json build/vm.wasm $(SITE)
 	vite dev
 
 clean:
@@ -15,15 +15,15 @@ clean:
 
 # real
 
-build/dist: site/components/Terminal/color-schemes.json build/console.wasm $(SITE)
+build/dist: site/components/Terminal/color-schemes.json build/vm.wasm $(SITE)
 	vite build
 
 site/components/Terminal/color-schemes.json: ./scripts/xtermjs-colors
 	./scripts/xtermjs-colors > $@
 
-build/console.wasm: build/wasm_exec.js $(GOFILES)
+build/vm.wasm: $(GOFILES)
 	mkdir -p build
-	GOOS=js GOARCH=wasm go build -o build/console.wasm ./cmd/console-wasm
+	GOOS=js GOARCH=wasm go build -o build/vm.wasm ./cmd/vm-wasm
 
 #build/console.wasm: build/wasm_exec.js $(GOFILES)
 #	mkdir -p build

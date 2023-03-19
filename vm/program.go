@@ -1,11 +1,11 @@
-package console
+package vm
 
 import (
 	"context"
 	"fmt"
 	"sort"
 
-	"libdb.so/console/fs"
+	"libdb.so/vm/fs"
 )
 
 // Program defines a userspace program within our larger program.

@@ -10,9 +10,9 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v3"
-	"libdb.so/console"
-	"libdb.so/console/internal/cliprog"
-	"libdb.so/console/programs"
+	"libdb.so/vm"
+	"libdb.so/vm/internal/cliprog"
+	"libdb.so/vm/programs"
 )
 
 func init() {
@@ -39,7 +39,7 @@ var ls = cli.App{
 		},
 	},
 	Action: func(c *cli.Context) error {
-		env := console.EnvironmentFromContext(c.Context)
+		env := vm.EnvironmentFromContext(c.Context)
 
 		arg := c.Args().First()
 		if arg == "" {

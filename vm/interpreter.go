@@ -1,4 +1,4 @@
-package console
+package vm
 
 import (
 	"context"
@@ -11,8 +11,8 @@ import (
 	stdfs "io/fs"
 
 	"github.com/pkg/errors"
-	"libdb.so/console/fs"
-	"libdb.so/console/internal/liner"
+	"libdb.so/vm/fs"
+	"libdb.so/vm/internal/liner"
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"

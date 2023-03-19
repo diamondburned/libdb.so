@@ -1,5 +1,5 @@
 import "./wasm_exec.js";
-import consoleBlob from "#/libdb.so/build/console.wasm?url";
+import consoleBlob from "#/libdb.so/build/vm.wasm?url";
 import type * as xterm from "xterm";
 
 declare global {

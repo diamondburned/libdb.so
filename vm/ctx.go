@@ -1,4 +1,4 @@
-package console
+package vm
 
 import (
 	"context"
