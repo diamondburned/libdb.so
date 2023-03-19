@@ -11,27 +11,27 @@ import (
 	"unsafe"
 
 	"libdb.so/cmd/internal/global"
-	"libdb.so/console"
-	"libdb.so/console/programs"
+	"libdb.so/vm"
+	"libdb.so/vm/programs"
 )
 
 var input io.Writer // js writes to this
 
 var startCh = make(chan struct{}, 1)
-var terminal *console.Terminal
+var terminal *vm.Terminal
 
 func main() {
-	terminal = console.NewTerminal(newIO(), console.TerminalQuery{})
+	terminal = vm.NewTerminal(newIO(), vm.TerminalQuery{})
 
 	ctx := context.Background()
-	env := console.Environment{
+	env := vm.Environment{
 		Terminal:   terminal,
 		Programs:   programs.All(),
 		Filesystem: global.Filesystem,
 		Cwd:        global.InitialCwd,
 	}
 
-	interp, err := console.NewInterpreter(&env, console.InterpreterOpts{
+	interp, err := vm.NewInterpreter(&env, vm.InterpreterOpts{
 		RunCommands: global.RC,
 	})
 	if err != nil {
@@ -50,11 +50,11 @@ func main() {
 	}
 }
 
-func newIO() console.IO {
+func newIO() vm.IO {
 	wr, ww := io.Pipe()
 	input = ww
 
-	return console.IO{
+	return vm.IO{
 		Stdin:  wr,
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
@@ -83,7 +83,7 @@ func write_stdin(this js.Value, args []js.Value) any { // (string) => void
 }
 
 func update_terminal(this js.Value, args []js.Value) any { // ({row, col, xpixel, ypixel, sixel}) => void
-	terminal.UpdateQuery(console.TerminalQuery{
+	terminal.UpdateQuery(vm.TerminalQuery{
 		Width:  args[0].Get("row").Int(),
 		Height: args[0].Get("col").Int(),
 		XPixel: args[0].Get("xpixel").Int(),

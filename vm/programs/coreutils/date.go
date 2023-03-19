@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/urfave/cli/v3"
-	"libdb.so/console"
-	"libdb.so/console/internal/cliprog"
-	"libdb.so/console/programs"
+	"libdb.so/vm"
+	"libdb.so/vm/internal/cliprog"
+	"libdb.so/vm/programs"
 )
 
 func init() {
@@ -23,7 +23,7 @@ var date = cli.App{
 		},
 	},
 	Action: func(c *cli.Context) error {
-		env := console.EnvironmentFromContext(c.Context)
+		env := vm.EnvironmentFromContext(c.Context)
 		if c.Bool("iso-8601") {
 			env.Println(time.Now().Format(time.RFC3339))
 		} else {

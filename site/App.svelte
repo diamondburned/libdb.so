@@ -2,7 +2,7 @@
   import "./style.scss";
 
   import * as svelte from "svelte";
-  import * as console_ from "#/libdb.so/site/lib/console.js";
+  import * as vm from "#/libdb.so/site/lib/vm.js";
   import type * as xterm from "xterm";
 
   import Terminal from "#/libdb.so/site/components/Terminal/index.svelte";
@@ -10,7 +10,7 @@
   let screen: HTMLElement;
 
   function init(terminal: xterm.Terminal) {
-    console_.start(terminal).catch((err) => console.error(err));
+    vm.start(terminal).catch((err) => console.error(err));
   }
 </script>
 

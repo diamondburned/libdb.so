@@ -6,10 +6,10 @@ import (
 	"os"
 
 	"github.com/fatih/color"
-	"libdb.so/console"
-	"libdb.so/console/programs"
+	"libdb.so/vm"
+	"libdb.so/vm/programs"
 
-	_ "libdb.so/console/programs/hewwo"
+	_ "libdb.so/vm/programs/hewwo"
 )
 
 var colors = []color.Attribute{
@@ -23,13 +23,13 @@ var colors = []color.Attribute{
 }
 
 func main() {
-	io := console.IO{
+	io := vm.IO{
 		Stdin:  os.Stdin,
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
 	}
 
-	inst, err := console.NewInterpreter(io, console.InterpreterOpts{
+	inst, err := vm.NewInterpreter(io, vm.InterpreterOpts{
 		MakeRaw:  false, // maybe?
 		Programs: programs.All(),
 	})

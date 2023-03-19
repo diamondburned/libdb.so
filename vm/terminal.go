@@ -1,4 +1,4 @@
-package console
+package vm
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/ssh/terminal"
-	"libdb.so/console/internal/syncg"
+	"libdb.so/vm/internal/syncg"
 )
 
 // IO defines our needed IO files.

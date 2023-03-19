@@ -5,9 +5,9 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/urfave/cli/v3"
-	"libdb.so/console"
-	"libdb.so/console/internal/cliprog"
-	"libdb.so/console/programs"
+	"libdb.so/vm"
+	"libdb.so/vm/internal/cliprog"
+	"libdb.so/vm/programs"
 )
 
 func init() {
@@ -18,8 +18,8 @@ var app = cli.App{
 	Name:  "spew",
 	Usage: "spew file(s)",
 	Action: func(c *cli.Context) error {
-		env := console.EnvironmentFromContext(c.Context)
-		log := console.LoggerFromContext(c.Context)
+		env := vm.EnvironmentFromContext(c.Context)
+		log := vm.LoggerFromContext(c.Context)
 
 		for _, arg := range c.Args().Slice() {
 			f, err := fs.ReadFile(env.Filesystem, arg)

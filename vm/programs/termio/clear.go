@@ -2,9 +2,9 @@ package termio
 
 import (
 	"github.com/urfave/cli/v3"
-	"libdb.so/console"
-	"libdb.so/console/internal/cliprog"
-	"libdb.so/console/programs"
+	"libdb.so/vm"
+	"libdb.so/vm/internal/cliprog"
+	"libdb.so/vm/programs"
 )
 
 func init() {
@@ -15,7 +15,7 @@ var clear = cli.App{
 	Name:  "clear",
 	Usage: "clear the terminal screen",
 	Action: func(c *cli.Context) error {
-		env := console.EnvironmentFromContext(c.Context)
+		env := vm.EnvironmentFromContext(c.Context)
 		env.Print("\033[2J\033[1;1H")
 		return nil
 	},

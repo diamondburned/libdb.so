@@ -3,14 +3,14 @@ package global
 import (
 	_ "embed"
 
-	"libdb.so/console/fs"
 	"libdb.so/public"
+	"libdb.so/vm/fs"
 
-	_ "libdb.so/console/programs/coreutils"
-	_ "libdb.so/console/programs/hewwo"
-	_ "libdb.so/console/programs/neofetch"
-	_ "libdb.so/console/programs/spew"
-	_ "libdb.so/console/programs/termio"
+	_ "libdb.so/vm/programs/coreutils"
+	_ "libdb.so/vm/programs/hewwo"
+	_ "libdb.so/vm/programs/neofetch"
+	_ "libdb.so/vm/programs/spew"
+	_ "libdb.so/vm/programs/termio"
 )
 
 const InitialCwd = "/"
