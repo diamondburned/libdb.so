@@ -21,7 +21,7 @@ var cat = cli.App{
 		log := vm.LoggerFromContext(c.Context)
 
 		for _, arg := range c.Args().Slice() {
-			f, err := env.Filesystem.Open(arg)
+			f, err := env.Open(arg)
 			if err != nil {
 				log.Println("cat:", err)
 				continue
