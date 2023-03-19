@@ -3,6 +3,7 @@ package liner
 import (
 	"unicode"
 
+	"github.com/leaanthony/go-ansi-parser"
 	"github.com/mattn/go-runewidth"
 )
 
@@ -19,17 +20,14 @@ var zeroWidth = []*unicode.RangeTable{
 
 // countGlyphs considers zero-width characters to be zero glyphs wide,
 // and members of Chinese, Japanese, and Korean scripts to be 2 glyphs wide.
-func countGlyphs(s []rune) int {
-	n := 0
-	for _, r := range s {
-		// speed up the common case
-		if r < 127 {
-			n++
-			continue
-		}
+func countGlyphs(runes []rune) int {
+	s := string(runes)
 
-		n += runewidth.RuneWidth(r)
+	n, err := ansi.Length(s)
+	if err != nil {
+		return runewidth.StringWidth(s)
 	}
+
 	return n
 }
 
