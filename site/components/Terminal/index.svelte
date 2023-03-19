@@ -42,7 +42,7 @@
 
     const imageAddon = new ImageAddon(imageAddonSettings);
 
-    // terminal.loadAddon(webglAddon);
+    terminal.loadAddon(webglAddon);
     terminal.loadAddon(fitAddon);
     terminal.loadAddon(imageAddon);
     terminal.open(terminalElement);
