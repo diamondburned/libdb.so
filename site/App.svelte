@@ -5,7 +5,7 @@
   import * as console_ from "#/libdb.so/site/lib/console.js";
   import type * as xterm from "xterm";
 
-  import Terminal from "#/libdb.so/site/components/Terminal.svelte";
+  import Terminal from "#/libdb.so/site/components/Terminal/index.svelte";
 
   let screen: HTMLElement;
 
@@ -15,10 +15,8 @@
 </script>
 
 <main>
-  <Terminal id="terminal" done={init} />
-  <div id="screen" style="display: none" bind:this={screen}>
-    <div style="white-space: pre; font: 14px monospace; line-height: 14px" />
-    <canvas style="display: none" />
+  <div class="backdrop">
+    <Terminal id="terminal" done={init} />
   </div>
 </main>
 
@@ -27,14 +25,26 @@
     width: 100vw;
     height: 100vh;
 
+    /* https://www.joshwcomeau.com/gradient-generator?colors=f690dc|4e98fa&angle=55&colorMode=hcl&precision=20&easingCurve=0.25|0.75|0.75|0.25 */
+    background-color: dimgray;
+    background-image: url("/Pictures/background.jpg");
+    background-size: cover;
+  }
+
+  main > div {
+    width: 100%;
+    height: 100%;
+
     display: flex;
     justify-content: center;
     align-items: center;
+
+    backdrop-filter: blur(20px);
   }
 
   #terminal {
-    width: calc(100% - 1rem);
-    height: calc(100% - 2rem);
+    width: min(800px, calc(100% - clamp(1rem, 10vw, 3rem)));
+    height: min(600px, calc(100% - clamp(1rem, 10vw, 3rem)));
   }
 
   #screen {

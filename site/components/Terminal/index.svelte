@@ -5,12 +5,14 @@
   import { ImageAddon, IImageAddonOptions } from "xterm-addon-image";
   import { FitAddon } from "xterm-addon-fit";
   import * as svelte from "svelte";
+  import colors from "./color-schemes.json";
   import type * as xterm from "xterm";
 
   let terminalElement: HTMLElement;
 
   export let id: string;
   export let done: (_: xterm.Terminal) => void;
+  let title = "libdb.so";
 
   const imageAddonSettings: IImageAddonOptions = {
     enableSizeReports: true,
@@ -29,6 +31,7 @@
       fontWeightBold: "700",
       allowTransparency: true,
       convertEol: true,
+      theme: colors,
     });
 
     const webglAddon = new WebGLAddon();
@@ -43,10 +46,14 @@
     terminal.loadAddon(fitAddon);
     terminal.loadAddon(imageAddon);
     terminal.open(terminalElement);
-    terminal.write("Initializing VM...\r\n");
+    terminal.write("Starting VM...\r\n");
 
     onResize();
     window.addEventListener("resize", onResize);
+
+    const onTitleChange = terminal.onTitleChange((t) => {
+      title = t;
+    });
 
     done(terminal);
 
@@ -54,19 +61,62 @@
       terminal.dispose();
       webglAddon.dispose();
       fitAddon.dispose();
+      onTitleChange.dispose();
       window.removeEventListener("resize", onResize);
     };
   });
 </script>
 
-<div {id} bind:this={terminalElement} />
+<div
+  {id}
+  class="terminal-box"
+  style="
+    --background: {colors.background};
+    --foreground: {colors.foreground};
+  "
+>
+  <header>
+    <h3>{title}</h3>
+  </header>
+  <div class="terminal" bind:this={terminalElement} />
+</div>
 
 <style>
-  div {
+  div.terminal-box {
     overflow: hidden;
-
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+
+    box-shadow: 0 2px 16px -6px rgba(0, 0, 0, 0.77);
+    border-radius: 15px 15px 0 0;
+  }
+
+  header {
+    color: black;
+    background: linear-gradient(
+      to right,
+      rgba(85, 205, 252, 1) 0%,
+      rgba(147, 194, 255, 1) 25%,
+      rgba(200, 181, 245, 1) 50%,
+      rgba(234, 171, 217, 1) 75%,
+      rgba(247, 168, 184, 1) 100%
+    );
+    text-align: center;
+  }
+
+  header h3 {
+    font-weight: bold;
+    font-size: 1rem;
+    margin: 0.75rem;
+  }
+
+  div.terminal {
+    flex: 1;
+    padding: 8px 6px;
+    background-color: var(--background);
+  }
+
+  div.terminal > :global(*) {
+    height: 100%;
   }
 </style>

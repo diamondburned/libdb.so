@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+scheme=(
+	"#272224" "#FF473D" "#3DCCB2" "#FF9600"
+	"#3B7ECB" "#F74C6D" "#00B5FC" "#3E3E3E"
+	"#52494C" "#FF6961" "#85E6D4" "#FFB347"
+	"#779ECB" "#F7A8B8" "#55CDFC" "#EEEEEC"
+	"#1D1D1D"
+	"#FFFFFF"
+)
+
+mapping=(
+	black red green yellow
+	blue magenta cyan white
+	brightBlack brightRed brightGreen brightYellow
+	brightBlue brightMagenta brightCyan brightWhite
+	background
+	foreground
+)
+
+jqArgs=()
+jqKeys=()
+
+for ((i = 0; i < ${#scheme[@]}; i++)); do
+	k=${mapping[$i]}
+	v=${scheme[$i]}
+	jqArgs+=( --arg "$k" "$v" )
+	jqKeys+=( "${k}" )
+done
+
+jq --null-input "${jqArgs[@]}" "{ $(printf "$%s," "${jqKeys[@]}") }"
