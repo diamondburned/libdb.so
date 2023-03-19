@@ -8,6 +8,7 @@ import (
 	"text/tabwriter"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v3"
 	"libdb.so/vm"
@@ -105,7 +106,7 @@ var ls = cli.App{
 
 				fmt.Fprintf(w,
 					"%s\t%s\t%s\n",
-					printPerm(m), printTime(t), ent.Name(),
+					printPerm(m), printTime(t), printName(ent),
 				)
 			}
 
@@ -113,11 +114,18 @@ var ls = cli.App{
 		}
 
 		for _, ent := range ents {
-			fmt.Fprintln(c.App.Writer, ent.Name())
+			fmt.Fprintln(c.App.Writer, printName(ent))
 		}
 
 		return nil
 	},
+}
+
+func printName(dirEntry fs.DirEntry) string {
+	if dirEntry.IsDir() {
+		return color.New(color.FgBlue, color.Bold).Sprint(dirEntry.Name())
+	}
+	return dirEntry.Name()
 }
 
 func printPerm(mode fs.FileMode) string {
