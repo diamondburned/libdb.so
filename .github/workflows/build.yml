@@ -13,6 +13,8 @@ jobs:
       - name: Install Nix shell
         uses: diamondburned/cache-install@main
         with:
+          nix-file: "" # we don't need this yet
+          shell-file: shell.nix
           auto-optimise: true
 
       - name: Update gomod2nix
