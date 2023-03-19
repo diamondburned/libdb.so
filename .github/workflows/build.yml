@@ -1,6 +1,6 @@
 name: Build
 on:
-  # no push because deploy.yml will trigger this workflow
+  push:
   pull_request:
   workflow_call:
   workflow_dispatch:
