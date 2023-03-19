@@ -2,12 +2,15 @@ let sources = import ./nix/sources.nix;
 in
 
 {
-	pkgs ? import sources.nixpkgs {},
+	pkgs ? import sources.nixpkgs {
+		overlays = import ./nix/overlays.nix;
+	},
 	lib ? pkgs.lib,
 	src ? builtins.filterSource
 		(path: type:
 			(baseNameOf path != ".git") &&
-			(baseNameOf path != "build"))
+			(baseNameOf path != "build") &&
+			(baseNameOf path != "node_modules"))
 		(./.),
 	version ? "git",
 	outputHash ? "sha256:${lib.fakeSha256 }",
@@ -23,15 +26,15 @@ let stdenv = pkgs.stdenv;
 	};
 
 	vmWasm =
-		let module = pkgs.buildGoModule {
-			pname = "libdb.so-vm-wasm";
+		let module = pkgs.buildGoApplication {
 			inherit version src;
-	
+			pname = "libdb.so-vm-wasm";
+			go = pkgs.go_1_20;
+			modules = ./gomod2nix.toml;
 			subPackages = [ "cmd/vm-wasm" ];
-			vendorSha256 = "sha256:1mwymf0x569frm906xldn0qlik41mfif7w0avhwmzmd07npg0xnd";
-	
-			doCheck = false; # none to run
+
 			CGO_ENABLED = 0;
+			doCheck = false; # none to run
 
 			postInstall = ''
 				mv $out/bin/js_wasm/vm-wasm $out/bin/vm.wasm
@@ -43,23 +46,41 @@ let stdenv = pkgs.stdenv;
 			GOARCH = "wasm";
 		});
 
-	npmPackage = pkgs.buildNpmPackage {
-		pname = "libdb.so-vm-wasm";
-		inherit version src;
-
-		npmBuildScript = "build";
-		npmDepsHash = "sha256:0pdpg76kccgj8dhf203mraxz9ys9aarjp41v3qj9p4mhqyqy3nbg";
-		dontNpmInstall = true;
-
-		preBuild = ''
-			mkdir -p build
-			cp ${vmWasm}/bin/vm.wasm build/vm.wasm
-		'';
-
-		installPhase = ''
-			cp -r build/dist $out
-		'';
+	nodeModules = pkgs.npmlock2nix.v2.node_modules {
+		inherit src;
+		# mkDerivation hates us because we have a Makefile. We'll override
+		# installPhase to fix that.
+		installPhase = "mv node_modules $out/";
 	};
 in
 
-npmPackage
+stdenv.mkDerivation {
+	inherit version src;
+	pname = "libdb.so";
+
+	buildInputs = with pkgs; [
+		coreutils
+		bash
+		jq
+		# go
+		nodejs
+	];
+
+	preBuild = ''
+		set -x
+
+		mkdir -p build
+		cp -r ${vmWasm}/bin/vm.wasm build/vm.wasm
+
+		cp -r ${nodeModules} node_modules
+		chown -R $(id -u):$(id -g) node_modules
+		chmod -R +w node_modules
+		export PATH="$PATH:$PWD/node_modules/.bin"
+
+		set +x
+	'';
+
+	installPhase = ''
+		cp -r build/dist $out
+	'';
+}

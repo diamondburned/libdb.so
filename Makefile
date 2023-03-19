@@ -19,14 +19,13 @@ clean:
 # real
 
 build/dist: dist-deps
-	npm i
 	vite build
 
 site/components/Terminal/color-schemes.json: ./scripts/xtermjs-colors
 	./scripts/xtermjs-colors > $@
 
-build/publicfs.json: $(PUBLIC) ./scripts/jsonfs.ts
-	./scripts/jsonfs.ts public > build/publicfs.json
+build/publicfs.json: $(PUBLIC) ./scripts/jsonfs
+	bash ./scripts/jsonfs public > build/publicfs.json
 
 build/vm.wasm: $(GOFILES)
 	mkdir -p build

@@ -1,6 +1,4 @@
 <script lang="ts">
-  import "./style.scss";
-
   import * as svelte from "svelte";
   import * as vm from "#/libdb.so/site/lib/vm.js";
   import type * as xterm from "xterm";

@@ -2,12 +2,7 @@
 
 let sources = import ./nix/sources.nix;
 	ourPkgs = import sources.nixpkgs {
-		overlays = [
-			(self: super: {
-				go = super.go_1_20;
-				buildGoModule = super.buildGo120Module;
-			})
-		];
+		overlays = import ./nix/overlays.nix;
 	};
 
 	lib = pkgs.lib;
@@ -22,11 +17,11 @@ pkgs.mkShell rec {
 		niv
 		go
 		gopls
-		tinygo
 		caddy
-		nixos-generators
 		jq
-		qemu
+		node2nix
+		gomod2nix
+		# tinygo
 	];
 
 	shellHook = ''
