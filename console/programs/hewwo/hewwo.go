@@ -1,7 +1,7 @@
 package hewwo
 
 import (
-	"fmt"
+	"context"
 
 	"libdb.so/console"
 	"libdb.so/console/programs"
@@ -13,13 +13,14 @@ func init() {
 
 type program struct{}
 
-func (p program) Name() string { return "hewwo" }
+func (p program) Name() string {
+	return "hewwo"
+}
 
-func (p program) Run(term *console.Terminal, args []string) error {
+func (p program) Run(ctx context.Context, env *console.Environment, args []string) error {
 	if len(args) != 1 {
 		return &console.UsageError{Usage: "hewwo"}
 	}
-
-	fmt.Fprintln(term, "hewwo go!")
+	env.Println("hewwo go!")
 	return nil
 }

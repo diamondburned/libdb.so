@@ -18,6 +18,10 @@ clean:
 build/dist: build/console.wasm $(SITE)
 	vite build
 
-build/console.wasm: $(GOFILES)
+build/console.wasm: build/wasm_exec.js $(GOFILES)
 	mkdir -p build
-	tinygo build -o build/console.wasm -target wasm ./cmd/console-wasm/
+	GOOS=js GOARCH=wasm go build -o build/console.wasm ./cmd/console-wasm
+# tinygo build -o build/console.wasm -opt 2 -scheduler asyncify -target wasm ./cmd/console-wasm/
+
+build/wasm_exec.js:
+	cp $$(go env GOROOT)/misc/wasm/wasm_exec.js $@

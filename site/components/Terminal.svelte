@@ -9,16 +9,17 @@
   let terminalElement: HTMLElement;
 
   export let id: string;
-  export let terminal: xterm.Terminal;
+  export let done: (_: xterm.Terminal) => void;
 
   svelte.onMount(async () => {
     const xterm = await import("xterm");
 
-    terminal = new xterm.Terminal({
+    const terminal = new xterm.Terminal({
       fontFamily: "monospace",
       fontWeight: "500",
       fontWeightBold: "700",
       allowTransparency: true,
+      convertEol: true,
     });
 
     const webglAddon = new WebGLAddon();
@@ -34,6 +35,8 @@
 
     onResize();
     window.addEventListener("resize", onResize);
+
+    done(terminal);
 
     return () => {
       terminal.dispose();

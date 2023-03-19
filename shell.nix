@@ -1,7 +1,14 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let sources = import ./nix/sources.nix;
-	ourPkgs = import sources.nixpkgs { };
+	ourPkgs = import sources.nixpkgs {
+		overlays = [
+			(self: super: {
+				go = super.go_1_20;
+				buildGoModule = super.buildGo120Module;
+			})
+		];
+	};
 
 	lib = pkgs.lib;
 
@@ -13,9 +20,8 @@ pkgs.mkShell rec {
 	buildInputs = with ourPkgs; [
 		nodejs
 		niv
-		# We're stuck with Go 1.19 until we get tinygo 1.27.0, which I cannot
-		# for the life of me get to build.
-		go_1_19
+		go
+		gopls
 		tinygo
 		caddy
 		nixos-generators
