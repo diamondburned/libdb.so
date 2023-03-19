@@ -11,7 +11,9 @@ export default defineConfig({
   // Why the FUCK is clearScreen true by default? That is fucking stupid.
   clearScreen: false,
   plugins: [
-    viteCompression(),
+    viteCompression({
+      filter: /\.(js|mjs|json|css|html|wasm)$/i,
+    }),
     svelte({
       preprocess: sveltePreprocess(),
     }),
@@ -31,6 +33,7 @@ export default defineConfig({
     },
     target: "esnext",
     sourcemap: true,
+    reportCompressedSize: false, // viteCompression does this for us
   },
   esbuild: {
     sourcemap: true,

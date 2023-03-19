@@ -3,7 +3,8 @@
   "type": "module",
   "license": "GPL-3.0-or-later",
   "scripts": {
-    "dev": "vite"
+    "dev": "vite",
+    "build": "make"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.0.2",
