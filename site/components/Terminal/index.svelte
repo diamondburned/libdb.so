@@ -77,7 +77,7 @@
   "
 >
   <header>
-    <h3>{title}</h3>
+    <h3>{title} – xterm.js</h3>
   </header>
   <div class="terminal" bind:this={terminalElement} />
 </div>
