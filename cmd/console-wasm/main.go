@@ -17,6 +17,8 @@ import (
 
 	_ "libdb.so/console/programs/coreutils"
 	_ "libdb.so/console/programs/hewwo"
+	_ "libdb.so/console/programs/spew"
+	_ "libdb.so/console/programs/termio"
 )
 
 var input io.Writer // js writes to this

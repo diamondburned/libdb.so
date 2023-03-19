@@ -43,6 +43,8 @@ type Environment struct {
 	Cwd string
 	// Programs are the programs that are available to run.
 	Programs map[string]Program
+	// Environ is the environment variables.
+	Environ map[string]string
 }
 
 // ListPrograms returns a list of all programs in alphabetical order.
@@ -65,4 +67,9 @@ func (env *Environment) Println(v ...any) {
 // Printf prints a formatted line to the terminal.
 func (env *Environment) Printf(f string, v ...any) {
 	fmt.Fprintf(env.Terminal, f, v...)
+}
+
+// Print prints to the terminal.
+func (env *Environment) Print(v ...any) {
+	fmt.Fprint(env.Terminal, v...)
 }

@@ -10,7 +10,6 @@ import (
 	stderrors "errors"
 	stdfs "io/fs"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/pkg/errors"
 	"libdb.so/console/fs"
 	"libdb.so/console/internal/liner"
@@ -38,8 +37,6 @@ type InterpreterOpts struct {
 
 // NewInterpreter creates a new interpreter.
 func NewInterpreter(env *Environment, opts InterpreterOpts) (*Interpreter, error) {
-	log.Printf("fs: %s", spew.Sdump(env.Filesystem))
-
 	inst := Interpreter{env: env}
 
 	inst.logger = log.New(inst.env.Terminal.Stderr, "", 0)
