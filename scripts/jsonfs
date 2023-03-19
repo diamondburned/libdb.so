@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+function scanDir() {
+	declare -A objs
+	for f in "$1"/*; do
+		n=$(basename "$f")
+		if [[ -d "$f" ]]; then
+			obj=$(scanDir "$f")
+			objs["${n}/"]="$obj"
+		elif [[ -f "$f" ]]; then
+			obj=$(jq --null-input \
+				--arg size "$(stat -c%s "$f")" \
+				--arg hash "$(sha256sum "$f" | cut -d' ' -f1)" \
+				'{ $size, $hash }')
+			objs["$n"]="$obj"
+		else
+			echo "Skipping $f since it's neither a file nor a directory" >&2
+		fi
+	done
+	jsonobj objs
+}
+
+function basename() {
+	echo "${1##*/}"
+}
+
+# jsonobj varname
+function jsonobj() {
+	args=()
+	keys=()
+
+	declare -n obj=$1
+	i=0
+	for k in "${!obj[@]}"; do
+		v="${obj[$k]}"
+		args+=(--argjson "v$i" "$v")
+		keys+=("\"$k\": \$v$i")
+		i=$((i + 1))
+	done
+
+	jq --null-input "${args[@]}" "{ $(printf "%s, " "${keys[@]}") }"
+}
+
+if [[ $# -ne 1 ]]; then
+	echo "Usage: jsonfs <path>"
+	exit 1
+fi
+
+shopt -s dotglob
+cd "$1" && scanDir .
