@@ -3,6 +3,7 @@ package vm
 import (
 	"context"
 	"fmt"
+	stdfs "io/fs"
 	"log"
 	"path"
 	"sort"
@@ -84,6 +85,12 @@ type Environment struct {
 func (env *Environment) Env(key string) string {
 	_, v := env.Environ.Get(key).Resolve(env.Environ)
 	return v.Str
+}
+
+// Open opens a file at the given path relative to the current working
+// directory.
+func (env *Environment) Open(path string) (stdfs.File, error) {
+	return env.Filesystem.Open(env.JoinCwd(path))
 }
 
 // JoinCwd joins the given path components and prepends the current working
