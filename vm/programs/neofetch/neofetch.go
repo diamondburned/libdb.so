@@ -3,8 +3,8 @@ package neofetch
 import (
 	"context"
 	"fmt"
+	"io"
 	"runtime"
-	"runtime/debug"
 	"strings"
 
 	_ "embed"
@@ -16,6 +16,7 @@ import (
 
 func init() {
 	programs.Register(program{})
+	color.NoColor = false
 }
 
 //go:embed me.sixel
@@ -39,33 +40,40 @@ func (program) Run(ctx context.Context, env *vm.Environment, args []string) erro
 func info() string {
 	var b strings.Builder
 
-	color.New(color.FgMagenta, color.Bold).Fprintf(&b, "libdb.so\n")
-	color.New(color.FgMagenta, color.Bold).Fprintf(&b, "--------\n")
-	b.WriteByte('\n')
+	fpcolor(&b, "libdb.so\n", color.FgMagenta, color.Bold)
+	fpcolor(&b, "--------\n", color.FgMagenta, color.Bold)
 
 	b.WriteByte('\n')
 
-	b.WriteString("GitHub: ")
+	fpcolor(&b, "GitHub: ", color.FgCyan, color.Bold)
 	printLink(&b, "diamondburned", "https://github.com/diamondburned")
 	b.WriteByte('\n')
 
-	b.WriteString("Mastodon: ")
+	fpcolor(&b, "Mastodon: ", color.FgBlue, color.Bold)
 	printLink(&b, "@diamond@hachyderm.io", "https://hachyderm.io/@diamond")
 	b.WriteByte('\n')
 
 	b.WriteByte('\n')
 
-	build, _ := debug.ReadBuildInfo()
-	fmt.Fprintln(&b, "Go version", build.GoVersion)
-	fmt.Fprintln(&b, "GOOS:", runtime.GOOS)
-	fmt.Fprintln(&b, "GOARCH:", runtime.GOARCH)
-	fmt.Fprintln(&b, "NumCPU:", runtime.NumCPU())
+	fmt.Fprintln(&b, spcolor("Go:", color.FgCyan), strings.Replace(runtime.Version(), "go", "v", 1))
+	fmt.Fprintln(&b, spcolor("GOOS:", color.FgCyan), runtime.GOOS)
+	fmt.Fprintln(&b, spcolor("GOARCH:", color.FgCyan), runtime.GOARCH)
+	fmt.Fprintln(&b, spcolor("NumCPU:", color.FgCyan), runtime.NumCPU())
 
+	b.WriteByte('\n')
 	b.WriteByte('\n')
 
 	printFgColors(&b, 0, 8)
 	printFgColors(&b, 8, 16)
 	return b.String()
+}
+
+func spcolor(s string, cs ...color.Attribute) string {
+	return color.New(cs...).Sprint(s)
+}
+
+func fpcolor(w io.Writer, s string, cs ...color.Attribute) {
+	color.New(cs...).Fprint(w, s)
 }
 
 func printFgColors(b *strings.Builder, from, to int) {
