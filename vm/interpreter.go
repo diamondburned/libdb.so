@@ -20,7 +20,7 @@ import (
 )
 
 // PromptFunc is a function that returns the prompt string.
-type PromptFunc func(*Environment) string
+type PromptFunc func(Environment) string
 
 // Interpreter is the main interpreter for the larger program. It manages
 // prompting the user, printing to console, and running programs.
@@ -33,6 +33,7 @@ type Interpreter struct {
 	env         *Environment
 	closes      []func() error
 	opts        InterpreterOpts
+	progNames   []string
 }
 
 // InterpreterOpts are options for creating a new instance.
@@ -50,10 +51,21 @@ func NewInterpreter(env *Environment, opts InterpreterOpts) (*Interpreter, error
 		opts: opts,
 	}
 
+	inst.progNames = make([]string, 0, len(env.Programs))
+	inst.progNames = append(inst.progNames,
+		"true", "false", "exit", "set", "shift", "unset", "echo", "printf",
+		"pwd", "cd", "source", "command", "umask", "alias", "unalias", "eval",
+		"test", "exec", "read", "readarray", "shopt",
+	)
+
+	for name := range env.Programs {
+		inst.progNames = append(inst.progNames, name)
+	}
+
+	sort.Strings(inst.progNames)
+
 	if inst.opts.Prompt == nil {
-		inst.opts.Prompt = func(*Environment) string {
-			return "$ "
-		}
+		inst.opts.Prompt = func(Environment) string { return "$ " }
 	}
 
 	inst.logger = log.New(inst.env.Terminal.Stderr, "", 0)
@@ -76,7 +88,7 @@ func NewInterpreter(env *Environment, opts InterpreterOpts) (*Interpreter, error
 	}
 
 	inst.shExpandCfg = &expand.Config{
-		Env:     shEnviron(inst.env.Environ),
+		Env:     inst.env.Environ,
 		ReadDir: readDir,
 		// TODO: CmdSubst
 	}
@@ -99,7 +111,7 @@ func NewInterpreter(env *Environment, opts InterpreterOpts) (*Interpreter, error
 		}),
 		interp.StdIO(inst.env.Terminal.Stdin, inst.env.Terminal.Stdout, inst.env.Terminal.Stderr),
 		interp.ExecHandler(inst.execHandler),
-		interp.Env(shEnviron(inst.env.Environ)),
+		interp.Env(inst.env.Environ),
 		interp.RunnerOption(func(r *interp.Runner) error {
 			r.Dir = "/"
 			return nil
@@ -134,7 +146,7 @@ func (inst *Interpreter) Close() error {
 }
 
 // Terminal returns the terminal for the interpreter.
-func (inst *Interpreter) Terminal() *Terminal {
+func (inst *Interpreter) Terminal() Terminal {
 	return inst.env.Terminal
 }
 
@@ -150,7 +162,9 @@ func (inst *Interpreter) Run(ctx context.Context) error {
 	inst.prompter.SetCtrlCAborts(false)
 
 	for {
-		prompt := inst.opts.Prompt(inst.env)
+		inst.env.Cwd = inst.shRunner.Dir
+		inst.env.Environ = inst.shRunner.Env
+		prompt := inst.opts.Prompt(*inst.env)
 
 		// Support multiline prompts by splitting on newlines and printing each
 		// line separately except the last one.
@@ -195,16 +209,6 @@ func (inst *Interpreter) Run(ctx context.Context) error {
 	// return inst.shParser.Interactive(inst.env.Terminal.Stdin, interactiveFunc)
 }
 
-// Exec executes the given command string as if the user did it.
-func (inst *Interpreter) Exec(ctx context.Context, line string) {
-	ctx = context.WithValue(ctx, environmentKey, inst.env)
-	ctx = context.WithValue(ctx, loggerKey, inst.logger)
-
-	// By that, we just print the prompt and execute the command.
-	inst.env.Print(inst.opts.Prompt(inst.env), line)
-	inst.exec(ctx, line)
-}
-
 func (inst *Interpreter) exec(ctx context.Context, line string) {
 	shFile, err := inst.shParser.Parse(strings.NewReader(line), "")
 	if err != nil {
@@ -228,7 +232,19 @@ func (inst *Interpreter) execHandler(ctx context.Context, args []string) error {
 		return fmt.Errorf("unknown command: %q", args[0])
 	}
 
-	return prog.Run(ctx, inst.env, args)
+	handler := interp.HandlerCtx(ctx)
+
+	env := *inst.env
+	env.Cwd = handler.Dir
+	env.Terminal = env.Terminal.WithIO(IO{
+		Stdin:  io.NopCloser(handler.Stdin),
+		Stdout: handler.Stdout,
+		Stderr: handler.Stderr,
+	})
+
+	ctx = context.WithValue(ctx, environmentKey, &env)
+
+	return prog.Run(ctx, env, args)
 }
 
 func (inst *Interpreter) wordCompleter(ctx context.Context) func(string, int) (string, []string, string) {
@@ -365,7 +381,17 @@ func (inst *Interpreter) wordCompleter(ctx context.Context) func(string, int) (s
 				words = append(words, w)
 			}
 
-			completions = autocompleter.Autocomplete(ctx, inst.env, words, ix)
+			// Is this even needed? Is this overkill? I think it is, but
+			// whatever.
+			env := Environment{
+				Terminal:   inst.env.Terminal.WithIO(NoIOExceptStderr(inst.env.Terminal.Stderr)),
+				Filesystem: inst.env.Filesystem,
+				Cwd:        inst.shRunner.Dir,
+				Programs:   inst.env.Programs,
+				Environ:    inst.env.Environ,
+			}
+
+			completions = autocompleter.Autocomplete(ctx, env, words, ix)
 			return
 		}
 
@@ -386,14 +412,18 @@ func (inst *Interpreter) wordCompleter(ctx context.Context) func(string, int) (s
 	}
 }
 
+func (inst *Interpreter) updateEnv() {
+	inst.env.Cwd = inst.shRunner.Dir
+	inst.env.Environ = inst.shRunner.Env
+}
+
 func (inst *Interpreter) programAutocomplete(word string) []string {
 	var completions []string
-	for name := range inst.env.Programs {
+	for _, name := range inst.progNames {
 		if strings.HasPrefix(name, word) {
 			completions = append(completions, name)
 		}
 	}
-	sort.Strings(completions)
 	return completions
 }
 

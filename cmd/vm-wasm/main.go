@@ -21,8 +21,8 @@ import (
 
 var input io.Writer // js writes to this
 var startCh = make(chan struct{}, 1)
+var terminal vm.Terminal
 var publicFS *httpfs.FS
-var terminal *vm.Terminal
 
 func main() {
 	terminal = vm.NewTerminal(newIO(), vm.TerminalQuery{})
@@ -43,6 +43,7 @@ func main() {
 		Programs:   programs.All(),
 		Filesystem: fs.ReadOnlyFS(publicFS),
 		Cwd:        global.InitialCwd,
+		Environ:    global.InitialEnv,
 	}
 
 	interp, err := vm.NewInterpreter(&env, vm.InterpreterOpts{

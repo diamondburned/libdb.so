@@ -27,7 +27,7 @@ func (p program) Name() string {
 	return p.App.Name
 }
 
-func (p program) Run(ctx context.Context, env *vm.Environment, args []string) error {
+func (p program) Run(ctx context.Context, env vm.Environment, args []string) error {
 	p.Reader = env.Terminal.Stdin
 	p.Writer = env.Terminal.Stdout
 	p.ErrWriter = env.Terminal.Stderr

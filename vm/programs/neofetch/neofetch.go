@@ -26,7 +26,7 @@ type program struct{}
 
 func (program) Name() string { return "neofetch" }
 
-func (program) Run(ctx context.Context, env *vm.Environment, args []string) error {
+func (program) Run(ctx context.Context, env vm.Environment, args []string) error {
 	if len(args) != 1 {
 		return &vm.UsageError{Usage: "neofetch"}
 	}
@@ -87,7 +87,7 @@ func printLink(b *strings.Builder, text, url string) {
 	fmt.Fprintf(b, "\x1b]8;;%s\x1b\\%s\x1b]8;;\x1b\\", url, text)
 }
 
-func printInfo(env *vm.Environment, str string) {
+func printInfo(env vm.Environment, str string) {
 	const up = 16
 	const right = 36
 
