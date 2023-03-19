@@ -4,9 +4,6 @@ go 1.20
 
 replace mvdan.cc/sh/v3 => github.com/diamondburned/mvdan-sh/v3 v3.0.0-20230318131347-17d55f04e1ac
 
-//replace github.com/peterh/liner => github.com/diamondburned/peterh-liner v0.0.0-20230319000726-e4c9392f4efc
-replace github.com/peterh/liner => ../liner
-
 require (
 	github.com/alecthomas/assert v1.0.0
 	github.com/davecgh/go-spew v1.1.1
