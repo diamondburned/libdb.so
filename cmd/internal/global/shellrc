@@ -1,0 +1,8 @@
+#!/usr/bin/env gosh
+clear
+neofetch
+
+echo
+echo "Welcome to libdb.so!"
+echo "Type \`help' for a list of commands."
+echo

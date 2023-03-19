@@ -23,21 +23,25 @@ import (
 type Interpreter struct {
 	shParser *syntax.Parser
 	shRunner *interp.Runner
+	prompter *liner.State
 	logger   *log.Logger
 	env      *Environment
 	closes   []func() error
+	opts     InterpreterOpts
 }
 
 // InterpreterOpts are options for creating a new instance.
 type InterpreterOpts struct {
-	// MakeRaw puts the terminal in raw mode. This is useful for running the
-	// program in a sub-terminal.
-	MakeRaw bool
+	// RunCommands is a string that is evaluated on startup.
+	RunCommands string
 }
 
 // NewInterpreter creates a new interpreter.
 func NewInterpreter(env *Environment, opts InterpreterOpts) (*Interpreter, error) {
-	inst := Interpreter{env: env}
+	inst := Interpreter{
+		env:  env,
+		opts: opts,
+	}
 
 	inst.logger = log.New(inst.env.Terminal.Stderr, "", 0)
 
@@ -86,14 +90,13 @@ func NewInterpreter(env *Environment, opts InterpreterOpts) (*Interpreter, error
 
 	inst.shRunner = shRunner
 
-	if opts.MakeRaw {
-		undo, err := inst.env.Terminal.makeRaw()
-		if err != nil {
-			return nil, err
-		}
-
-		inst.closes = append(inst.closes, undo)
-	}
+	inst.prompter = liner.NewStateStdin(
+		inst.env.Terminal.IO.Stdin,
+		func() (row, col uint16, ok bool) {
+			q := inst.env.Terminal.Query()
+			return uint16(q.Width), uint16(q.Height), true
+		},
+	)
 
 	return &inst, nil
 }
@@ -117,19 +120,13 @@ func (inst *Interpreter) Terminal() *Terminal {
 // Run runs the console loop. It blocks until the context is canceled or until a
 // fatal/unrecoverable error occurs.
 func (inst *Interpreter) Run(ctx context.Context) error {
-	prompter := liner.NewStateStdin(
-		inst.env.Terminal.IO.Stdin,
-		func() (row, col uint16, ok bool) {
-			q := inst.env.Terminal.Query()
-			return uint16(q.Width), uint16(q.Height), true
-		},
-	)
-
 	ctx = context.WithValue(ctx, environmentKey, inst.env)
 	ctx = context.WithValue(ctx, loggerKey, inst.logger)
 
+	inst.exec(ctx, inst.opts.RunCommands)
+
 	for {
-		line, err := prompter.Prompt(inst.prompt())
+		line, err := inst.prompter.Prompt(inst.prompt())
 		if err != nil {
 			return errors.Wrap(err, "failed to read line")
 		}
@@ -138,18 +135,8 @@ func (inst *Interpreter) Run(ctx context.Context) error {
 			continue
 		}
 
-		prompter.AppendHistory(line)
-
-		shFile, err := inst.shParser.Parse(strings.NewReader(line), "")
-		if err != nil {
-			inst.logger.Printf("error parsing: %v", err)
-			continue
-		}
-
-		if err := inst.shRunner.Run(ctx, shFile); err != nil {
-			inst.logger.Printf("error running: %v", err)
-			continue
-		}
+		inst.prompter.AppendHistory(line)
+		inst.exec(ctx, line)
 	}
 
 	// interactiveFunc := func(stmts []*syntax.Stmt) bool {
@@ -173,6 +160,29 @@ func (inst *Interpreter) Run(ctx context.Context) error {
 	//
 	// fmt.Fprintf(inst.env.Terminal, inst.prompt())
 	// return inst.shParser.Interactive(inst.env.Terminal.Stdin, interactiveFunc)
+}
+
+// Exec executes the given command string as if the user did it.
+func (inst *Interpreter) Exec(ctx context.Context, line string) {
+	ctx = context.WithValue(ctx, environmentKey, inst.env)
+	ctx = context.WithValue(ctx, loggerKey, inst.logger)
+
+	// By that, we just print the prompt and execute the command.
+	inst.env.Print(inst.prompt(), line)
+	inst.exec(ctx, line)
+}
+
+func (inst *Interpreter) exec(ctx context.Context, line string) {
+	shFile, err := inst.shParser.Parse(strings.NewReader(line), "")
+	if err != nil {
+		inst.logger.Printf("error parsing: %v", err)
+		return
+	}
+
+	if err := inst.shRunner.Run(ctx, shFile); err != nil {
+		inst.logger.Printf("error running: %v", err)
+		return
+	}
 }
 
 func (inst *Interpreter) prompt() string {
