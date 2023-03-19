@@ -3,15 +3,16 @@ import consoleBlob from "#/libdb.so/build/vm.wasm?url";
 import type * as xterm from "xterm";
 
 declare global {
-  function console_write_stdin(data: string): void;
-  function console_update_terminal(_: {
+  function vm_write_stdin(data: string): void;
+  function vm_update_terminal(_: {
     row: number;
     col: number;
     xpixel: number;
     ypixel: number;
     sixel: boolean;
   }): void;
-  function console_start(): void;
+  function vm_start(): void;
+  function vm_set_public_fs(json: string): void;
   var console_write: null | ((fd: number, bytes: Uint8Array) => void);
 }
 
@@ -60,7 +61,7 @@ class TerminalProxy {
   }
 
   private onData(data: string) {
-    const write_stdin = globalThis.console_write_stdin;
+    const write_stdin = globalThis.vm_write_stdin;
     if (write_stdin) {
       write_stdin(data);
     } else {
@@ -69,8 +70,8 @@ class TerminalProxy {
   }
 
   private onResize(termsz: { rows: number; cols: number }) {
-    if (globalThis.console_update_terminal) {
-      globalThis.console_update_terminal({
+    if (globalThis.vm_update_terminal) {
+      globalThis.vm_update_terminal({
         row: termsz.rows,
         col: termsz.cols,
         xpixel: 0,
@@ -83,7 +84,15 @@ class TerminalProxy {
   }
 }
 
-export async function start(terminal: xterm.Terminal) {
+type FileTreeKey =
+  | `${string}/` // directory
+  | `${string}`; // file
+
+interface FileTree {
+  [key: FileTreeKey]: FileTree | { size: number };
+}
+
+export async function start(terminal: xterm.Terminal, publicFS: FileTree) {
   if (running) return;
 
   // @ts-ignore
@@ -101,9 +110,12 @@ export async function start(terminal: xterm.Terminal) {
     console.error("error running wasm blob", err);
   });
 
+  console.log("initialize public httpfs");
+  globalThis.vm_set_public_fs(JSON.stringify(publicFS));
+
   console.log("starting console...");
   proxy.updateQuery();
-  globalThis.console_start();
+  globalThis.vm_start();
 
   console.log("done");
 }

@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"io"
 	"log"
+	"net/http"
 	"os"
 	"reflect"
 	"runtime"
@@ -12,22 +14,34 @@ import (
 
 	"libdb.so/cmd/internal/global"
 	"libdb.so/vm"
+	"libdb.so/vm/fs"
+	"libdb.so/vm/fs/httpfs"
 	"libdb.so/vm/programs"
 )
 
 var input io.Writer // js writes to this
-
 var startCh = make(chan struct{}, 1)
+var publicFS *httpfs.FS
 var terminal *vm.Terminal
 
 func main() {
 	terminal = vm.NewTerminal(newIO(), vm.TerminalQuery{})
 
+	{
+		global := js.Global()
+		global.Set("vm_write_stdin", js.FuncOf(write_stdin))
+		global.Set("vm_update_terminal", js.FuncOf(update_terminal))
+		global.Set("vm_start", js.FuncOf(start))
+		global.Set("vm_set_public_fs", js.FuncOf(set_public_fs))
+	}
+
+	<-startCh
+
 	ctx := context.Background()
 	env := vm.Environment{
 		Terminal:   terminal,
 		Programs:   programs.All(),
-		Filesystem: global.Filesystem,
+		Filesystem: fs.ReadOnlyFS(publicFS),
 		Cwd:        global.InitialCwd,
 	}
 
@@ -37,13 +51,6 @@ func main() {
 	if err != nil {
 		log.Panicln("cannot make new interpreter:", err)
 	}
-
-	global := js.Global()
-	global.Set("console_write_stdin", js.FuncOf(write_stdin))
-	global.Set("console_update_terminal", js.FuncOf(update_terminal))
-	global.Set("console_start", js.FuncOf(start))
-
-	<-startCh
 
 	if err := interp.Run(ctx); err != nil {
 		log.Panicln(err)
@@ -79,6 +86,19 @@ func write_stdin(this js.Value, args []js.Value) any { // (string) => void
 	b := unsafe.Slice((*byte)(unsafe.Pointer((*reflect.StringHeader)(unsafe.Pointer(&s)).Data)), len(s))
 	input.Write(b)
 	runtime.KeepAlive(s)
+	return nil
+}
+
+// set_public_fs sets the public file system to the given JSON string.
+func set_public_fs(this js.Value, args []js.Value) any { // (string) => void
+	jsonStr := args[0].String()
+	var tree httpfs.FileTree
+
+	if err := json.Unmarshal([]byte(jsonStr), &tree); err != nil {
+		log.Panicln("cannot unmarshal public fs:", err)
+	}
+
+	publicFS = httpfs.New(*http.DefaultClient, tree)
 	return nil
 }
 

@@ -4,7 +4,8 @@ import (
 	"errors"
 	"io/fs"
 	"os"
-	"strings"
+
+	"libdb.so/vm/fs/internal/fsutil"
 )
 
 // ErrReadOnly is returned when a filesystem is read-only.
@@ -16,15 +17,6 @@ func ReadOnlyFS(fs fs.FS) FS {
 	return rofs{fs}
 }
 
-func fromAbs(abs string) string {
-	name := abs
-	name = strings.TrimPrefix(name, "/")
-	if name == "" {
-		name = "."
-	}
-	return name
-}
-
 type rofs struct{ fs fs.FS }
 
 var (
@@ -33,7 +25,7 @@ var (
 )
 
 func (ro rofs) Open(name string) (fs.File, error) {
-	return ro.fs.Open(fromAbs(name))
+	return ro.fs.Open(fsutil.ConvertAbs(name))
 }
 
 func (ro rofs) OpenFile(name string, flag int, perm fs.FileMode) (File, error) {
@@ -54,7 +46,7 @@ func (ro rofs) Remove(name string) error {
 }
 
 func (ro rofs) ReadDir(name string) ([]fs.DirEntry, error) {
-	return fs.ReadDir(ro.fs, fromAbs(name))
+	return fs.ReadDir(ro.fs, fsutil.ConvertAbs(name))
 }
 
 func (ro rofs) Mkdir(name string, perm fs.FileMode) error {
