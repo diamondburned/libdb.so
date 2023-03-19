@@ -55,10 +55,10 @@ func info() string {
 
 	b.WriteByte('\n')
 
-	fmt.Fprintln(&b, spcolor("Go:", color.FgCyan), strings.Replace(runtime.Version(), "go", "v", 1))
-	fmt.Fprintln(&b, spcolor("GOOS:", color.FgCyan), runtime.GOOS)
-	fmt.Fprintln(&b, spcolor("GOARCH:", color.FgCyan), runtime.GOARCH)
-	fmt.Fprintln(&b, spcolor("NumCPU:", color.FgCyan), runtime.NumCPU())
+	fmt.Fprintln(&b, spcolor("Go:", color.FgHiCyan), strings.Replace(runtime.Version(), "go", "v", 1))
+	fmt.Fprintln(&b, spcolor("GOOS:", color.FgHiCyan), runtime.GOOS)
+	fmt.Fprintln(&b, spcolor("GOARCH:", color.FgHiCyan), runtime.GOARCH)
+	fmt.Fprintln(&b, spcolor("NumCPU:", color.FgHiCyan), runtime.NumCPU())
 
 	b.WriteByte('\n')
 	b.WriteByte('\n')
