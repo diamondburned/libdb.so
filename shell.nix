@@ -1,18 +1,21 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let sources = import ./nix/sources.nix;
-	ourPkgs = import sources.nixpkgs {
+	mkShell = pkgs.mkShell;
+in
+
+let pkgs = import sources.nixpkgs {
 		overlays = import ./nix/overlays.nix;
 	};
 
 	lib = pkgs.lib;
 
-	tinygo = ourPkgs.callPackage ./nix/packages/tinygo { };
+	tinygo = pkgs.callPackage ./nix/packages/tinygo { };
 
 in
 
-pkgs.mkShell rec {
-	buildInputs = with ourPkgs; [
+mkShell rec {
+	buildInputs = with pkgs; [
 		nodejs
 		niv
 		go
