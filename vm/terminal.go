@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/ssh/terminal"
@@ -15,6 +16,23 @@ type IO struct {
 	Stdin  io.ReadCloser
 	Stdout io.Writer
 	Stderr io.Writer
+}
+
+// NoIO returns a new IO instance that discards all input and output.
+func NoIO() IO {
+	return IO{
+		Stdin:  io.NopCloser(strings.NewReader("")),
+		Stdout: io.Discard,
+		Stderr: io.Discard,
+	}
+}
+
+// NoIOExceptStderr returns a new IO instance that discards all input and
+// standard output, but writes standard error to the given writer.
+func NoIOExceptStderr(stderr io.Writer) IO {
+	io := NoIO()
+	io.Stderr = stderr
+	return io
 }
 
 func (io IO) makeRaw() (func() error, error) {
@@ -81,10 +99,10 @@ type Terminal struct {
 }
 
 // NewTerminal creates a new terminal.
-func NewTerminal(io IO, query TerminalQuery) *Terminal {
+func NewTerminal(io IO, query TerminalQuery) Terminal {
 	var q terminalQueryUpdater
 	q.set(query)
-	return &Terminal{
+	return Terminal{
 		IO:    io,
 		query: &q,
 	}
@@ -117,4 +135,10 @@ func (t *Terminal) Write(b []byte) (int, error) {
 // Read reads from the terminal's stdin.
 func (t *Terminal) Read(b []byte) (int, error) {
 	return t.Stdin.Read(b)
+}
+
+// WithIO returns a new terminal with the given IO. The terminal query is kept.
+func (t Terminal) WithIO(io IO) Terminal {
+	t.IO = io
+	return t
 }

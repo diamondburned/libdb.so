@@ -17,7 +17,7 @@ func (p program) Name() string {
 	return "hewwo"
 }
 
-func (p program) Run(ctx context.Context, env *vm.Environment, args []string) error {
+func (p program) Run(ctx context.Context, env vm.Environment, args []string) error {
 	if len(args) != 1 {
 		return &vm.UsageError{Usage: "hewwo"}
 	}

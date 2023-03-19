@@ -22,8 +22,16 @@ const InitialCwd = "/"
 //go:embed shellrc
 var RC string
 
+var InitialEnv = vm.EnvironFromMap(map[string]string{
+	"TERM":  "xterm-256color",
+	"HOME":  "/",
+	"SITE":  "libdb.so",
+	"SHELL": "github.com/mvdan/sh/v3",
+	"SHLVL": "1",
+})
+
 // PromptMonochrome is a monochromic prompter.
-func PromptMonochrome(env *vm.Environment) string {
+func PromptMonochrome(env vm.Environment) string {
 	return fmt.Sprintf("\n$ libdb.so @ %s\n―❤―▶ ", env.Cwd)
 }
 
@@ -36,11 +44,11 @@ var transBlend = []colorful.Color{
 }
 
 // PromptColored is a colorful prompter.
-func PromptColored() func(env *vm.Environment) string {
+func PromptColored() vm.PromptFunc {
 	var b bytes.Buffer
 	b.Grow(1024)
 
-	return func(env *vm.Environment) string {
+	return func(env vm.Environment) string {
 		q := env.Terminal.Query()
 
 		b.Reset()
