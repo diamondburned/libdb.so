@@ -56,9 +56,9 @@ jobs:
           auto-optimise: true
 
       - name: Build
-        run: echo output=$(nix-build) >> $GITHUB_OUTPUT
+        run: cp -r "$(nix-build)" result
 
       - name: Upload artifact(s)
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ${{ steps.build.outputs.output }}
+          path: result
