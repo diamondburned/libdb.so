@@ -25,7 +25,7 @@ site/components/Terminal/color-schemes.json: ./scripts/xtermjs-colors
 	./scripts/xtermjs-colors > $@
 
 build/publicfs.json: $(PUBLIC) ./scripts/jsonfs
-	bash ./scripts/jsonfs public > build/publicfs.json
+	bash ./scripts/jsonfs public/_fs > build/publicfs.json
 
 build/vm.wasm: $(GOFILES)
 	mkdir -p build

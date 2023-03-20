@@ -39,7 +39,7 @@
 
     /* https://www.joshwcomeau.com/gradient-generator?colors=f690dc|4e98fa&angle=55&colorMode=hcl&precision=20&easingCurve=0.25|0.75|0.75|0.25 */
     background-color: dimgray;
-    background-image: url("/Pictures/background.jpg");
+    background-image: url("/_fs/Pictures/background.jpg");
     background-size: cover;
   }
 
@@ -55,8 +55,8 @@
   }
 
   #terminal {
-    width: min(800px, calc(100% - clamp(1rem, 10vw, 3rem)));
-    height: min(600px, calc(100% - clamp(1rem, 10vw, 3rem)));
+    width: min(800px, calc(100% - clamp(6px, 5vw, 3rem)));
+    height: min(600px, calc(100% - clamp(6px, 5vw, 3rem)));
   }
 
   #screen {

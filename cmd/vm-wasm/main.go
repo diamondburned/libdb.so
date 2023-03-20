@@ -93,15 +93,16 @@ func write_stdin(this js.Value, args []js.Value) any { // (string) => void
 }
 
 // set_public_fs sets the public file system to the given JSON string.
-func set_public_fs(this js.Value, args []js.Value) any { // (string) => void
+func set_public_fs(this js.Value, args []js.Value) any { // (string, string) => void
 	jsonStr := args[0].String()
-	var tree httpfs.FileTree
+	basePath := args[1].String()
 
+	var tree httpfs.FileTree
 	if err := json.Unmarshal([]byte(jsonStr), &tree); err != nil {
 		log.Panicln("cannot unmarshal public fs:", err)
 	}
 
-	publicFS = httpfs.New(*http.DefaultClient, tree)
+	publicFS = httpfs.New(*http.DefaultClient, tree, basePath)
 	return nil
 }
 

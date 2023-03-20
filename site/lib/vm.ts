@@ -12,7 +12,7 @@ declare global {
     sixel: boolean;
   }): void;
   function vm_start(): void;
-  function vm_set_public_fs(json: string): void;
+  function vm_set_public_fs(json: string, basePath: string): void;
   var console_write: null | ((fd: number, bytes: Uint8Array) => void);
 }
 
@@ -92,7 +92,15 @@ interface FileTree {
   [key: FileTreeKey]: FileTree | { size: number };
 }
 
-export async function start(terminal: xterm.Terminal, publicFS: FileTree) {
+type FilesystemJSON = {
+  base: string;
+  tree: FileTree;
+};
+
+export async function start(
+  terminal: xterm.Terminal,
+  publicFS: FilesystemJSON
+) {
   if (running) return;
 
   // @ts-ignore
@@ -111,7 +119,7 @@ export async function start(terminal: xterm.Terminal, publicFS: FileTree) {
   });
 
   console.log("initialize public httpfs");
-  globalThis.vm_set_public_fs(JSON.stringify(publicFS));
+  globalThis.vm_set_public_fs(JSON.stringify(publicFS.tree), publicFS.base);
 
   console.log("starting console...");
   proxy.updateQuery();

@@ -40,19 +40,23 @@
       },
     });
 
-    const webglAddon = new WebGLAddon();
-    webglAddon.onContextLoss(() => webglAddon.dispose());
-
     const fitAddon = new FitAddon();
     const onResize = () => fitAddon.fit();
+    terminal.loadAddon(fitAddon);
 
     const imageAddon = new ImageAddon(imageAddonSettings);
-
-    terminal.loadAddon(webglAddon);
-    terminal.loadAddon(fitAddon);
     terminal.loadAddon(imageAddon);
+
+    try {
+      const webglAddon = new WebGLAddon();
+      webglAddon.onContextLoss(() => webglAddon.dispose());
+      terminal.loadAddon(webglAddon);
+    } catch (err) {
+      console.log("WebGL not supported, using canvas fallback");
+    }
+
     terminal.open(terminalElement);
-    terminal.write("Starting VM...\r\n");
+    terminal.write("Starting VM...\n");
 
     onResize();
     window.addEventListener("resize", onResize);

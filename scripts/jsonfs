@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-function scanDir() {
+scanDir() {
 	declare -A objs
 	for f in "$1"/*; do
 		n=$(basename "$f")
@@ -20,12 +20,12 @@ function scanDir() {
 	jsonobj objs
 }
 
-function basename() {
+basename() {
 	echo "${1##*/}"
 }
 
 # jsonobj varname
-function jsonobj() {
+jsonobj() {
 	args=()
 	keys=()
 
@@ -41,10 +41,31 @@ function jsonobj() {
 	jq --null-input "${args[@]}" "{ $(printf "%s, " "${keys[@]}") }"
 }
 
-if [[ $# -ne 1 ]]; then
-	echo "Usage: jsonfs <path>"
-	exit 1
-fi
+main() {
+	if [[ $# -ne 1 ]]; then
+		echo "Usage: jsonfs <path>"
+		exit 1
+	fi
 
-shopt -s dotglob
-cd "$1" && scanDir .
+	if [[ "$1/" != public/* ]]; then
+		echo "Path must be in public/" >&2
+		exit 1
+	fi
+
+	cd "public"
+
+	dir=${1#public/}
+	if [[ "$dir" == "" ]]; then
+		dir="."
+	fi
+	
+	shopt -s dotglob
+	tree=$(scanDir "$dir")
+
+	jq --null-input \
+		--arg base "$dir" \
+		--argjson tree "$tree" \
+		'{ $base, $tree }'
+}
+
+main "$@"
