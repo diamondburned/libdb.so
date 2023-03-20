@@ -6,6 +6,7 @@ import (
 	"io"
 	"regexp"
 	"runtime"
+	"runtime/debug"
 	"strings"
 
 	_ "embed"
@@ -61,14 +62,19 @@ func info() string {
 	printLink(&b, "diamondburned/libdb.so", "https://libdb.so/libdb.so")
 	b.WriteByte('\n')
 
+	if rev := programRev(); rev != "" {
+		fpcolor(&b, "Built on: ", color.FgGreen, color.Bold)
+		b.WriteString(rev)
+		b.WriteByte('\n')
+	}
+
 	b.WriteByte('\n')
 
 	fmt.Fprintln(&b, spcolor("Go:", color.FgHiCyan), strings.Replace(runtime.Version(), "go", "v", 1))
 	fmt.Fprintln(&b, spcolor("GOOS:", color.FgHiCyan), runtime.GOOS)
 	fmt.Fprintln(&b, spcolor("GOARCH:", color.FgHiCyan), runtime.GOARCH)
-	fmt.Fprintln(&b, spcolor("NumCPU:", color.FgHiCyan), runtime.NumCPU())
+	fmt.Fprintln(&b, spcolor("NumCPU:", color.FgHiCyan), cpuCount())
 
-	b.WriteByte('\n')
 	b.WriteByte('\n')
 
 	printFgColors(&b, 0, 8)
@@ -89,6 +95,53 @@ func printFgColors(b *strings.Builder, from, to int) {
 		fmt.Fprintf(b, "\x1b[38;5;%dm%s\033[0m", fg, "███")
 	}
 	b.WriteByte('\n')
+}
+
+func cpuCount() string {
+	ncpu := runtime.NumCPU()
+	scpu := ""
+	if ncpu == 1 {
+		scpu = fmt.Sprintf("%d core", ncpu)
+	} else {
+		scpu = fmt.Sprintf("%d cores", ncpu)
+	}
+
+	ngoros := runtime.NumGoroutine()
+	if ngoros == 1 {
+		scpu += fmt.Sprintf(" (1 active goroutine)")
+	} else {
+		scpu += fmt.Sprintf(" (%d active goroutines)", ngoros)
+	}
+
+	return scpu
+}
+
+func programRev() string {
+	build, ok := debug.ReadBuildInfo()
+	if !ok {
+		return ""
+	}
+
+	setting := func(k string) string {
+		for _, setting := range build.Settings {
+			if setting.Key == k {
+				return setting.Value
+			}
+		}
+		return ""
+	}
+
+	vcs := setting("vcs")
+	rev := setting("vcs.revision")
+	if vcs == "" || rev == "" {
+		return ""
+	}
+
+	if len(rev) > 7 {
+		rev = rev[:7]
+	}
+
+	return fmt.Sprintf("%s revision %s", vcs, rev)
 }
 
 var ansiLinkRe = regexp.MustCompile(`(?m)\x1b]8;;([^\x1b]*)\x1b\\([^\x1b]*)\x1b]8;;\x1b\\`)
