@@ -43,6 +43,9 @@ type InterpreterOpts struct {
 	RunCommands string
 	// Prompt is a function that returns the prompt string.
 	Prompt PromptFunc
+	// IgnoreEOF, if true, will ignore EOF errors and continue prompting as
+	// usual.
+	IgnoreEOF bool
 }
 
 var builtinCommands = []string{
@@ -178,10 +181,19 @@ func (inst *Interpreter) Run(ctx context.Context) error {
 
 		line, err := inst.prompter.Prompt(promptLines[len(promptLines)-1])
 		if err != nil {
-			if errors.Is(err, liner.ErrPromptAborted) {
+			switch {
+			case errors.Is(err, liner.ErrPromptAborted):
+				// Ctrl+C is pressed; redraw entire prompt.
 				continue
+			case errors.Is(err, io.EOF):
+				if inst.opts.IgnoreEOF {
+					inst.env.Println()
+					continue
+				}
+				return nil // break with no error
+			default:
+				return errors.Wrap(err, "failed to read line")
 			}
-			return errors.Wrap(err, "failed to read line")
 		}
 
 		if line == "" {
