@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -49,15 +50,22 @@ func main() {
 	interp, err := vm.NewInterpreter(&env, vm.InterpreterOpts{
 		RunCommands: global.RC,
 		Prompt:      global.PromptColored(),
-		IgnoreEOF:   true,
 	})
 	if err != nil {
 		log.Panicln("cannot make new interpreter:", err)
 	}
 
-	if err := interp.Run(ctx); err != nil {
+	if err := interp.Run(ctx); err != nil && !errors.Is(err, io.EOF) {
 		log.Panicln(err)
 	}
+
+	// EOF reached. Just close the tab lmfao.
+	window := js.Global().Get("window")
+	window.Call("close")
+
+	// Block forever to prevent the program from exiting prematurely.
+	// The tab should close soon so it doesn't matter.
+	select {}
 }
 
 func newIO() vm.IO {
