@@ -49,6 +49,7 @@ func main() {
 	interp, err := vm.NewInterpreter(&env, vm.InterpreterOpts{
 		RunCommands: global.RC,
 		Prompt:      global.PromptColored(),
+		IgnoreEOF:   true,
 	})
 	if err != nil {
 		log.Panicln("cannot make new interpreter:", err)
