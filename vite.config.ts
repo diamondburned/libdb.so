@@ -25,6 +25,7 @@ export default defineConfig({
   },
   build: {
     outDir: path.join(root, "build", "dist"),
+    assetsDir: "_assets",
     emptyOutDir: true,
     rollupOptions: {
       output: {

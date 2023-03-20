@@ -18,11 +18,12 @@ var _ fs.FS = (*FS)(nil)
 
 // New returns a new FS that obeys the given file tree. A cache may optionally
 // be provided to cache file contents.
-func New(client http.Client, tree FileTree) *FS {
+func New(client http.Client, tree FileTree, basePath string) *FS {
 	return &FS{
 		tree: tree,
 		client: httpClient{
-			client: client,
+			client:   client,
+			basePath: basePath,
 		},
 	}
 }
