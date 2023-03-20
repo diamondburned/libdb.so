@@ -378,16 +378,11 @@ func (inst *Interpreter) wordCompleter(ctx context.Context) func(string, int) (s
 			return
 		}
 
-		prog, ok := inst.env.Programs[firstValue]
-		if !ok {
-			// unknown program, ignore
-			return
-		}
-
-		autocompleter, ok := prog.(ProgramAutocompleter)
-		if ok {
-			// We should guarantee that we can expand words up to the cursor.
-			// Don't bother with the rest if we have no choice.
+		prog, found := inst.env.Programs[firstValue]
+		autocompleter, isAutocompleter := prog.(ProgramAutocompleter)
+		if found && isAutocompleter {
+			// We should guarantee that we can expand words up to the
+			// cursor. Don't bother with the rest if we have no choice.
 			words := make([]string, 0, len(cursorExpr.Args))
 			for i, w := range cursorExpr.Args {
 				w, err := expand.Literal(inst.shExpandCfg, w)
@@ -396,8 +391,8 @@ func (inst *Interpreter) wordCompleter(ctx context.Context) func(string, int) (s
 						// we couldn't decode up to the cursor, ignore
 						return
 					}
-					// we can't decode the rest, but we can still autocomplete
-					// up to the cursor
+					// we can't decode the rest, but we can still
+					// autocomplete up to the cursor
 					break
 				}
 				words = append(words, w)
@@ -425,6 +420,10 @@ func (inst *Interpreter) wordCompleter(ctx context.Context) func(string, int) (s
 		}
 
 		for _, f := range files {
+			// If we're autocompleting cd, then we only want directories.
+			if firstValue == "cd" && !f.IsDir() {
+				continue
+			}
 			if strings.HasPrefix(f.Name(), cursorValue) {
 				completions = append(completions, f.Name())
 			}
