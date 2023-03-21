@@ -23,7 +23,9 @@ let pkgs = ourPkgs;
 
 	# We always want gopls to run in GOOS=js mode so we can get proper autocompletions.
 	gopls = pkgs.writeShellScriptBin "gopls" ''
-		GOOS=js GOARCH=wasm exec ${pkgs.gopls}/bin/gopls "$@"
+		export GOOS=js
+		export GOARCH=wasm
+		exec ${pkgs.gopls}/bin/gopls "$@"
 	'';
 
 in
