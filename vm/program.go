@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"libdb.so/vm/fs"
+	"libdb.so/vm/rwfs"
 	"mvdan.cc/sh/v3/expand"
 )
 
@@ -72,7 +72,7 @@ type Environment struct {
 	// Terminal is the terminal to use.
 	Terminal Terminal
 	// Filesystem is the filesystem to use.
-	Filesystem fs.FS
+	Filesystem rwfs.FS
 	// Cwd is the current working directory.
 	Cwd string
 	// Programs are the programs that are available to run.

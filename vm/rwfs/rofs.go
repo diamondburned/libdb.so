@@ -1,11 +1,11 @@
-package fs
+package rwfs
 
 import (
 	"errors"
 	"io/fs"
 	"os"
 
-	"libdb.so/vm/fs/internal/fsutil"
+	"libdb.so/vm/rwfs/internal/fsutil"
 )
 
 // ErrReadOnly is returned when a filesystem is read-only.
@@ -19,10 +19,7 @@ func ReadOnlyFS(fs fs.FS) FS {
 
 type rofs struct{ fs fs.FS }
 
-var (
-	_ FS    = rofs{}
-	_ DirFS = rofs{}
-)
+var _ FS = rofs{}
 
 func (ro rofs) Open(name string) (fs.File, error) {
 	return ro.fs.Open(fsutil.ConvertAbs(name))

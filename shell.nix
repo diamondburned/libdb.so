@@ -21,6 +21,11 @@ let pkgs = ourPkgs;
 
 	tinygo = pkgs.callPackage ./nix/packages/tinygo { };
 
+	# We always want gopls to run in GOOS=js mode so we can get proper autocompletions.
+	gopls = pkgs.writeShellScriptBin "gopls" ''
+		GOOS=js GOARCH=wasm exec ${pkgs.gopls}/bin/gopls "$@"
+	'';
+
 in
 
 mkShell rec {
@@ -33,6 +38,9 @@ mkShell rec {
 		gomod2nix
 		# tinygo
 	];
+
+	# GOOS = "js";
+	# GOARCH = "wasm";
 
 	shellHook = ''
 		export PATH="$PATH:${PROJECT_ROOT}/node_modules/.bin"

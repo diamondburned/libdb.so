@@ -1,4 +1,4 @@
-package fs
+package rwfs
 
 import (
 	"io"
@@ -13,12 +13,6 @@ type FS interface {
 	OpenFile(name string, flag int, perm fs.FileMode) (File, error)
 	// Remove removes the named file or (empty) directory.
 	Remove(name string) error
-}
-
-// DirFS is a read-writable filesystem that is backed by a directory.
-type DirFS interface {
-	fs.ReadDirFS
-	FS
 	// Mkdir creates a new directory with the specified name and permission
 	// bits.
 	Mkdir(name string, perm fs.FileMode) error
@@ -33,7 +27,7 @@ type DirFS interface {
 // File is a read-writable file.
 type File interface {
 	fs.File
-	io.Writer
+	io.ReadWriteCloser
 }
 
 // Type aliases.
