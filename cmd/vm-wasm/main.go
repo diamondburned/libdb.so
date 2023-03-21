@@ -14,9 +14,9 @@ import (
 
 	"libdb.so/cmd/internal/global"
 	"libdb.so/vm"
-	"libdb.so/vm/fs"
-	"libdb.so/vm/fs/httpfs"
 	"libdb.so/vm/programs"
+	"libdb.so/vm/rwfs"
+	"libdb.so/vm/rwfs/httpfs"
 )
 
 var input io.Writer // js writes to this
@@ -50,7 +50,7 @@ func main() {
 	env := vm.Environment{
 		Terminal:   terminal,
 		Programs:   programs.All(),
-		Filesystem: fs.ReadOnlyFS(publicFS),
+		Filesystem: rwfs.ReadOnlyFS(publicFS),
 		Cwd:        global.InitialCwd,
 		Environ:    global.InitialEnv,
 	}

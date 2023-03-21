@@ -4,16 +4,15 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"sort"
 	"strings"
 	"text/tabwriter"
 
 	stderrors "errors"
-	stdfs "io/fs"
 
 	"github.com/pkg/errors"
-	"libdb.so/vm/fs"
 	"libdb.so/vm/internal/liner"
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/interp"
@@ -75,7 +74,7 @@ func NewInterpreter(env *Environment, opts InterpreterOpts) (*Interpreter, error
 	inst.logger = log.New(inst.env.Terminal.Stderr, "", 0)
 
 	readDir := func(path string) ([]fs.FileInfo, error) {
-		entries, err := stdfs.ReadDir(env.Filesystem, path)
+		entries, err := fs.ReadDir(env.Filesystem, path)
 		if err != nil {
 			return nil, err
 		}
@@ -108,7 +107,7 @@ func NewInterpreter(env *Environment, opts InterpreterOpts) (*Interpreter, error
 			return env.Filesystem.OpenFile(path, flag, perm)
 		}),
 		interp.StatHandler(func(ctx context.Context, name string, followSymlinks bool) (fs.FileInfo, error) {
-			return stdfs.Stat(env.Filesystem, name)
+			return fs.Stat(env.Filesystem, name)
 		}),
 		interp.ReadDirHandler(func(ctx context.Context, path string) ([]fs.FileInfo, error) {
 			return readDir(path)
@@ -413,7 +412,7 @@ func (inst *Interpreter) wordCompleter(ctx context.Context) func(string, int) (s
 		}
 
 		// fallback: do file autocompletion
-		files, err := stdfs.ReadDir(inst.env.Filesystem, inst.env.Cwd)
+		files, err := fs.ReadDir(inst.env.Filesystem, inst.env.Cwd)
 		if err != nil {
 			// We can't read PWD. That's pretty bad, but we can't do much.
 			return

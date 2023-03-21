@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
-	"libdb.so/vm/fs/internal/fsutil"
+	"libdb.so/vm/rwfs/internal/fsutil"
 )
 
 // FS is a file system that reads from an HTTP server.

@@ -6,24 +6,15 @@ import (
 )
 
 // Split splits an absolute path into its components. The first element is
-// always the root. If absPath is "/", then Split returns []string{}.
+// always the directory within root, meaning it is not empty. If absPath is "/",
+// then Split returns []string{}.
 func Split(absPath string) []string {
-	if !strings.HasPrefix(absPath, "/") {
-		// Assume this is an absolute path in case it's passed from io/fs.
-		absPath = "/" + absPath
-	}
-
-	absPath = path.Clean(absPath)
-	if absPath == "/" {
+	absPath = strings.TrimPrefix(path.Clean(absPath), "/")
+	if absPath == "" {
 		return []string{}
 	}
 
-	parts := strings.Split(absPath, "/")
-	if len(parts) > 0 && parts[0] == "" {
-		parts = parts[1:]
-	}
-
-	return parts
+	return strings.Split(absPath, "/")
 }
 
 // JoinAbs joins a path to an absolute path.
