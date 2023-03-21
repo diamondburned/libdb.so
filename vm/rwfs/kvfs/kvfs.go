@@ -137,11 +137,7 @@ func (kvfs *FS) Open(fullpath string) (fs.File, error) {
 
 	v, err := kvfs.store.Get(fullpath)
 	if err != nil {
-		return nil, &fs.PathError{
-			Op:   "open",
-			Path: fullpath,
-			Err:  err,
-		}
+		return nil, pathErr("open", fullpath, err)
 	}
 
 	switch v := v.(type) {
@@ -167,11 +163,7 @@ func (kvfs *FS) OpenFile(fullpath string, flag int, perm fs.FileMode) (rwfs.File
 
 	// Don't support O_RDWR because we don't have any way to do that.
 	if flagHas(flag, os.O_RDWR) {
-		return nil, &fs.PathError{
-			Op:   "open",
-			Path: fullpath,
-			Err:  errors.New("O_RDWR not supported"),
-		}
+		return nil, pathErr("open", fullpath, errors.New("O_RDWR not supported"))
 	}
 
 	if flagHas(flag, os.O_RDONLY) {
@@ -200,20 +192,12 @@ func (kvfs *FS) OpenFile(fullpath string, flag int, perm fs.FileMode) (rwfs.File
 		if flagHas(flag, os.O_EXCL) && err == nil {
 			// File exists but we want to only create the file when there's
 			// none. Exit.
-			return nil, &fs.PathError{
-				Op:   "open",
-				Path: fullpath,
-				Err:  fs.ErrExist,
-			}
+			return nil, pathErr("open", fullpath, fs.ErrExist)
 		}
 	} else {
 		// No O_CREATE, so we must error if the file doesn't exist.
 		if err != nil {
-			return nil, &fs.PathError{
-				Op:   "open",
-				Path: fullpath,
-				Err:  err,
-			}
+			return nil, pathErr("open", fullpath, err)
 		}
 	}
 
@@ -223,20 +207,14 @@ func (kvfs *FS) OpenFile(fullpath string, flag int, perm fs.FileMode) (rwfs.File
 		if path.Dir(fullpath) != "/" {
 			_, err := kvfs.store.Get(path.Dir(fullpath))
 			if err != nil {
-				return nil, &fs.PathError{
-					Op:   "open",
-					Path: fullpath,
-					Err:  errors.Wrap(err, "failed to get parent directory"),
-				}
+				return nil, pathErr("open", fullpath,
+					errors.Wrap(err, "failed to get parent directory"))
 			}
 		}
 
 		if !flagWrite(flag) { // user sanity check
-			return nil, &fs.PathError{
-				Op:   "open",
-				Path: fullpath,
-				Err:  errors.New("O_TRUNC requires write flag"),
-			}
+			return nil, pathErr("open", fullpath,
+				errors.New("O_TRUNC requires write flag"))
 		}
 
 		if flagHas(flag, os.O_TRUNC) {
@@ -244,11 +222,8 @@ func (kvfs *FS) OpenFile(fullpath string, flag int, perm fs.FileMode) (rwfs.File
 		}
 
 		if err := kvfs.store.Set(fullpath, stored); err != nil {
-			return nil, &fs.PathError{
-				Op:   "open",
-				Path: fullpath,
-				Err:  errors.Wrap(err, "failed to truncate file"),
-			}
+			return nil, pathErr("open", fullpath,
+				errors.Wrap(err, "failed to truncate file"))
 		}
 	}
 
@@ -283,11 +258,7 @@ func (kvfs *FS) write(file *fsFile) error {
 		// while the file was open, so we need to check again. We also have to
 		// do this to get existing data for O_APPEND just in case.
 		if f, ok = v.(StoredFile); !ok {
-			return &fs.PathError{
-				Op:   "write",
-				Path: file.info.path,
-				Err:  fs.ErrInvalid,
-			}
+			return pathErr("write", file.info.path, fs.ErrInvalid)
 		}
 	}
 
@@ -306,11 +277,7 @@ func (kvfs *FS) write(file *fsFile) error {
 	}
 
 	if err := kvfs.store.Set(file.info.path, f); err != nil {
-		return &fs.PathError{
-			Op:   "write",
-			Path: file.info.path,
-			Err:  err,
-		}
+		return pathErr("write", file.info.path, err)
 	}
 
 	return nil
@@ -328,19 +295,11 @@ func (rwfs *FS) readDir(fullpath string, n int) ([]fs.DirEntry, error) {
 	// Check that this is an actual directory.
 	dir, err := rwfs.store.Get(fullpath)
 	if err != nil {
-		return nil, &fs.PathError{
-			Op:   "readdir",
-			Path: fullpath,
-			Err:  err,
-		}
+		return nil, pathErr("readdir", fullpath, err)
 	}
 
 	if _, ok := dir.(StoredDirectory); !ok {
-		return nil, &fs.PathError{
-			Op:   "readdir",
-			Path: fullpath,
-			Err:  fs.ErrInvalid,
-		}
+		return nil, pathErr("readdir", fullpath, fs.ErrInvalid)
 	}
 
 	prefix := fullpath + "/"
@@ -392,19 +351,11 @@ func (rwfs *FS) Remove(fullpath string) error {
 
 	_, ok := v.(StoredFile)
 	if !ok {
-		return &fs.PathError{
-			Op:   "remove",
-			Path: fullpath,
-			Err:  fs.ErrInvalid,
-		}
+		return pathErr("remove", fullpath, fs.ErrInvalid)
 	}
 
 	if err := rwfs.store.Delete(fullpath); err != nil {
-		return &fs.PathError{
-			Op:   "remove",
-			Path: fullpath,
-			Err:  err,
-		}
+		return pathErr("remove", fullpath, err)
 	}
 
 	return nil
@@ -423,11 +374,7 @@ func (rwfs *FS) Mkdir(fullpath string, perm fs.FileMode) error {
 
 	_, err := rwfs.store.Get(fullpath)
 	if err == nil {
-		return &fs.PathError{
-			Op:   "mkdir",
-			Path: fullpath,
-			Err:  fs.ErrExist,
-		}
+		return pathErr("mkdir", fullpath, fs.ErrExist)
 	}
 
 	value := StoredDirectory{
@@ -436,11 +383,7 @@ func (rwfs *FS) Mkdir(fullpath string, perm fs.FileMode) error {
 	}
 
 	if err := rwfs.store.Set(fullpath, value); err != nil {
-		return &fs.PathError{
-			Op:   "mkdir",
-			Path: fullpath,
-			Err:  err,
-		}
+		return pathErr("mkdir", fullpath, err)
 	}
 
 	return nil
@@ -484,11 +427,7 @@ func (rwfs *FS) MkdirAll(fullpath string, perm fs.FileMode) error {
 			CreateTime: now,
 			IsDir:      true,
 		}); err != nil {
-			return &fs.PathError{
-				Op:   "mkdirall",
-				Path: fullpath,
-				Err:  err,
-			}
+			return pathErr("mkdirall", fullpath, err)
 		}
 	}
 
@@ -506,22 +445,15 @@ func (rwfs *FS) RemoveAll(fullpath string) error {
 		// Path is a directory, remove everything it has.
 		for _, file := range files {
 			if err := rwfs.store.Delete(file.Path); err != nil {
-				return &fs.PathError{
-					Op:   "removeall",
-					Path: fullpath,
-					Err:  err,
-				}
+				return pathErr("removeall", fullpath, err)
 			}
 		}
 	}
 
 	if fullpath == "/" {
 		if err := rwfs.store.Delete(fullpath); err != nil {
-			return &fs.PathError{
-				Op:   "removeall",
-				Path: fullpath,
-				Err:  errors.Wrap(err, "failed to remove top-most directory"),
-			}
+			return pathErr("removeall", fullpath,
+				errors.Wrap(err, "failed to remove top-most directory"))
 		}
 	}
 
@@ -530,4 +462,12 @@ func (rwfs *FS) RemoveAll(fullpath string) error {
 
 func clean(fullpath string) string {
 	return path.Clean("/" + fullpath)
+}
+
+func pathErr(op, path string, err error) error {
+	return &fs.PathError{
+		Op:   op,
+		Path: path,
+		Err:  err,
+	}
 }
