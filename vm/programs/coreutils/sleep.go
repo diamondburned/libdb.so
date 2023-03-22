@@ -18,11 +18,11 @@ func init() {
 
 var sleep = cli.App{
 	Name:      "sleep",
-	Usage:     "sleep for a given amount of time",
-	UsageText: `sleep <duration|seconds>`,
+	Usage:     "sleep for NUMBER seconds or a given duration",
+	UsageText: `sleep NUMBER[SUFFIX]`,
 	Action: func(c *cli.Context) error {
 		if c.NArg() != 1 {
-			return &vm.UsageError{Usage: "sleep <duration|seconds>"}
+			return &vm.UsageError{Usage: "sleep NUMBER[SUFFIX]"}
 		}
 
 		d, err := time.ParseDuration(c.Args().First())

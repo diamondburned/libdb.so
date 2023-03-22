@@ -21,8 +21,9 @@ func init() {
 }
 
 var ls = cli.App{
-	Name:  "ls",
-	Usage: "list directory contents",
+	Name:      "ls",
+	Usage:     "list directory contents",
+	UsageText: `ls [OPTION]... [FILE]...`,
 	Flags: []cli.Flag{
 		&cli.BoolFlag{
 			Name:    "all",
@@ -42,87 +43,93 @@ var ls = cli.App{
 	Action: func(c *cli.Context) error {
 		env := vm.EnvironmentFromContext(c.Context)
 
-		arg := c.Args().First()
-		if arg == "" {
-			arg = env.Cwd
+		args := c.Args().Slice()
+		if len(args) == 0 {
+			args = []string{"."}
 		}
 
-		stat, err := fs.Stat(env.Filesystem, arg)
-		if err != nil {
-			return errors.Wrap(err, "stat")
-		}
-
-		var ents []fs.DirEntry
-
-		if stat.IsDir() {
-			ents, err = fs.ReadDir(env.Filesystem, arg)
+		for _, arg := range args {
+			stat, err := fs.Stat(env.Filesystem, arg)
 			if err != nil {
-				return errors.Wrap(err, "failed to read directory")
+				return errors.Wrap(err, "stat")
 			}
-		} else {
-			ents = []fs.DirEntry{
-				fakeDirEntry{stat},
-			}
-		}
 
-		if !c.Bool("all") {
-			filtered := ents[:0]
+			var ents []fs.DirEntry
+
+			if stat.IsDir() {
+				ents, err = fs.ReadDir(env.Filesystem, arg)
+				if err != nil {
+					return errors.Wrap(err, "failed to read directory")
+				}
+			} else {
+				ents = []fs.DirEntry{
+					fakeDirEntry{stat},
+				}
+			}
+
+			if len(args) > 1 {
+				fmt.Fprintln(env.Terminal.Stdout, arg+":")
+			}
+
+			if !c.Bool("all") {
+				filtered := ents[:0]
+				for _, ent := range ents {
+					if strings.HasPrefix(ent.Name(), ".") {
+						continue
+					}
+					filtered = append(filtered, ent)
+				}
+				ents = filtered
+			}
+
+			if c.Bool("json") {
+				lsEnts := make([]lsEntry, len(ents))
+				for i, ent := range ents {
+					lsEnts[i] = lsEntry{
+						Name:  ent.Name(),
+						Type:  ent.Type(),
+						IsDir: ent.IsDir(),
+					}
+				}
+
+				enc := json.NewEncoder(c.App.Writer)
+				enc.SetIndent("", "  ")
+				return enc.Encode(lsEnts)
+			}
+
+			if c.Bool("long") {
+				w := tabwriter.NewWriter(c.App.Writer, 0, 0, 1, ' ', 0)
+
+				for _, ent := range ents {
+					var t time.Time
+					var m fs.FileMode
+
+					s, err := ent.Info()
+					if err == nil {
+						t = s.ModTime()
+						m = s.Mode()
+					}
+
+					fmt.Fprintf(w,
+						"%s\t%s\t%s\n",
+						printPerm(m), printTime(t), printName(env, ent),
+					)
+				}
+
+				return w.Flush()
+			}
+
 			for _, ent := range ents {
-				if strings.HasPrefix(ent.Name(), ".") {
-					continue
-				}
-				filtered = append(filtered, ent)
+				fmt.Fprintln(c.App.Writer, printName(env, ent))
 			}
-			ents = filtered
-		}
-
-		if c.Bool("json") {
-			lsEnts := make([]lsEntry, len(ents))
-			for i, ent := range ents {
-				lsEnts[i] = lsEntry{
-					Name:  ent.Name(),
-					Type:  ent.Type(),
-					IsDir: ent.IsDir(),
-				}
-			}
-
-			enc := json.NewEncoder(c.App.Writer)
-			enc.SetIndent("", "  ")
-			return enc.Encode(lsEnts)
-		}
-
-		if c.Bool("long") {
-			w := tabwriter.NewWriter(c.App.Writer, 0, 0, 1, ' ', 0)
-
-			for _, ent := range ents {
-				var t time.Time
-				var m fs.FileMode
-
-				s, err := ent.Info()
-				if err == nil {
-					t = s.ModTime()
-					m = s.Mode()
-				}
-
-				fmt.Fprintf(w,
-					"%s\t%s\t%s\n",
-					printPerm(m), printTime(t), printName(ent),
-				)
-			}
-
-			return w.Flush()
-		}
-
-		for _, ent := range ents {
-			fmt.Fprintln(c.App.Writer, printName(ent))
 		}
 
 		return nil
 	},
 }
 
-func printName(dirEntry fs.DirEntry) string {
-	if dirEntry.IsDir() {
+func printName(env *vm.Environment, dirEntry fs.DirEntry) string {
+	if env.HasTerminal && dirEntry.IsDir() {
 		return color.New(color.FgBlue, color.Bold).Sprint(dirEntry.Name())
 	}
 	return dirEntry.Name()

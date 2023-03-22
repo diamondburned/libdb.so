@@ -78,16 +78,14 @@ func (o overlayFS) OpenFile(name string, flag int, perm fs.FileMode) (File, erro
 func (o overlayFS) Remove(name string) error {
 	name = ConvertAbs(name)
 
-	err := o.rw.Remove(name)
-	// Either no error or does-not-exist error are fine. It's the two common and
-	// valid errors that we can assume RW can return.
-	if err == nil || errors.Is(err, fs.ErrNotExist) {
-		return nil
+	// Don't allow if we're removing a read-only file or directory.
+	_, err1 := fs.Stat(o.ro, name)
+	if err1 == nil {
+		return &fs.PathError{Op: "remove", Path: name, Err: fs.ErrPermission}
 	}
 
-	// Consider every other error a permission error, since we'd have to check
-	// the read-only filesystem otherwise.
-	return &fs.PathError{Op: "remove", Path: name, Err: fs.ErrPermission}
+	// Otherwise, the error is whatever the read-write filesystem returns.
+	return o.rw.Remove(name)
 }
 
 func (o overlayFS) ReadDir(name string) ([]fs.DirEntry, error) {
@@ -148,6 +146,9 @@ func (o overlayFS) RemoveAll(name string) error {
 
 	// Otherwise, the error is whatever the read-write filesystem returns.
 	return o.rw.RemoveAll(name)
+
+	// Note to self: I think rm -f will actually try to remove RW files off a RO
+	// directory. Maybe rm itself implements this logic?
 }
 
 func errorsOrNotFound(errs []error) error {
