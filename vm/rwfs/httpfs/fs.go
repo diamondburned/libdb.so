@@ -61,6 +61,8 @@ func (h *FS) Open(path string) (fs.File, error) {
 					d: entry,
 				}, nil
 			}
+
+			break
 		}
 
 		dir, ok := entry.(FileTree)

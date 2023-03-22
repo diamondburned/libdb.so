@@ -3,6 +3,8 @@ package rwfs
 import (
 	"errors"
 	"io/fs"
+
+	"libdb.so/vm/rwfs/internal/fsutil"
 )
 
 // OverlayFS is a read-writable filesystem that overlays multiple filesystems.
@@ -12,9 +14,14 @@ func OverlayFS(mounts ...FS) FS {
 
 type overlayFS []FS
 
-var _ FS = overlayFS{}
+var (
+	_ FS           = overlayFS{}
+	_ fs.ReadDirFS = overlayFS{}
+)
 
 func (ofs overlayFS) Open(name string) (fs.File, error) {
+	name = fsutil.ConvertAbs(name)
+
 	var errs []error
 
 	for _, vfs := range ofs {
@@ -26,13 +33,15 @@ func (ofs overlayFS) Open(name string) (fs.File, error) {
 			errs = append(errs, err)
 			continue
 		}
-		return f, nil
+		return readDirableROFile{f, name, ofs}, nil
 	}
 
-	return nil, errors.Join(errs...)
+	return nil, errorsOrNotFound(errs)
 }
 
 func (ofs overlayFS) OpenFile(name string, flag int, perm fs.FileMode) (File, error) {
+	name = fsutil.ConvertAbs(name)
+
 	var errs []error
 
 	for _, vfs := range ofs {
@@ -44,13 +53,15 @@ func (ofs overlayFS) OpenFile(name string, flag int, perm fs.FileMode) (File, er
 			errs = append(errs, err)
 			continue
 		}
-		return f, nil
+		return readDirableRWFile{f, name, ofs}, nil
 	}
 
-	return nil, errors.Join(errs...)
+	return nil, errorsOrNotFound(errs)
 }
 
 func (ofs overlayFS) Remove(name string) error {
+	name = fsutil.ConvertAbs(name)
+
 	var errs []error
 
 	for _, vfs := range ofs {
@@ -59,29 +70,30 @@ func (ofs overlayFS) Remove(name string) error {
 		}
 	}
 
-	return errors.Join(errs...)
+	return errorsOrNotFound(errs)
 }
 
 func (ofs overlayFS) ReadDir(name string) ([]fs.DirEntry, error) {
-	var entries []fs.DirEntry
+	name = fsutil.ConvertAbs(name)
+
+	var allEntries []fs.DirEntry
 	var errs []error
 
 	for _, vfs := range ofs {
 		entries, err := fs.ReadDir(vfs, name)
 		if err != nil {
-			if errors.Is(err, fs.ErrNotExist) {
-				continue
-			}
 			errs = append(errs, err)
 			continue
 		}
-		entries = append(entries, entries...)
+		allEntries = append(allEntries, entries...)
 	}
 
-	return entries, errors.Join(errs...)
+	return allEntries, errors.Join(errs...)
 }
 
 func (ofs overlayFS) Mkdir(name string, perm fs.FileMode) error {
+	name = fsutil.ConvertAbs(name)
+
 	var errs []error
 
 	for _, vfs := range ofs {
@@ -100,6 +112,8 @@ func (ofs overlayFS) Mkdir(name string, perm fs.FileMode) error {
 }
 
 func (ofs overlayFS) MkdirAll(name string, perm fs.FileMode) error {
+	name = fsutil.ConvertAbs(name)
+
 	var errs []error
 
 	for _, vfs := range ofs {
@@ -114,6 +128,8 @@ func (ofs overlayFS) MkdirAll(name string, perm fs.FileMode) error {
 }
 
 func (ofs overlayFS) RemoveAll(name string) error {
+	name = fsutil.ConvertAbs(name)
+
 	var errs []error
 
 	for _, vfs := range ofs {
@@ -123,4 +139,40 @@ func (ofs overlayFS) RemoveAll(name string) error {
 	}
 
 	return errors.Join(errs...)
+}
+
+func errorsOrNotFound(errs []error) error {
+	if len(errs) == 0 {
+		return fs.ErrNotExist
+	}
+	return errors.Join(errs...)
+}
+
+var _ fs.ReadDirFile = readDirableROFile{}
+var _ fs.ReadDirFile = readDirableRWFile{}
+
+type readDirableROFile struct {
+	fs.File
+	path    string
+	overlay overlayFS
+}
+
+func (f readDirableROFile) ReadDir(n int) ([]fs.DirEntry, error) {
+	if _, ok := f.File.(fs.ReadDirFile); !ok {
+		return nil, fs.ErrInvalid
+	}
+	return f.overlay.ReadDir(f.path)
+}
+
+type readDirableRWFile struct {
+	File
+	path    string
+	overlay overlayFS
+}
+
+func (f readDirableRWFile) ReadDir(n int) ([]fs.DirEntry, error) {
+	if _, ok := f.File.(fs.ReadDirFile); !ok {
+		return nil, fs.ErrInvalid
+	}
+	return f.overlay.ReadDir(f.path)
 }

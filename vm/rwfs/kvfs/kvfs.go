@@ -16,6 +16,8 @@ import (
 	"libdb.so/vm/rwfs/internal/fsutil"
 )
 
+const root = "/"
+
 // Store is a key-value store.
 type Store interface {
 	// Get returns the value for the given key.
@@ -204,7 +206,7 @@ func (kvfs *FS) OpenFile(fullpath string, flag int, perm fs.FileMode) (rwfs.File
 	if flagHas(flag, os.O_TRUNC, os.O_CREATE) {
 		// Guarantee that the parent directory exists before we create this
 		// file.
-		if path.Dir(fullpath) != "/" {
+		if path.Dir(fullpath) != root {
 			_, err := kvfs.store.Get(path.Dir(fullpath))
 			if err != nil {
 				return nil, pathErr("open", fullpath,
@@ -293,20 +295,25 @@ func (rwfs *FS) readDir(fullpath string, n int) ([]fs.DirEntry, error) {
 	defer rwfs.lock.RUnlock()
 
 	// Check that this is an actual directory.
-	dir, err := rwfs.store.Get(fullpath)
-	if err != nil {
-		return nil, pathErr("readdir", fullpath, err)
+	if fullpath != root {
+		dir, err := rwfs.store.Get(fullpath)
+		if err != nil {
+			return nil, pathErr("readdir", fullpath, err)
+		}
+
+		if _, ok := dir.(StoredDirectory); !ok {
+			return nil, pathErr("readdir", fullpath, fs.ErrInvalid)
+		}
 	}
 
-	if _, ok := dir.(StoredDirectory); !ok {
-		return nil, pathErr("readdir", fullpath, fs.ErrInvalid)
+	prefix := fullpath
+	if prefix != root {
+		prefix += "/"
 	}
-
-	prefix := fullpath + "/"
 
 	files, err := rwfs.store.List(prefix, false)
 	if err != nil {
-		return nil, err
+		return nil, pathErr("readdir", fullpath, errors.Wrap(err, "failed to list files"))
 	}
 
 	if n > 0 && len(files) > n {
@@ -339,6 +346,12 @@ func (rwfs *FS) readDir(fullpath string, n int) ([]fs.DirEntry, error) {
 }
 
 func (rwfs *FS) Remove(fullpath string) error {
+	fullpath = clean(fullpath)
+	if fullpath == root {
+		// Do not remove root!
+		return pathErr("remove", fullpath, fs.ErrPermission)
+	}
+
 	rwfs.lock.Lock()
 	defer rwfs.lock.Unlock()
 
@@ -363,8 +376,9 @@ func (rwfs *FS) Remove(fullpath string) error {
 
 func (rwfs *FS) Mkdir(fullpath string, perm fs.FileMode) error {
 	fullpath = clean(fullpath)
-	if fullpath == "/" {
-		return nil
+	if fullpath == root {
+		// Root always exists.
+		return pathErr("mkdir", fullpath, fs.ErrExist)
 	}
 
 	rwfs.lock.Lock()
@@ -391,7 +405,8 @@ func (rwfs *FS) Mkdir(fullpath string, perm fs.FileMode) error {
 
 func (rwfs *FS) MkdirAll(fullpath string, perm fs.FileMode) error {
 	fullpath = clean(fullpath)
-	if fullpath == "/" {
+	if fullpath == root {
+		// Root always exists.
 		return nil
 	}
 
@@ -450,7 +465,7 @@ func (rwfs *FS) RemoveAll(fullpath string) error {
 		}
 	}
 
-	if fullpath == "/" {
+	if fullpath != root {
 		if err := rwfs.store.Delete(fullpath); err != nil {
 			return pathErr("removeall", fullpath,
 				errors.Wrap(err, "failed to remove top-most directory"))
@@ -461,7 +476,11 @@ func (rwfs *FS) RemoveAll(fullpath string) error {
 }
 
 func clean(fullpath string) string {
-	return path.Clean("/" + fullpath)
+	fullpath = fsutil.ConvertAbs(fullpath)
+	if fullpath == "." {
+		return root
+	}
+	return "/" + fullpath
 }
 
 func pathErr(op, path string, err error) error {
