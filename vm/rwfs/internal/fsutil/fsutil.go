@@ -9,7 +9,7 @@ import (
 // always the directory within root, meaning it is not empty. If absPath is "/",
 // then Split returns []string{}.
 func Split(absPath string) []string {
-	absPath = strings.TrimPrefix(path.Clean(absPath), "/")
+	absPath = strings.TrimPrefix(path.Clean("/"+absPath), "/")
 	if absPath == "" {
 		return []string{}
 	}
