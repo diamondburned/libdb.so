@@ -17,6 +17,7 @@ import (
 	"libdb.so/vm/programs"
 	"libdb.so/vm/rwfs"
 	"libdb.so/vm/rwfs/httpfs"
+	"libdb.so/vm/rwfs/kvfs"
 )
 
 var input io.Writer // js writes to this
@@ -48,11 +49,14 @@ func main() {
 
 	ctx := context.Background()
 	env := vm.Environment{
-		Terminal:   terminal,
-		Programs:   programs.All(),
-		Filesystem: rwfs.ReadOnlyFS(publicFS),
-		Cwd:        global.InitialCwd,
-		Environ:    global.InitialEnv,
+		Terminal: terminal,
+		Programs: programs.All(),
+		Filesystem: rwfs.OverlayFS(
+			kvfs.New(kvfs.LocalStorage()),
+			rwfs.ReadOnlyFS(publicFS),
+		),
+		Cwd:     global.InitialCwd,
+		Environ: global.InitialEnv,
 	}
 
 	interp, err := vm.NewInterpreter(&env, vm.InterpreterOpts{

@@ -3,142 +3,151 @@ package rwfs
 import (
 	"errors"
 	"io/fs"
-
-	"libdb.so/vm/rwfs/internal/fsutil"
+	"os"
+	"path"
 )
 
 // OverlayFS is a read-writable filesystem that overlays multiple filesystems.
-func OverlayFS(mounts ...FS) FS {
-	return overlayFS(mounts)
+func OverlayFS(rw FS, ro fs.FS) FS {
+	return overlayFS{rw, ro}
 }
 
-type overlayFS []FS
+type overlayFS struct {
+	rw FS
+	ro fs.FS
+}
 
 var (
 	_ FS           = overlayFS{}
 	_ fs.ReadDirFS = overlayFS{}
 )
 
-func (ofs overlayFS) Open(name string) (fs.File, error) {
-	name = fsutil.ConvertAbs(name)
+func (o overlayFS) Open(name string) (fs.File, error) {
+	name = ConvertAbs(name)
 
-	var errs []error
+	// Check the read-only filesystem first because it's read-only, so it cannot
+	// be removed or written to.
+	if f, err := o.ro.Open(name); err == nil {
+		return readDirableROFile{f, name, o}, nil
+	}
 
-	for _, vfs := range ofs {
-		f, err := vfs.Open(name)
-		if err != nil {
-			if errors.Is(err, fs.ErrNotExist) {
-				continue
+	// Then check the read-write filesystem.
+	if f, err := o.rw.Open(name); err == nil {
+		return readDirableROFile{f, name, o}, nil
+	}
+
+	return nil, &fs.PathError{Op: "open", Path: name, Err: fs.ErrNotExist}
+}
+
+func (o overlayFS) OpenFile(name string, flag int, perm fs.FileMode) (File, error) {
+	name = ConvertAbs(name)
+
+	f, err := o.ro.Open(name)
+	if err == nil {
+		if flag&os.O_RDONLY != 0 {
+			return rofile{f}, nil
+		}
+		return nil, &fs.PathError{
+			Op:   "openfile",
+			Path: name,
+			Err:  fs.ErrPermission,
+		}
+	}
+
+	// If we're creating a file, then there's a chance that the directory that
+	// we're in exists on the read-only filesystem but not the read-write
+	// filesystem. In that case, we'll need to create the directory.
+	if flag&os.O_CREATE != 0 {
+		dir := path.Dir(name)
+
+		s, err := fs.Stat(o.ro, dir)
+		if err == nil {
+			if err := o.rw.MkdirAll(dir, s.Mode()); err != nil {
+				return nil, &fs.PathError{
+					Op:   "openfile",
+					Path: name,
+					Err:  err,
+				}
 			}
-			errs = append(errs, err)
-			continue
-		}
-		return readDirableROFile{f, name, ofs}, nil
-	}
-
-	return nil, errorsOrNotFound(errs)
-}
-
-func (ofs overlayFS) OpenFile(name string, flag int, perm fs.FileMode) (File, error) {
-	name = fsutil.ConvertAbs(name)
-
-	var errs []error
-
-	for _, vfs := range ofs {
-		f, err := vfs.OpenFile(name, flag, perm)
-		if err != nil {
-			if errors.Is(err, fs.ErrNotExist) {
-				continue
-			}
-			errs = append(errs, err)
-			continue
-		}
-		return readDirableRWFile{f, name, ofs}, nil
-	}
-
-	return nil, errorsOrNotFound(errs)
-}
-
-func (ofs overlayFS) Remove(name string) error {
-	name = fsutil.ConvertAbs(name)
-
-	var errs []error
-
-	for _, vfs := range ofs {
-		if err := vfs.Remove(name); err != nil && !errors.Is(err, fs.ErrNotExist) {
-			errs = append(errs, err)
 		}
 	}
 
-	return errorsOrNotFound(errs)
+	return o.rw.OpenFile(name, flag, perm)
 }
 
-func (ofs overlayFS) ReadDir(name string) ([]fs.DirEntry, error) {
-	name = fsutil.ConvertAbs(name)
+func (o overlayFS) Remove(name string) error {
+	name = ConvertAbs(name)
 
-	var allEntries []fs.DirEntry
-	var errs []error
-
-	for _, vfs := range ofs {
-		entries, err := fs.ReadDir(vfs, name)
-		if err != nil {
-			errs = append(errs, err)
-			continue
-		}
-		allEntries = append(allEntries, entries...)
-	}
-
-	return allEntries, errors.Join(errs...)
-}
-
-func (ofs overlayFS) Mkdir(name string, perm fs.FileMode) error {
-	name = fsutil.ConvertAbs(name)
-
-	var errs []error
-
-	for _, vfs := range ofs {
-		err := vfs.Mkdir(name, perm)
-		if err != nil {
-			if errors.Is(err, fs.ErrExist) {
-				continue
-			}
-			errs = append(errs, err)
-			continue
-		}
+	err := o.rw.Remove(name)
+	// Either no error or does-not-exist error are fine. It's the two common and
+	// valid errors that we can assume RW can return.
+	if err == nil || errors.Is(err, fs.ErrNotExist) {
 		return nil
 	}
 
-	return errors.Join(errs...)
+	// Consider every other error a permission error, since we'd have to check
+	// the read-only filesystem otherwise.
+	return &fs.PathError{Op: "remove", Path: name, Err: fs.ErrPermission}
 }
 
-func (ofs overlayFS) MkdirAll(name string, perm fs.FileMode) error {
-	name = fsutil.ConvertAbs(name)
+func (o overlayFS) ReadDir(name string) ([]fs.DirEntry, error) {
+	name = ConvertAbs(name)
 
-	var errs []error
+	// For ReadDir, combine.
+	rwEntries, err1 := fs.ReadDir(o.rw, name)
+	roEntries, err2 := fs.ReadDir(o.ro, name)
 
-	for _, vfs := range ofs {
-		if err := vfs.MkdirAll(name, perm); err != nil {
-			errs = append(errs, err)
-			continue
-		}
+	// If the directory exists in the read-only filesystem, then we're fine with
+	// the read-write filesystem returning an error.
+	if err2 == nil && err1 != nil {
+		return roEntries, nil
+	}
+
+	entries := append(rwEntries, roEntries...)
+	// Deduplicate paths, because we're handling writes to a read-only directory
+	// by making it on the read-write filesystem as well.
+	entries = DeduplicateDirEntries(entries)
+	return entries, errors.Join(err1, err2)
+}
+
+func (o overlayFS) Mkdir(name string, perm fs.FileMode) error {
+	name = ConvertAbs(name)
+
+	// Check if the directory already exists on either filesystems.
+	_, err1 := fs.Stat(o.rw, name)
+	_, err2 := fs.Stat(o.ro, name)
+	if err1 == nil || err2 == nil {
+		return &fs.PathError{Op: "mkdir", Path: name, Err: fs.ErrExist}
+	}
+
+	// We can only do this on a read-write filesystem.
+	return o.rw.Mkdir(name, perm)
+}
+
+func (o overlayFS) MkdirAll(name string, perm fs.FileMode) error {
+	name = ConvertAbs(name)
+
+	// Same as above.
+	_, err1 := fs.Stat(o.rw, name)
+	_, err2 := fs.Stat(o.ro, name)
+	if err1 == nil || err2 == nil {
 		return nil
 	}
 
-	return errors.Join(errs...)
+	return o.rw.MkdirAll(name, perm)
 }
 
-func (ofs overlayFS) RemoveAll(name string) error {
-	name = fsutil.ConvertAbs(name)
+func (o overlayFS) RemoveAll(name string) error {
+	name = ConvertAbs(name)
 
-	var errs []error
-
-	for _, vfs := range ofs {
-		if err := vfs.RemoveAll(name); err != nil {
-			errs = append(errs, err)
-		}
+	// Does the directory exist on the read-only filesystems?
+	_, err1 := fs.Stat(o.rw, name)
+	if err1 == nil {
+		return &fs.PathError{Op: "removeall", Path: name, Err: fs.ErrPermission}
 	}
 
-	return errors.Join(errs...)
+	// Otherwise, the error is whatever the read-write filesystem returns.
+	return o.rw.RemoveAll(name)
 }
 
 func errorsOrNotFound(errs []error) error {

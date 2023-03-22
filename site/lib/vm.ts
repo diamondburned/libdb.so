@@ -37,7 +37,7 @@ class TerminalProxy {
             if (index === -1) {
               break;
             }
-            console.log("console:", fd, bytes);
+            console.log("vm:", fd, bytes);
             lineBuffer.splice(0, lineBuffer.length);
           }
           break;

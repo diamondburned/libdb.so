@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
-	"libdb.so/vm/rwfs/internal/fsutil"
+	"libdb.so/vm/rwfs"
 )
 
 // FS is a file system that reads from an HTTP server.
@@ -29,7 +29,7 @@ func New(client http.Client, tree FileTree, basePath string) *FS {
 }
 
 func (h *FS) Open(path string) (fs.File, error) {
-	parts := fsutil.Split(path)
+	parts := rwfs.Split(path)
 	if len(parts) == 0 {
 		return fsDir{
 			i: dirInfo(path),
@@ -47,7 +47,7 @@ func (h *FS) Open(path string) (fs.File, error) {
 		if i == len(parts)-1 {
 			switch entry := entry.(type) {
 			case FileInfo:
-				r, err := h.client.get(fsutil.JoinAbs(parts), entry)
+				r, err := h.client.get(rwfs.JoinAbs(parts), entry)
 				if err != nil {
 					return nil, errors.Wrap(err, "httpfs: error getting file")
 				}

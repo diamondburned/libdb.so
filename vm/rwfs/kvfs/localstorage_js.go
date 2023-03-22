@@ -67,20 +67,18 @@ func (s localStorage) Delete(fullpath string) error {
 	return nil
 }
 
-func (s localStorage) List(fullpath string, recursive bool) ([]PathedStoreValue, error) {
-	// We assume fullpath is already a directory.
-	fullpath = path.Clean("/"+fullpath) + "/"
-	key := localStoragePrefix + fullpath
+func (s localStorage) List(prefix string, recursive bool) ([]PathedStoreValue, error) {
+	localPrefix := localStoragePrefix + prefix
 
 	var values []PathedStoreValue
 	for i := 0; i < s.js.Get("length").Int(); i++ {
 		k := s.js.Call("key", i).String()
-		if !strings.HasPrefix(k, key) {
+		if !strings.HasPrefix(k, localPrefix) {
 			continue
 		}
 
 		filepath := strings.TrimPrefix(k, localStoragePrefix)
-		filename := strings.TrimPrefix(filepath, fullpath)
+		filename := strings.TrimPrefix(filepath, prefix)
 		if !recursive && strings.Contains(filename, "/") {
 			// Not a direct child. Skip.
 			continue

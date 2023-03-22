@@ -36,10 +36,12 @@ func (stat fsFileInfo) ModTime() time.Time { return time.Time{} }
 func (stat fsFileInfo) IsDir() bool        { return stat.dir }
 func (stat fsFileInfo) Sys() any           { return stat }
 func (stat fsFileInfo) Mode() fs.FileMode {
+	mode := fs.FileMode(0444)
 	if stat.IsDir() {
-		return 1444
+		mode |= 0111
+		mode |= fs.ModeDir
 	}
-	return 0444
+	return mode
 }
 
 func (stat fsFileInfo) Type() fs.FileMode          { return stat.Mode().Type() }
