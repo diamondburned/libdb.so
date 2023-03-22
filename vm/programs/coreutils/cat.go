@@ -14,8 +14,9 @@ func init() {
 }
 
 var cat = cli.App{
-	Name:  "cat",
-	Usage: "concatenate files and print on the standard output",
+	Name:      "cat",
+	Usage:     "concatenate files and print on the standard output",
+	UsageText: `cat [FILE]...`,
 	Action: func(c *cli.Context) error {
 		env := vm.EnvironmentFromContext(c.Context)
 		log := vm.LoggerFromContext(c.Context)

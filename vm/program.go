@@ -13,6 +13,28 @@ import (
 	"mvdan.cc/sh/v3/expand"
 )
 
+// ExitError is an error that can be returned by a program to exit with a
+// specific exit code.
+type ExitError interface {
+	error
+	// ExitCode returns the exit code of the program.
+	ExitCode() int
+}
+
+// ExitCode returns the exit code of the program from an error.
+func ExitCode(err error) int {
+	if err == nil {
+		return 0
+	}
+
+	coder, ok := err.(ExitError)
+	if ok {
+		return coder.ExitCode()
+	}
+
+	return 1
+}
+
 // Program defines a userspace program within our larger program.
 type Program interface {
 	// Name returns the name of the program.
@@ -71,6 +93,8 @@ func EnvironFromMap(envs map[string]string) expand.Environ {
 type Environment struct {
 	// Terminal is the terminal to use.
 	Terminal Terminal
+	// HasTerminal is true if the terminal is a real terminal.
+	HasTerminal bool
 	// Filesystem is the filesystem to use.
 	Filesystem rwfs.FS
 	// Cwd is the current working directory.

@@ -238,7 +238,7 @@ func (inst *Interpreter) exec(ctx context.Context, line string) {
 	}
 
 	if err := inst.shRunner.Run(ctx, shFile); err != nil {
-		inst.logger.Printf("error running: %v", err)
+		inst.logger.Println(err)
 		return
 	}
 }
@@ -263,6 +263,9 @@ func (inst *Interpreter) execHandler(ctx context.Context, args []string) error {
 		Stdout: handler.Stdout,
 		Stderr: handler.Stderr,
 	})
+	// This could work? We have a terminal if gosh gave us the same stdout as
+	// the one we give to gosh, otherwise it's probably a pipe.
+	env.HasTerminal = env.Terminal.Stdout == inst.env.Terminal.Stdout
 
 	switch args[0] {
 	case "help":
@@ -275,7 +278,13 @@ func (inst *Interpreter) execHandler(ctx context.Context, args []string) error {
 	}
 
 	ctx = context.WithValue(ctx, environmentKey, &env)
-	return prog.Run(ctx, env, args)
+
+	if err := prog.Run(ctx, env, args); err != nil {
+		inst.logger.Println(err)
+		return fmt.Errorf("exit status %d", ExitCode(err))
+	}
+
+	return nil
 }
 
 func (inst *Interpreter) wordCompleter(ctx context.Context) func(string, int) (string, []string, string) {
