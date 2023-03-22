@@ -104,16 +104,20 @@ func NewInterpreter(env *Environment, opts InterpreterOpts) (*Interpreter, error
 	shRunner, err := interp.New(
 		// TODO: CmdSubst
 		interp.OpenHandler(func(ctx context.Context, path string, flag int, perm fs.FileMode) (io.ReadWriteCloser, error) {
-			return env.Filesystem.OpenFile(path, flag, perm)
+			inst.updateEnv()
+			return env.Filesystem.OpenFile(env.JoinCwd(path), flag, perm)
 		}),
 		interp.StatHandler(func(ctx context.Context, name string, followSymlinks bool) (fs.FileInfo, error) {
+			inst.updateEnv()
 			return fs.Stat(env.Filesystem, name)
 		}),
 		interp.ReadDirHandler(func(ctx context.Context, path string) ([]fs.FileInfo, error) {
+			inst.updateEnv()
 			return readDir(path)
 		}),
 		interp.StdIO(inst.env.Terminal.Stdin, inst.env.Terminal.Stdout, inst.env.Terminal.Stderr),
 		interp.ExecHandler(inst.execHandler),
+		interp.CallHandler(inst.callHandler),
 		interp.Env(inst.env.Environ),
 		interp.RunnerOption(func(r *interp.Runner) error {
 			r.Dir = "/"
@@ -239,14 +243,20 @@ func (inst *Interpreter) exec(ctx context.Context, line string) {
 	}
 }
 
+func (inst *Interpreter) callHandler(ctx context.Context, args []string) ([]string, error) {
+	inst.updateEnv()
+	return args, nil
+}
+
 func (inst *Interpreter) execHandler(ctx context.Context, args []string) error {
 	if len(args) == 0 {
 		return nil
 	}
 
 	handler := interp.HandlerCtx(ctx)
+	inst.updateEnv()
 
-	env := *inst.env
+	env := *inst.env // this is ephemeral
 	env.Cwd = handler.Dir
 	env.Terminal = env.Terminal.WithIO(IO{
 		Stdin:  io.NopCloser(handler.Stdin),

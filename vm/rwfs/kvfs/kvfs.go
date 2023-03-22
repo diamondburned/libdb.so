@@ -13,7 +13,6 @@ import (
 
 	"github.com/pkg/errors"
 	"libdb.so/vm/rwfs"
-	"libdb.so/vm/rwfs/internal/fsutil"
 )
 
 const root = "/"
@@ -48,7 +47,7 @@ func (StoredDirectory) storedValue() {}
 // UnmarshalStoredValue unmarshals the given stored value into the given value.
 func UnmarshalStoredValue(b json.RawMessage) (StoredValue, error) {
 	var isDir struct {
-		IsDir bool `json:"isDir"`
+		IsDir bool `json:"is_dir"`
 	}
 
 	if err := json.Unmarshal(b, &isDir); err != nil {
@@ -316,8 +315,8 @@ func (rwfs *FS) readDir(fullpath string, n int) ([]fs.DirEntry, error) {
 		return nil, pathErr("readdir", fullpath, errors.Wrap(err, "failed to list files"))
 	}
 
-	if n > 0 && len(files) > n {
-		files = files[:n]
+	if n > 0 {
+		return nil, errors.New("n > 0 not supported")
 	}
 
 	entries := make([]fs.DirEntry, 0, len(files))
@@ -428,7 +427,7 @@ func (rwfs *FS) MkdirAll(fullpath string, perm fs.FileMode) error {
 
 	// We need to create the path. We'll do this by splitting the path and
 	// creating each directory one by one.
-	parts := fsutil.Split(fullpath)
+	parts := split(fullpath)
 
 	for i := range parts {
 		path := "/" + strings.Join(parts[:i+1], "/")
@@ -476,11 +475,15 @@ func (rwfs *FS) RemoveAll(fullpath string) error {
 }
 
 func clean(fullpath string) string {
-	fullpath = fsutil.ConvertAbs(fullpath)
+	fullpath = rwfs.ConvertAbs(fullpath)
 	if fullpath == "." {
 		return root
 	}
 	return "/" + fullpath
+}
+
+func split(path string) []string { // avoid variable name conflict
+	return rwfs.Split(path)
 }
 
 func pathErr(op, path string, err error) error {

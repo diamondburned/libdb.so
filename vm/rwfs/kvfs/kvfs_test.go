@@ -41,6 +41,16 @@ func TestFS(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, 1, len(root))
 		assert.Equal(t, "foo", root[0].Name())
+
+		bar, err := rwfs.Open("foo/bar")
+		assert.NoError(t, err)
+
+		defer bar.Close()
+
+		barStat, err := bar.Stat()
+		assert.NoError(t, err)
+		assert.True(t, barStat.IsDir())
+		assert.Equal(t, dmask|os.ModeDir, barStat.Mode())
 	})
 
 	t.Run("create", func(t *testing.T) {
