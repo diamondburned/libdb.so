@@ -13,6 +13,7 @@ import (
 	"unsafe"
 
 	"libdb.so/cmd/internal/global"
+	"libdb.so/internal/nsfw"
 	"libdb.so/vm"
 	"libdb.so/vm/programs"
 	"libdb.so/vm/rwfs"
@@ -53,7 +54,7 @@ func main() {
 		Programs: programs.All(),
 		Filesystem: rwfs.OverlayFS(
 			kvfs.New(kvfs.LocalStorage()),
-			rwfs.ReadOnlyFS(publicFS),
+			rwfs.ReadOnlyFS(nsfw.WrapFS(publicFS)),
 		),
 		Cwd:     global.InitialCwd,
 		Environ: global.InitialEnv,

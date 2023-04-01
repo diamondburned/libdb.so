@@ -10,6 +10,8 @@ import (
 	"text/tabwriter"
 	"time"
 
+	stderrors "errors"
+
 	"github.com/fatih/color"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v3"
@@ -43,97 +45,105 @@ var ls = cli.App{
 		},
 	},
 	Action: func(c *cli.Context) error {
-		env := vm.EnvironmentFromContext(c.Context)
-
 		args := c.Args().Slice()
 		if len(args) == 0 {
 			args = []string{"."}
 		}
 
+		var errs []error
 		for _, arg := range args {
-			path := path.Join(env.Cwd, arg)
-
-			stat, err := fs.Stat(env.Filesystem, path)
-			if err != nil {
-				return errors.Wrap(err, "stat")
-			}
-
-			var ents []fs.DirEntry
-
-			if stat.IsDir() {
-				ents, err = fs.ReadDir(env.Filesystem, path)
-				if err != nil {
-					return errors.Wrap(err, "failed to read directory")
-				}
-			} else {
-				ents = []fs.DirEntry{
-					fakeDirEntry{stat},
-				}
-			}
-
-			if len(args) > 1 {
-				fmt.Fprintln(env.Terminal.Stdout, arg+":")
-			}
-
-			if !c.Bool("all") {
-				filtered := ents[:0]
-				for _, ent := range ents {
-					if strings.HasPrefix(ent.Name(), ".") {
-						continue
-					}
-					filtered = append(filtered, ent)
-				}
-				ents = filtered
-			}
-
-			if c.Bool("json") {
-				lsEnts := make([]lsEntry, len(ents))
-				for i, ent := range ents {
-					lsEnts[i] = lsEntry{
-						Name:  ent.Name(),
-						Type:  ent.Type(),
-						IsDir: ent.IsDir(),
-					}
-				}
-
-				enc := json.NewEncoder(c.App.Writer)
-				enc.SetIndent("", "  ")
-				return enc.Encode(lsEnts)
-			}
-
-			if c.Bool("long") {
-				w := tabwriter.NewWriter(c.App.Writer, 0, 0, 1, ' ', 0)
-
-				for _, ent := range ents {
-					var modTime time.Time
-					var mode fs.FileMode
-					var size int64
-
-					s, err := ent.Info()
-					if err != nil {
-						log.Println("stat:", err)
-					} else {
-						modTime = s.ModTime()
-						mode = s.Mode()
-						size = s.Size()
-					}
-
-					fmt.Fprintf(w,
-						"%s\t%d\t%s\t%s\n",
-						printPerm(mode), size, printTime(modTime), printName(env, ent),
-					)
-				}
-
-				return w.Flush()
-			}
-
-			for _, ent := range ents {
-				fmt.Fprintln(c.App.Writer, printName(env, ent))
+			if err := ls_(c, arg, len(args) > 1); err != nil {
+				errs = append(errs, err)
 			}
 		}
 
-		return nil
+		return stderrors.Join(errs...)
 	},
+}
+
+func ls_(c *cli.Context, arg string, multiple bool) error {
+	env := vm.EnvironmentFromContext(c.Context)
+	path := path.Join(env.Cwd, arg)
+
+	stat, err := fs.Stat(env.Filesystem, path)
+	if err != nil {
+		return errors.Wrap(err, "stat")
+	}
+
+	var ents []fs.DirEntry
+
+	if stat.IsDir() {
+		ents, err = fs.ReadDir(env.Filesystem, path)
+		if err != nil {
+			return errors.Wrap(err, "readdir")
+		}
+	} else {
+		ents = []fs.DirEntry{
+			fakeDirEntry{stat},
+		}
+	}
+
+	if multiple {
+		fmt.Fprintln(env.Terminal.Stdout, arg+":")
+	}
+
+	if !c.Bool("all") {
+		filtered := ents[:0]
+		for _, ent := range ents {
+			if strings.HasPrefix(ent.Name(), ".") {
+				continue
+			}
+			filtered = append(filtered, ent)
+		}
+		ents = filtered
+	}
+
+	if c.Bool("json") {
+		lsEnts := make([]lsEntry, len(ents))
+		for i, ent := range ents {
+			lsEnts[i] = lsEntry{
+				Name:  ent.Name(),
+				Type:  ent.Type(),
+				IsDir: ent.IsDir(),
+			}
+		}
+
+		enc := json.NewEncoder(c.App.Writer)
+		enc.SetIndent("", "  ")
+		return enc.Encode(lsEnts)
+	}
+
+	if c.Bool("long") {
+		w := tabwriter.NewWriter(c.App.Writer, 0, 0, 1, ' ', 0)
+
+		for _, ent := range ents {
+			var modTime time.Time
+			var mode fs.FileMode
+			var size int64
+
+			s, err := ent.Info()
+			if err != nil {
+				log.Println("stat:", err)
+			} else {
+				modTime = s.ModTime()
+				mode = s.Mode()
+				size = s.Size()
+			}
+
+			fmt.Fprintf(w,
+				"%s\t%d\t%s\t%s\n",
+				printPerm(mode), size, printTime(modTime), printName(env, ent),
+			)
+		}
+
+		return w.Flush()
+	}
+
+	for _, ent := range ents {
+		fmt.Fprintln(c.App.Writer, printName(env, ent))
+	}
+
+	return nil
 }
 
 func printName(env vm.Environment, dirEntry fs.DirEntry) string {
