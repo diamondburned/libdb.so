@@ -255,6 +255,7 @@ func (inst *Interpreter) execHandler(ctx context.Context, args []string) error {
 	env := *inst.env
 	env.Cwd = handler.Dir
 	env.Execute = execHandler
+	env.PromptLine = inst.prompter.Prompt
 	env.Terminal = env.Terminal.WithIO(IO{
 		Stdin:  io.NopCloser(handler.Stdin),
 		Stdout: handler.Stdout,
