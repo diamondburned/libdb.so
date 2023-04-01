@@ -2,6 +2,7 @@ package vm
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	stdfs "io/fs"
 	"log"
@@ -12,6 +13,21 @@ import (
 	"libdb.so/vm/rwfs"
 	"mvdan.cc/sh/v3/expand"
 )
+
+// UnknownProgramError is returned when a program is not found.
+type UnknownProgramError struct {
+	Name string
+}
+
+func (err *UnknownProgramError) Error() string {
+	return fmt.Sprintf("unknown program %q", err.Name)
+}
+
+// ErrorIsUnknownProgram returns true if the error is an UnknownProgramError.
+func ErrorIsUnknownProgram(err error) bool {
+	var unknown *UnknownProgramError
+	return errors.As(err, &unknown)
+}
 
 // ExitError is an error that can be returned by a program to exit with a
 // specific exit code.

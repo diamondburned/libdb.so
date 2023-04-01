@@ -280,7 +280,7 @@ func (inst *Interpreter) execHandler(ctx context.Context, args []string) error {
 func execHandler(ctx context.Context, env Environment, args ...string) error {
 	prog, ok := env.Programs[args[0]]
 	if !ok {
-		return fmt.Errorf("unknown command: %q", args[0])
+		return &UnknownProgramError{args[0]}
 	}
 
 	ctx = context.WithValue(ctx, environmentKey, &env)
