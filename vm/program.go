@@ -121,6 +121,10 @@ type Environment struct {
 	Environ expand.Environ
 	// Execute executes a program.
 	Execute func(ctx context.Context, env Environment, args ...string) error
+	// PromptLine prompts the user for one input line. The prompt will have
+	// line-editing capabilities. Note that this function bypasses the
+	// terminal's Stdin.
+	PromptLine func(prompt string) (string, error)
 }
 
 // Env returns the environment variable with the given key.
