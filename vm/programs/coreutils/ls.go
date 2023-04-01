@@ -131,7 +131,7 @@ var ls = cli.App{
 	},
 }
 
-func printName(env *vm.Environment, dirEntry fs.DirEntry) string {
+func printName(env vm.Environment, dirEntry fs.DirEntry) string {
 	if env.HasTerminal && dirEntry.IsDir() {
 		return color.New(color.FgBlue, color.Bold).Sprint(dirEntry.Name())
 	}
