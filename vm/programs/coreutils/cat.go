@@ -88,7 +88,7 @@ func readMIME(r io.Reader) (string, io.Reader, error) {
 	buf := bufio.NewReaderSize(r, 512)
 
 	head, err := buf.Peek(512)
-	if err != nil {
+	if err != nil && err != io.EOF {
 		return "", nil, errors.Wrap(err, "peek")
 	}
 
