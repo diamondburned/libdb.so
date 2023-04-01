@@ -3,6 +3,7 @@ package sixel
 import (
 	"fmt"
 	"image"
+	"log"
 	"strings"
 
 	_ "image/jpeg"
@@ -51,11 +52,19 @@ var img2sixel = cli.App{
 	Flags: []cli.Flag{
 		&cli.IntFlag{
 			Name:  "width",
-			Usage: "width of the output image in pixels",
+			Usage: "width of the output image in pixels without upscaling",
+			Value: 400,
 		},
 		&cli.IntFlag{
 			Name:  "height",
-			Usage: "height of the output image in pixels",
+			Usage: "height of the output image in pixels without upscaling",
+			Value: 400,
+		},
+		&cli.BoolFlag{
+			Name: "keep-aspect",
+			Usage: "keep the aspect ratio of the original image, " +
+				"making --width and --height the maximum values",
+			Value: true,
 		},
 		&cli.StringFlag{
 			Name: "scaler",
@@ -103,9 +112,13 @@ var img2sixel = cli.App{
 			return errors.Wrap(err, "image decode")
 		}
 
-		if c.IsSet("width") || c.IsSet("height") {
+		if c.Int("width") != 0 || c.Int("height") != 0 {
 			scaler := drawScaler(c.String("scaler"))
-			img = resize(img, scaler, c.Int("width"), c.Int("height"))
+
+			img, err = resize(img, scaler, c.Int("width"), c.Int("height"), c.Bool("keep-aspect"))
+			if err != nil {
+				return errors.Wrap(err, "resize")
+			}
 		}
 
 		sixelEnc := sixel.NewEncoder(env.Terminal.Stdout)
@@ -115,22 +128,43 @@ var img2sixel = cli.App{
 	},
 }
 
-func resize(img image.Image, scaler draw.Scaler, w, h int) image.Image {
-	if w == 0 {
-		w = widthFromHeight(img.Bounds(), h)
-	}
-	if h == 0 {
-		h = heightFromWidth(img.Bounds(), w)
-	}
-	dst := image.NewRGBA(image.Rect(0, 0, w, h))
-	scaler.Scale(dst, dst.Bounds(), img, img.Bounds(), draw.Over, nil)
-	return dst
-}
-
 func widthFromHeight(original image.Rectangle, height int) int {
 	return original.Dx() * height / original.Dy()
 }
 
 func heightFromWidth(original image.Rectangle, width int) int {
 	return original.Dy() * width / original.Dx()
+}
+
+func resize(img image.Image, scaler draw.Scaler, maxW, maxH int, keepAspect bool) (image.Image, error) {
+	w := img.Bounds().Dx()
+	h := img.Bounds().Dy()
+
+	if keepAspect {
+		if w <= maxW && h <= maxH {
+			return img, nil
+		}
+		if w > maxW {
+			w = maxW
+			h = heightFromWidth(img.Bounds(), w)
+		}
+		if h > maxH {
+			h = maxH
+			w = widthFromHeight(img.Bounds(), h)
+		}
+		log.Println("resized to", w, "x", h)
+	} else {
+		if w <= maxW && h <= maxH {
+			return img, nil
+		}
+		if maxW == 0 || maxH == 0 {
+			return nil, errors.New("invalid --width or --height")
+		}
+		w = maxW
+		h = maxH
+	}
+
+	dst := image.NewRGBA(image.Rect(0, 0, w, h))
+	scaler.Scale(dst, dst.Bounds(), img, img.Bounds(), draw.Over, nil)
+	return dst, nil
 }

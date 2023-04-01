@@ -27,7 +27,10 @@ func (o overlayFS) Open(name string) (fs.File, error) {
 
 	// Check the read-only filesystem first because it's read-only, so it cannot
 	// be removed or written to.
-	if f, err := o.ro.Open(name); err == nil {
+	if f, err := o.ro.Open(name); !errors.Is(err, fs.ErrNotExist) {
+		if err != nil {
+			return nil, err
+		}
 		return readDirableROFile{f, name, o}, nil
 	}
 
@@ -43,7 +46,10 @@ func (o overlayFS) OpenFile(name string, flag int, perm fs.FileMode) (File, erro
 	name = ConvertAbs(name)
 
 	f, err := o.ro.Open(name)
-	if err == nil {
+	if !errors.Is(err, fs.ErrNotExist) {
+		if err != nil {
+			return nil, err
+		}
 		if flag&os.O_RDONLY != 0 {
 			return rofile{f}, nil
 		}
@@ -61,7 +67,19 @@ func (o overlayFS) OpenFile(name string, flag int, perm fs.FileMode) (File, erro
 		dir := path.Dir(name)
 
 		s, err := fs.Stat(o.ro, dir)
-		if err == nil {
+		if !errors.Is(err, fs.ErrNotExist) {
+			if err != nil {
+				return nil, err
+			}
+
+			if !s.IsDir() {
+				return nil, &fs.PathError{
+					Op:   "openfile",
+					Path: name,
+					Err:  fs.ErrInvalid,
+				}
+			}
+
 			if err := o.rw.MkdirAll(dir, s.Mode()); err != nil {
 				return nil, &fs.PathError{
 					Op:   "openfile",
