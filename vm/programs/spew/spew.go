@@ -2,6 +2,7 @@ package spew
 
 import (
 	"io/fs"
+	"path"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/urfave/cli/v3"
@@ -22,7 +23,9 @@ var app = cli.App{
 		log := vm.LoggerFromContext(c.Context)
 
 		for _, arg := range c.Args().Slice() {
-			f, err := fs.ReadFile(env.Filesystem, arg)
+			path := path.Join(env.Cwd, arg)
+
+			f, err := fs.ReadFile(env.Filesystem, path)
 			if err != nil {
 				log.Println("cat:", err)
 				continue

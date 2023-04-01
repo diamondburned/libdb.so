@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
+	"path"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -49,7 +50,9 @@ var ls = cli.App{
 		}
 
 		for _, arg := range args {
-			stat, err := fs.Stat(env.Filesystem, arg)
+			path := path.Join(env.Cwd, arg)
+
+			stat, err := fs.Stat(env.Filesystem, path)
 			if err != nil {
 				return errors.Wrap(err, "stat")
 			}
@@ -57,7 +60,7 @@ var ls = cli.App{
 			var ents []fs.DirEntry
 
 			if stat.IsDir() {
-				ents, err = fs.ReadDir(env.Filesystem, arg)
+				ents, err = fs.ReadDir(env.Filesystem, path)
 				if err != nil {
 					return errors.Wrap(err, "failed to read directory")
 				}

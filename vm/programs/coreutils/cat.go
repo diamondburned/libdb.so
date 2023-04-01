@@ -2,6 +2,7 @@ package coreutils
 
 import (
 	"io"
+	"path"
 
 	"github.com/urfave/cli/v3"
 	"libdb.so/vm"
@@ -22,7 +23,9 @@ var cat = cli.App{
 		log := vm.LoggerFromContext(c.Context)
 
 		for _, arg := range c.Args().Slice() {
-			f, err := env.Open(arg)
+			path := path.Join(env.Cwd, arg)
+
+			f, err := env.Open(path)
 			if err != nil {
 				log.Println("cat:", err)
 				continue
