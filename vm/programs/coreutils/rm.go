@@ -2,6 +2,7 @@ package coreutils
 
 import (
 	"errors"
+	"path"
 
 	"github.com/urfave/cli/v3"
 	"libdb.so/vm"
@@ -40,7 +41,9 @@ var rm = cli.App{
 
 		var failed bool
 		for _, arg := range c.Args().Slice() {
-			if err := rm(arg); err != nil {
+			path := path.Join(env.Cwd, arg)
+
+			if err := rm(path); err != nil {
 				log.Println("rm:", err)
 				failed = true
 			}
