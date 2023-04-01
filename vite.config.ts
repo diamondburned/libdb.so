@@ -21,7 +21,7 @@ export default defineConfig({
   root: path.join(root, "site"),
   publicDir: path.join(root, "public"),
   server: {
-    port: 5000,
+    port: 5001,
   },
   build: {
     outDir: path.join(root, "build", "dist"),
