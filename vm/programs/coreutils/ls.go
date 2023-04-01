@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
+	"log"
 	"path"
 	"strings"
 	"text/tabwriter"
@@ -104,18 +105,22 @@ var ls = cli.App{
 				w := tabwriter.NewWriter(c.App.Writer, 0, 0, 1, ' ', 0)
 
 				for _, ent := range ents {
-					var t time.Time
-					var m fs.FileMode
+					var modTime time.Time
+					var mode fs.FileMode
+					var size int64
 
 					s, err := ent.Info()
-					if err == nil {
-						t = s.ModTime()
-						m = s.Mode()
+					if err != nil {
+						log.Println("stat:", err)
+					} else {
+						modTime = s.ModTime()
+						mode = s.Mode()
+						size = s.Size()
 					}
 
 					fmt.Fprintf(w,
-						"%s\t%s\t%s\n",
-						printPerm(m), printTime(t), printName(env, ent),
+						"%s\t%d\t%s\t%s\n",
+						printPerm(mode), size, printTime(modTime), printName(env, ent),
 					)
 				}
 
