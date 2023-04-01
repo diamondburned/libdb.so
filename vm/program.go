@@ -103,6 +103,8 @@ type Environment struct {
 	Programs map[string]Program
 	// Environ is the environment variables.
 	Environ expand.Environ
+	// Execute executes a program.
+	Execute func(ctx context.Context, env Environment, args ...string) error
 }
 
 // Env returns the environment variable with the given key.
@@ -114,7 +116,10 @@ func (env *Environment) Env(key string) string {
 // Open opens a file at the given path relative to the current working
 // directory.
 func (env *Environment) Open(path string) (stdfs.File, error) {
-	return env.Filesystem.Open(env.JoinCwd(path))
+	if !strings.HasPrefix(path, "/") {
+		path = env.JoinCwd(path)
+	}
+	return env.Filesystem.Open(path)
 }
 
 // JoinCwd joins the given path components and prepends the current working
