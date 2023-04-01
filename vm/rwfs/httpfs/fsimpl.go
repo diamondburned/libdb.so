@@ -87,12 +87,22 @@ func (f fsDir) ReadDir(n int) ([]fs.DirEntry, error) {
 	i := 0
 	ents := make([]fs.DirEntry, 0, len(f.d))
 	for name, df := range f.d {
-		_, isDir := df.(FileTree)
+		var size int64
+		var isDir bool
+
+		switch df := df.(type) {
+		case FileInfo:
+			size = int64(df.Size)
+		case FileTree:
+			isDir = true
+		}
+
 		ents = append(ents, fsFileInfo{
 			name: name,
-			size: 0,
+			size: size,
 			dir:  isDir,
 		})
+
 		i++
 		if n > 0 && i >= n {
 			break
