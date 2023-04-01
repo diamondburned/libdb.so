@@ -23,7 +23,7 @@ var cat = cli.App{
 	Flags: []cli.Flag{
 		&cli.BoolFlag{
 			Name:  "no-sixel",
-			Usage: "print sixel graphics as raw bytes",
+			Usage: "print sixel graphics as raw bytes (always true if no img2sixel)",
 		},
 	},
 	Action: func(c *cli.Context) error {
@@ -59,13 +59,22 @@ func printFile(c *cli.Context, path string) bool {
 
 	switch mime {
 	case "image/jpeg", "image/png":
-		if !c.Bool("no-sixel") {
-			if err := env.Execute(c.Context, env, "img2sixel", path); err != nil {
-				log.Println(err)
-				return false
-			}
-			return true
+		if c.Bool("no-sixel") {
+			break
 		}
+
+		err := env.Execute(c.Context, env, "img2sixel", path)
+		if vm.ErrorIsUnknownProgram(err) {
+			// Just print as raw if img2sixel is not available.
+			break
+		}
+
+		if err != nil {
+			log.Println(err)
+			return false
+		}
+
+		return true
 	}
 
 	if _, err = io.Copy(env.Terminal.Stdout, r); err != nil {
