@@ -249,30 +249,36 @@ func (inst *Interpreter) callHandler(ctx context.Context, args []string) ([]stri
 }
 
 func (inst *Interpreter) execHandler(ctx context.Context, args []string) error {
-	if len(args) == 0 {
-		return nil
-	}
-
 	handler := interp.HandlerCtx(ctx)
 	inst.updateEnv()
 
-	env := *inst.env // this is ephemeral
+	env := *inst.env
 	env.Cwd = handler.Dir
+	env.Execute = execHandler
 	env.Terminal = env.Terminal.WithIO(IO{
 		Stdin:  io.NopCloser(handler.Stdin),
 		Stdout: handler.Stdout,
 		Stderr: handler.Stderr,
 	})
+
 	// This could work? We have a terminal if gosh gave us the same stdout as
 	// the one we give to gosh, otherwise it's probably a pipe.
 	env.HasTerminal = env.Terminal.Stdout == inst.env.Terminal.Stdout
+
+	if len(args) == 0 {
+		return nil
+	}
 
 	switch args[0] {
 	case "help":
 		return inst.help(env)
 	}
 
-	prog, ok := inst.env.Programs[args[0]]
+	return execHandler(ctx, env, args...)
+}
+
+func execHandler(ctx context.Context, env Environment, args ...string) error {
+	prog, ok := env.Programs[args[0]]
 	if !ok {
 		return fmt.Errorf("unknown command: %q", args[0])
 	}
@@ -280,8 +286,9 @@ func (inst *Interpreter) execHandler(ctx context.Context, args []string) error {
 	ctx = context.WithValue(ctx, environmentKey, &env)
 
 	if err := prog.Run(ctx, env, args); err != nil {
-		inst.logger.Println(err)
-		return fmt.Errorf("exit status %d", ExitCode(err))
+		log := LoggerFromContext(ctx)
+		log.Println(err)
+		return fmt.Errorf("%s: exit status %d", args[0], ExitCode(err))
 	}
 
 	return nil

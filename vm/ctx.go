@@ -13,8 +13,8 @@ const (
 )
 
 // EnvironmentFromContext returns the console environment from the context.
-func EnvironmentFromContext(ctx context.Context) *Environment {
-	return ctx.Value(environmentKey).(*Environment)
+func EnvironmentFromContext(ctx context.Context) Environment {
+	return *ctx.Value(environmentKey).(*Environment)
 }
 
 // LoggerFromContext returns the logger from the context.
