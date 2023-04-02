@@ -29,5 +29,8 @@
   },
   "imports": {
     "#/libdb.so/*": "./*"
+  },
+  "dependencies": {
+    "xterm-pty": "^0.9.4"
   }
 }

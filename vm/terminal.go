@@ -18,6 +18,9 @@ type IO struct {
 	Stderr io.Writer
 }
 
+type Termios interface {
+}
+
 // NoIO returns a new IO instance that discards all input and output.
 func NoIO() IO {
 	return IO{

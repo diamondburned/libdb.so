@@ -4,6 +4,7 @@
   import { WebglAddon as WebGLAddon } from "xterm-addon-webgl";
   import { ImageAddon, IImageAddonOptions } from "xterm-addon-image";
   import { FitAddon } from "xterm-addon-fit";
+  import * as xtermpty from "xterm-pty";
   import * as svelte from "svelte";
   import colors from "./color-schemes.json";
   import type * as xterm from "xterm";
@@ -11,7 +12,7 @@
   let terminalElement: HTMLElement;
 
   export let id: string;
-  export let done: (_: xterm.Terminal) => void;
+  export let done: (terminal: xterm.Terminal, pty: xtermpty.Slave) => void;
   let title = "libdb.so";
 
   const imageAddonSettings: IImageAddonOptions = {
@@ -40,6 +41,9 @@
       },
     });
 
+    const { master, slave } = xtermpty.openpty();
+    terminal.loadAddon(master);
+
     const fitAddon = new FitAddon();
     const onResize = () => fitAddon.fit();
     terminal.loadAddon(fitAddon);
@@ -56,7 +60,7 @@
     }
 
     terminal.open(terminalElement);
-    terminal.write("Starting VM...\n");
+    slave.write("Starting VM...\n");
 
     onResize();
     window.addEventListener("resize", onResize);
@@ -65,7 +69,7 @@
       title = t;
     });
 
-    done(terminal);
+    done(terminal, slave);
 
     return () => {
       terminal.dispose();

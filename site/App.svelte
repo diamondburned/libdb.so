@@ -2,14 +2,15 @@
   import * as svelte from "svelte";
   import * as vm from "#/libdb.so/site/lib/vm.js";
   import type * as xterm from "xterm";
+  import type * as xtermpty from "xterm-pty";
 
   import Terminal from "#/libdb.so/site/components/Terminal/index.svelte";
   import publicFS from "#/libdb.so/build/publicfs.json";
 
   let screen: HTMLElement;
 
-  function init(terminal: xterm.Terminal) {
-    vm.start(terminal, publicFS).catch((err) => console.error(err));
+  function init(terminal: xterm.Terminal, pty: xtermpty.Slave) {
+    vm.start(terminal, pty, publicFS).catch((err) => console.error(err));
   }
 </script>
 
@@ -55,8 +56,8 @@
   }
 
   #terminal {
-    width: min(800px, calc(100% - clamp(6px, 5vw, 3rem)));
-    height: min(600px, calc(100% - clamp(6px, 5vw, 3rem)));
+    width: min(1000px, calc(100% - clamp(6px, 5vw, 3rem)));
+    height: min(800px, calc(100% - clamp(6px, 5vw, 3rem)));
   }
 
   #screen {
