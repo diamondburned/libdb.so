@@ -17,6 +17,13 @@ import (
 	"libdb.so/vm/programs"
 )
 
+var overrideRev string
+
+// OverrideGitRevision overrides the git revision that is printed by neofetch.
+func OverrideGitRevision(rev string) {
+	overrideRev = rev
+}
+
 func init() {
 	programs.Register(program{})
 	color.NoColor = false
@@ -117,24 +124,26 @@ func cpuCount() string {
 }
 
 func programRev() string {
-	build, ok := debug.ReadBuildInfo()
-	if !ok {
-		return ""
-	}
+	vcs := "git"
+	rev := overrideRev
 
-	setting := func(k string) string {
-		for _, setting := range build.Settings {
-			if setting.Key == k {
-				return setting.Value
-			}
+	if rev == "" {
+		build, ok := debug.ReadBuildInfo()
+		if !ok {
+			return ""
 		}
-		return ""
-	}
 
-	vcs := setting("vcs")
-	rev := setting("vcs.revision")
-	if vcs == "" || rev == "" {
-		return ""
+		setting := func(k string) string {
+			for _, setting := range build.Settings {
+				if setting.Key == k {
+					return setting.Value
+				}
+			}
+			return ""
+		}
+
+		vcs = setting("vcs")
+		rev = setting("vcs.revision")
 	}
 
 	if len(rev) > 7 {
