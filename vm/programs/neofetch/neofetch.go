@@ -144,6 +144,9 @@ func programRev() string {
 
 		vcs = setting("vcs")
 		rev = setting("vcs.revision")
+		if vcs+rev == "" {
+			return ""
+		}
 	}
 
 	if len(rev) > 7 {

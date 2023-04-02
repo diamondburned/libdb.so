@@ -54,7 +54,7 @@ let pkgs = ourPkgs;
 
 			ldflags =
 				[ "-s" "-w" ]
-				++ (if src ? rev then [ "-X 'main.gitrev=${version}'" ] else [ ]);
+				++ (if src ? rev then [ "-X main.gitrev=${version}" ] else [ ]);
 
 			postInstall = ''
 				mv $out/bin/js_wasm/vm-wasm $out/bin/vm.wasm
