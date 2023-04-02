@@ -55,8 +55,8 @@
   }
 
   #terminal {
-    width: min(800px, calc(100% - clamp(6px, 5vw, 3rem)));
-    height: min(600px, calc(100% - clamp(6px, 5vw, 3rem)));
+    width: min(calc(100% - clamp(6px, 5vw, 3rem)), max(80vw, 1000px));
+    height: min(calc(100% - clamp(6px, 7vw, 5rem)), max(70vh, 800px));
   }
 
   #screen {
