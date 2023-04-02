@@ -1,15 +1,12 @@
 schema = 3
 
 [mod]
-  [mod."github.com/alecthomas/assert"]
-    version = "v1.0.0"
-    hash = "sha256-ynxttRnJ52SYIcbS6LhiLHqPAunZ4caw9ZUWOMK3Rbs="
-  [mod."github.com/alecthomas/colour"]
-    version = "v0.1.0"
-    hash = "sha256-S1q8KD8TD4J6h9e50wqEsuirK12C4rKIivcCIkWo64M="
+  [mod."github.com/alecthomas/assert/v2"]
+    version = "v2.2.2"
+    hash = "sha256-Djmp063lRGw61by7F8XBHjAXzM2lagxq9GGhuTDQmX4="
   [mod."github.com/alecthomas/repr"]
-    version = "v0.0.0-20210801044451-80ca428c5142"
-    hash = "sha256-XUx+sN0wtc1j4t83sa5Z2MOBHxYQUUfsFfgfBeZqCUQ="
+    version = "v0.2.0"
+    hash = "sha256-vBRu5jLdJqlDGVflK0EZEUe40G+KAqI5P5fteHZxAvc="
   [mod."github.com/cpuguy83/go-md2man/v2"]
     version = "v2.0.2"
     hash = "sha256-OvWCtDsVrYzM84SMQwOXPLBxnWnMC1hDm+KiI6zm3uk="
@@ -19,6 +16,9 @@ schema = 3
   [mod."github.com/fatih/color"]
     version = "v1.15.0"
     hash = "sha256-7b+scFVQeEUoXfeCDd8X2gS8GMoWA+HxjK8wfbypa5s="
+  [mod."github.com/hexops/gotextdiff"]
+    version = "v1.0.3"
+    hash = "sha256-wVs5uJs2KHU1HnDCDdSe0vIgNZylvs8oNidDxwA3+O0="
   [mod."github.com/leaanthony/go-ansi-parser"]
     version = "v1.6.0"
     hash = "sha256-d5J2w/pmipy0+cRfShDoCVz8CjwDvGVlZGh8PRP/tm8="
@@ -46,9 +46,6 @@ schema = 3
   [mod."github.com/russross/blackfriday/v2"]
     version = "v2.1.0"
     hash = "sha256-R+84l1si8az5yDqd5CYcFrTyNZ1eSYlpXKq6nFt4OTQ="
-  [mod."github.com/sergi/go-diff"]
-    version = "v1.2.0"
-    hash = "sha256-d2higuBRee4ylRuCpPQV5+g0XK5yNQgDpudNor0qD2o="
   [mod."github.com/soniakeys/quant"]
     version = "v1.0.0"
     hash = "sha256-6PzSE8lSOPqO7Y7axqmL+7CioDPap+Rgb2ETmhqBoHg="
