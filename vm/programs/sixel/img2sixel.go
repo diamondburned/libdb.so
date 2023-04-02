@@ -123,7 +123,13 @@ var img2sixel = cli.App{
 		sixelEnc := sixel.NewEncoder(env.Terminal.Stdout)
 		sixelEnc.Dither = c.Bool("dither")
 		sixelEnc.Colors = colors
-		return sixelEnc.Encode(img)
+
+		if err := sixelEnc.Encode(img); err != nil {
+			return errors.Wrap(err, "error during sixel encode")
+		}
+
+		fmt.Fprintln(env.Terminal.Stdout)
+		return nil
 	},
 }
 
