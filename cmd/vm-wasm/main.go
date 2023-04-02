@@ -16,10 +16,19 @@ import (
 	"libdb.so/internal/nsfw"
 	"libdb.so/vm"
 	"libdb.so/vm/programs"
+	"libdb.so/vm/programs/neofetch"
 	"libdb.so/vm/rwfs"
 	"libdb.so/vm/rwfs/httpfs"
 	"libdb.so/vm/rwfs/kvfs"
 )
+
+var gitrev string
+
+func init() {
+	if gitrev != "" {
+		neofetch.OverrideGitRevision(gitrev)
+	}
+}
 
 var input io.Writer // js writes to this
 var startCh = make(chan struct{}, 1)

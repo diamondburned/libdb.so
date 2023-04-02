@@ -19,7 +19,6 @@ in
 			(baseNameOf path != "build") &&
 			(baseNameOf path != "node_modules"))
 		(./.),
-	version ? "git",
 	outputHash ? "sha256:${lib.fakeSha256 }",
 }:
 
@@ -28,6 +27,12 @@ in
 
 # use our nixpkgs for everything except stdenv
 let pkgs = ourPkgs;
+
+	version =
+		if src ? rev then
+			builtins.substring 0 7 src.rev
+		else
+			"dirty";
 
 	buildGoWasmModule = pkgs.buildGoModule.override {
 		go = pkgs.go // {
@@ -46,6 +51,10 @@ let pkgs = ourPkgs;
 
 			CGO_ENABLED = 0;
 			doCheck = false; # none to run
+
+			ldflags =
+				[ "-s" "-w" ]
+				++ (if src ? rev then [ "-X 'main.gitrev=${version}'" ] else [ ]);
 
 			postInstall = ''
 				mv $out/bin/js_wasm/vm-wasm $out/bin/vm.wasm
