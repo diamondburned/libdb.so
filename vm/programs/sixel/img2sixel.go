@@ -3,7 +3,6 @@ package sixel
 import (
 	"fmt"
 	"image"
-	"log"
 	"strings"
 
 	_ "image/jpeg"
@@ -152,7 +151,6 @@ func resize(img image.Image, scaler draw.Scaler, maxW, maxH int, keepAspect bool
 			h = maxH
 			w = widthFromHeight(img.Bounds(), h)
 		}
-		log.Println("resized to", w, "x", h)
 	} else {
 		if w <= maxW && h <= maxH {
 			return img, nil
