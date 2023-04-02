@@ -1,8 +1,8 @@
 package global
 
 import (
-	"bytes"
 	"fmt"
+	"strings"
 
 	_ "embed"
 
@@ -47,24 +47,35 @@ var transBlend = []colorful.Color{
 
 // PromptColored is a colorful prompter.
 func PromptColored() vm.PromptFunc {
-	var b bytes.Buffer
-	b.Grow(1024)
+	var s strings.Builder
+	s.Grow(1024)
+
+	var lastcol int
 
 	return func(env vm.Environment) string {
 		q := env.Terminal.Query()
+		if q.Width == lastcol {
+			return s.String()
+		}
 
-		b.Reset()
-		b.WriteByte('\n')
+		s.Reset()
+		s.WriteByte('\n')
 
 		line1 := fmt.Sprintf("$ libdb.so @ %s", env.Cwd)
-		lineprompt.Blend(&b, line1, q.Width, transBlend, lineprompt.Opts{
+		if len(line1) > q.Width {
+			line1 = line1[:q.Width]
+		}
+
+		lineprompt.Blend(&s, line1, q.Width, transBlend, lineprompt.Opts{
 			LOD:       15,
 			Underline: true,
 		})
 
-		b.WriteByte('\n')
-		b.WriteString("\033[38;2;85;205;252m―❤―\033[0m\033[38;2;247;157;208m▶\033[m ")
-		return b.String()
+		s.WriteByte('\n')
+		s.WriteString("\033[38;2;85;205;252m―❤―\033[0m\033[38;2;247;157;208m▶\033[m ")
+
+		lastcol = q.Width
+		return s.String()
 	}
 }
 
