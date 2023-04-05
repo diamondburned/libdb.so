@@ -1,6 +1,6 @@
-#!/usr/bin/env gosh
+#!/usr/bin/env sh
 clear
 neofetch
 echo
-echo "Welcome to libdb.so!"
-echo "Type \`help' for a list of commands."
+echo -e "Welcome to \e[1mlibdb.so\e[0m <3"
+echo -e "Type \e[1mhelp\e[0m for a list of commands"
