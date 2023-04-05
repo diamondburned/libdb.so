@@ -2,7 +2,7 @@
 
 SITE    = $(shell find site -type f) node_modules vite.config.ts package*.json
 PUBLIC  = $(shell find public -type f)
-GOFILES = $(shell find . -type f -name '*.go') go.mod go.sum
+GOFILES = $(shell find cmd internal vm -type f) go.mod go.sum
 
 # phony
 

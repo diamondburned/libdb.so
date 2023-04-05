@@ -52,35 +52,33 @@ func (program) Run(ctx context.Context, env vm.Environment, args []string) error
 func info() string {
 	var b strings.Builder
 
-	fpcolor(&b, "libdb.so\n", color.FgMagenta, color.Bold)
-	fpcolor(&b, "--------\n", color.FgMagenta, color.Bold)
+	printLink(&b, spcolor("libdb.so", color.FgMagenta, color.Bold), "https://libdb.so/libdb.so")
+	b.WriteByte('\n')
+	b.WriteByte('\n')
 
 	b.WriteByte('\n')
 
-	fpcolor(&b, "GitHub: ", color.FgCyan, color.Bold)
+	fpcolor(&b, "Blog: ", color.FgHiMagenta, color.Bold)
+	printLink(&b, "b.libdb.so", "https://b.libdb.so")
+	b.WriteByte('\n')
+
+	fpcolor(&b, "GitHub: ", color.FgHiCyan, color.Bold)
 	printLink(&b, "diamondburned", "https://github.com/diamondburned")
 	b.WriteByte('\n')
 
-	fpcolor(&b, "Mastodon: ", color.FgBlue, color.Bold)
+	fpcolor(&b, "Mastodon: ", color.FgHiBlue, color.Bold)
 	printLink(&b, "@diamond@hachyderm.io", "https://hachyderm.io/@diamond")
 	b.WriteByte('\n')
 
-	fpcolor(&b, "Source Code: ", color.FgYellow, color.Bold)
-	printLink(&b, "diamondburned/libdb.so", "https://libdb.so/libdb.so")
 	b.WriteByte('\n')
 
+	fmt.Fprintln(&b, spcolor("Go:", color.FgCyan), strings.Replace(runtime.Version(), "go", "v", 1))
+	fmt.Fprintln(&b, spcolor("GOOS:", color.FgCyan), runtime.GOOS)
+	fmt.Fprintln(&b, spcolor("GOARCH:", color.FgCyan), runtime.GOARCH)
+	fmt.Fprintln(&b, spcolor("NumCPU:", color.FgCyan), cpuCount())
 	if rev := programRev(); rev != "" {
-		fpcolor(&b, "Built on: ", color.FgGreen, color.Bold)
-		b.WriteString(rev)
-		b.WriteByte('\n')
+		fmt.Fprintln(&b, spcolor("Version:", color.FgCyan), rev)
 	}
-
-	b.WriteByte('\n')
-
-	fmt.Fprintln(&b, spcolor("Go:", color.FgHiCyan), strings.Replace(runtime.Version(), "go", "v", 1))
-	fmt.Fprintln(&b, spcolor("GOOS:", color.FgHiCyan), runtime.GOOS)
-	fmt.Fprintln(&b, spcolor("GOARCH:", color.FgHiCyan), runtime.GOARCH)
-	fmt.Fprintln(&b, spcolor("NumCPU:", color.FgHiCyan), cpuCount())
 
 	b.WriteByte('\n')
 
