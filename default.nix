@@ -2,11 +2,7 @@ let sources = import ./nix/sources.nix;
 in
 
 {
-	pkgs ? with builtins.tryEval <nixpkgs>;
-		if success then
-			import value {}
-		else
-			ourPkgs,
+	pkgs,
 	lib ? pkgs.lib,
 	src ? builtins.filterSource
 		(path: type:
@@ -14,12 +10,12 @@ in
 			(baseNameOf path != "build") &&
 			(baseNameOf path != "node_modules"))
 		(./.),
-	outputHash ? "sha256:${lib.fakeSha256 }",
 }:
 
 let stdenv = pkgs.stdenv;
+in
 
-	ourPkgs = import sources.nixpkgs {
+let ourPkgs = import sources.nixpkgs {
 		inherit (stdenv) system;
 		overlays = import ./nix/overlays.nix;
 	};
