@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
+	"strconv"
 
 	_ "embed"
 
@@ -28,10 +28,25 @@ func (prog) Usage() string {
 	return "opt in to potentially nsfw content"
 }
 
+var errAlreadyEnabled = errors.New("nsfw is already enabled")
+
 func (prog) Run(ctx context.Context, env vm.Environment, args []string) error {
+	if len(args) > 1 {
+		switch args[1] {
+		case "enable":
+			break
+		case "get":
+			env.Println(strconv.FormatBool(nsfw.IsEnabled()))
+			return nil
+		case "help", "-h", "--help":
+			return &vm.UsageError{Usage: "nsfw [enable|get|help]"}
+		default:
+			return fmt.Errorf("unknown subcommand %q", args[1])
+		}
+	}
+
 	if nsfw.IsEnabled() {
-		log.Println("nsfw is already enabled")
-		return nil
+		return vm.WrapError(1, errAlreadyEnabled)
 	}
 
 	fmt.Fprint(env.Terminal.Stdout, prompt)

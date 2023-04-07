@@ -4,3 +4,8 @@ neofetch
 echo
 echo -e "Welcome to \e[1mlibdb.so\e[0m <3"
 echo -e "Type \e[1mhelp\e[0m for a list of commands"
+
+if [ $(nsfw get) == true ]; then
+	echo
+	echo -e "hey!! just a heads up, you have \e[1mnsfw\e[0m mode enabled!"
+fi

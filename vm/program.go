@@ -51,6 +51,22 @@ func ExitCode(err error) int {
 	return 1
 }
 
+type exitCodedError struct {
+	error
+	code int
+}
+
+// WrapError wraps an error with an exit code.
+func WrapError(exitCode int, err error) error {
+	return exitCodedError{error: err, code: exitCode}
+}
+
+func (err exitCodedError) ExitCode() int {
+	return err.code
+}
+
+func (err exitCodedError) Unwrap() error { return err.error }
+
 // Program defines a userspace program within our larger program.
 type Program interface {
 	// Name returns the name of the program.
