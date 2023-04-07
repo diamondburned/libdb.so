@@ -14,7 +14,7 @@ require (
 	github.com/mattn/go-sixel v0.0.5
 	github.com/pkg/errors v0.9.1
 	github.com/urfave/cli/v3 v3.0.0-alpha2
-	gitlab.com/diamondburned/dotfiles/Scripts/lineprompt v0.0.0-20230319114047-e499e7061400
+	gitlab.com/diamondburned/dotfiles/Scripts/lineprompt v0.0.0-20230407082541-a6924ecdc0d4
 	golang.org/x/crypto v0.7.0
 	golang.org/x/image v0.6.0
 	mvdan.cc/sh/v3 v3.6.1-0.20230318112031-1e04c5bd318f
