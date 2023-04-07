@@ -40,6 +40,26 @@
       },
     });
 
+    terminal.attachCustomKeyEventHandler(function (e) {
+      // Bind Ctrl + C to copy if there is a selection.
+      if (e.ctrlKey && e.key == "c") {
+        if (terminal.hasSelection()) {
+          console.log("copying");
+          navigator.clipboard.writeText(terminal.getSelection());
+          return false;
+        }
+      }
+
+      // Bind Ctrl + V to paste for consistency with Ctrl + C. We don't actually
+      // need to do anything here because the browser will automatically paste
+      // the clipboard contents into the terminal.
+      if (e.ctrlKey && e.key == "v") {
+        return false;
+      }
+
+      return true;
+    });
+
     const fitAddon = new FitAddon();
     const onResize = () => fitAddon.fit();
     terminal.loadAddon(fitAddon);
