@@ -56,8 +56,8 @@ schema = 3
     version = "v0.0.0-20201216005158-039620a65673"
     hash = "sha256-WGHtW/OkLowkqOYIvXpDOpn9wqdH2+Dyx3+rYwpmvzI="
   [mod."gitlab.com/diamondburned/dotfiles/Scripts/lineprompt"]
-    version = "v0.0.0-20230319114047-e499e7061400"
-    hash = "sha256-9SPLgr1k60U6CZUoG+2A6pq6/p0fZgOOjowSM2uhwIM="
+    version = "v0.0.0-20230407082541-a6924ecdc0d4"
+    hash = "sha256-XSSQXi6y4kDGl5WeKJAWULVfhNaCnk4JCv9l9nIEIMw="
   [mod."golang.org/x/crypto"]
     version = "v0.7.0"
     hash = "sha256-Yc4casCQyfOgIr48FV+NI9qhanhBuYnkph5iI7rDyZE="
