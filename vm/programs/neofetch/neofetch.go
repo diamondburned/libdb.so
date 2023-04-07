@@ -8,11 +8,14 @@ import (
 	"runtime"
 	"runtime/debug"
 	"strings"
+	"text/tabwriter"
 
 	_ "embed"
 
 	"github.com/fatih/color"
 	"github.com/leaanthony/go-ansi-parser"
+	"github.com/lucasb-eyer/go-colorful"
+	"gitlab.com/diamondburned/dotfiles/Scripts/lineprompt/lineprompt"
 	"libdb.so/vm"
 	"libdb.so/vm/programs"
 )
@@ -49,42 +52,97 @@ func (program) Run(ctx context.Context, env vm.Environment, args []string) error
 	return nil
 }
 
+func colorfulHex(hex string) colorful.Color {
+	c, err := colorful.Hex(hex)
+	if err != nil {
+		panic(err)
+	}
+	return c
+}
+
+var transColors = []colorful.Color{
+	colorfulHex("#55CDFC"),
+	colorfulHex("#FFFFFF"),
+	colorfulHex("#F7A8B8"),
+}
+
+var transBand = func() string {
+	const b = "█"
+
+	var s strings.Builder
+	for _, c := range transColors {
+		s.Write(lineprompt.RGB(c.RGB255()))
+		s.WriteString(b)
+		s.WriteString(b)
+	}
+
+	s.Write(lineprompt.Reset)
+	return s.String()
+}()
+
 func info() string {
 	var b strings.Builder
-
-	printLink(&b, spcolor("libdb.so", color.FgMagenta, color.Bold), "https://libdb.so/libdb.so")
-	b.WriteByte('\n')
 	b.WriteByte('\n')
 
-	b.WriteByte('\n')
+	fmt.Fprintln(&b,
+		transBand,
+		spcolor("diamondburned", color.FgHiMagenta, color.Bold),
+		spcolor("(she/they/it)", color.FgHiMagenta),
+		transBand,
+	)
 
-	fpcolor(&b, "Blog: ", color.FgHiMagenta, color.Bold)
-	printLink(&b, "b.libdb.so", "https://b.libdb.so")
-	b.WriteByte('\n')
-
-	fpcolor(&b, "GitHub: ", color.FgHiCyan, color.Bold)
-	printLink(&b, "diamondburned", "https://github.com/diamondburned")
-	b.WriteByte('\n')
-
-	fpcolor(&b, "Mastodon: ", color.FgHiBlue, color.Bold)
-	printLink(&b, "@diamond@hachyderm.io", "https://hachyderm.io/@diamond")
 	b.WriteByte('\n')
 
 	b.WriteByte('\n')
 
-	fmt.Fprintln(&b, spcolor("Go:", color.FgCyan), strings.Replace(runtime.Version(), "go", "v", 1))
-	fmt.Fprintln(&b, spcolor("GOOS:", color.FgCyan), runtime.GOOS)
-	fmt.Fprintln(&b, spcolor("GOARCH:", color.FgCyan), runtime.GOARCH)
-	fmt.Fprintln(&b, spcolor("NumCPU:", color.FgCyan), cpuCount())
+	columnate2(&b,
+		spcolor("Blog:", color.FgHiGreen, color.Bold),
+		splink("b.libdb.so", "https://b.libdb.so"),
+
+		spcolor("GitHub:", color.FgHiCyan, color.Bold),
+		splink("diamondburned", "https://github.com/diamondburned"),
+
+		spcolor("Mastodon:", color.FgHiBlue, color.Bold),
+		splink("@diamond@hachyderm.io", "https://hachyderm.io/@diamond"),
+	)
+
+	b.WriteByte('\n')
+
+	source := splink("GitHub", "https://github.com/diamondburned/libdb.so")
 	if rev := programRev(); rev != "" {
-		fmt.Fprintln(&b, spcolor("Version:", color.FgCyan), rev)
+		source += " (" + rev + ")"
 	}
+
+	columnate2(&b,
+		spcolor("Go:", color.FgCyan),
+		fmt.Sprintf("%s on %s/%s",
+			strings.Replace(runtime.Version(), "go", "v", 1),
+			runtime.GOOS, runtime.GOARCH),
+
+		spcolor("NumCPU:", color.FgCyan),
+		cpuCount(),
+
+		spcolor("Source:", color.FgCyan),
+		source,
+	)
 
 	b.WriteByte('\n')
 
 	printFgColors(&b, 0, 8)
 	printFgColors(&b, 8, 16)
 	return b.String()
+}
+
+func columnate2(w io.Writer, values ...string) {
+	columnate(w, 2, values...)
+}
+
+func columnate(w io.Writer, n int, values ...string) {
+	tw := tabwriter.NewWriter(w, 0, 0, 1, ' ', 0)
+	for i := 0; i < len(values); i += 2 {
+		fmt.Fprintf(tw, "%s\t%s\n", values[i], values[i+1])
+	}
+	tw.Flush()
 }
 
 func spcolor(s string, cs ...color.Attribute) string {
@@ -165,8 +223,8 @@ func init() {
 	}
 }
 
-func printLink(b *strings.Builder, text, url string) {
-	fmt.Fprintf(b, ansiLinkf, url, text)
+func splink(text, url string) string {
+	return fmt.Sprintf(ansiLinkf, url, text)
 }
 
 func printInfo(env vm.Environment, str string) {
