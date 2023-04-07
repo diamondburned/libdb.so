@@ -1,17 +1,12 @@
 let sources = import ./nix/sources.nix;
-	ourPkgs = import sources.nixpkgs {
-		overlays = import ./nix/overlays.nix;
-	};
-
-	systemPkgs = with builtins.tryEval <nixpkgs>;
-		if success then
-			import value {}
-		else
-			ourPkgs;
 in
 
 {
-	pkgs ? systemPkgs,
+	pkgs ? with builtins.tryEval <nixpkgs>;
+		if success then
+			import value {}
+		else
+			ourPkgs,
 	lib ? pkgs.lib,
 	src ? builtins.filterSource
 		(path: type:
@@ -23,6 +18,11 @@ in
 }:
 
 let stdenv = pkgs.stdenv;
+
+	ourPkgs = import sources.nixpkgs {
+		inherit (stdenv) system;
+		overlays = import ./nix/overlays.nix;
+	};
 in
 
 # use our nixpkgs for everything except stdenv
