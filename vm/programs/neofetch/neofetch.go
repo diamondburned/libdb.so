@@ -66,29 +66,38 @@ var transColors = []colorful.Color{
 	colorfulHex("#F7A8B8"),
 }
 
-var transBand = func() string {
-	const b = "█"
-
+func transBand(inverted bool) string {
 	var s strings.Builder
-	for _, c := range transColors {
+	b := func(c colorful.Color) {
+		const b = "█"
 		s.Write(lineprompt.RGB(c.RGB255()))
 		s.WriteString(b)
 		s.WriteString(b)
 	}
 
+	if inverted {
+		for i := len(transColors) - 1; i >= 0; i-- {
+			b(transColors[i])
+		}
+	} else {
+		for i := range transColors {
+			b(transColors[i])
+		}
+	}
+
 	s.Write(lineprompt.Reset)
 	return s.String()
-}()
+}
 
 func info() string {
 	var b strings.Builder
 	b.WriteByte('\n')
 
 	fmt.Fprintln(&b,
-		transBand,
+		transBand(false),
 		spcolor("diamondburned", color.FgHiMagenta, color.Bold),
 		spcolor("(she/they/it)", color.FgHiMagenta),
-		transBand,
+		transBand(true),
 	)
 
 	b.WriteByte('\n')
