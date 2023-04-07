@@ -62,8 +62,8 @@ func colorfulHex(hex string) colorful.Color {
 
 var transColors = []colorful.Color{
 	colorfulHex("#55CDFC"),
-	colorfulHex("#FFFFFF"),
 	colorfulHex("#F7A8B8"),
+	colorfulHex("#FFFFFF"),
 }
 
 func transBand(inverted bool) string {
