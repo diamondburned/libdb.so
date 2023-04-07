@@ -16,6 +16,7 @@ import (
 	"github.com/leaanthony/go-ansi-parser"
 	"github.com/lucasb-eyer/go-colorful"
 	"gitlab.com/diamondburned/dotfiles/Scripts/lineprompt/lineprompt"
+	"libdb.so/internal/nsfw"
 	"libdb.so/vm"
 	"libdb.so/vm/programs"
 )
@@ -104,6 +105,20 @@ func info() string {
 
 	b.WriteByte('\n')
 
+	var mastodonCode string
+	if nsfw.IsEnabled() {
+		mastodonCode = splink(
+			"@diamond@girlcock.club",
+			"https://girlcock.club/@diamond",
+		)
+		mastodonCode += " (nsfw)"
+	} else {
+		mastodonCode = splink(
+			"@diamond@hachyderm.io",
+			"https://hachyderm.io/@diamond",
+		)
+	}
+
 	columnate2(&b,
 		spcolor("Blog:", color.FgHiGreen, color.Bold),
 		splink("b.libdb.so", "https://b.libdb.so"),
@@ -112,7 +127,7 @@ func info() string {
 		splink("diamondburned", "https://github.com/diamondburned"),
 
 		spcolor("Mastodon:", color.FgHiBlue, color.Bold),
-		splink("@diamond@hachyderm.io", "https://hachyderm.io/@diamond"),
+		mastodonCode,
 	)
 
 	b.WriteByte('\n')
