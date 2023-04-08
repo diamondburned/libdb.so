@@ -5,14 +5,17 @@
   import { ImageAddon, IImageAddonOptions } from "xterm-addon-image";
   import { FitAddon } from "xterm-addon-fit";
   import * as svelte from "svelte";
-  import colors from "./color-schemes.json";
+  import colorScheme from "./color-schemes.json";
   import type * as xterm from "xterm";
 
   let terminalElement: HTMLElement;
 
   export let id: string;
   export let done: (_: xterm.Terminal) => void;
+  export let colors: Record<string, string> = {};
+
   let title = "libdb.so";
+  $: combinedColors = { ...colorScheme, ...colors };
 
   const imageAddonSettings: IImageAddonOptions = {
     enableSizeReports: true,
@@ -29,9 +32,10 @@
       fontFamily: "monospace",
       fontWeight: "500",
       fontWeightBold: "700",
+      lineHeight: 1.1,
       allowTransparency: true,
       convertEol: true,
-      theme: colors,
+      theme: combinedColors,
       drawBoldTextInBrightColors: false,
       linkHandler: {
         activate: (event: MouseEvent, uri: string) => {
@@ -101,8 +105,8 @@
   {id}
   class="terminal-box"
   style="
-    --background: {colors.background};
-    --foreground: {colors.foreground};
+    --background: {combinedColors.background};
+    --foreground: {combinedColors.foreground};
   "
 >
   <header>
@@ -138,11 +142,12 @@
     font-weight: bold;
     font-size: 1rem;
     margin: 0.75rem;
+    user-select: none;
   }
 
   div.terminal {
     flex: 1;
-    padding: 8px 2px;
+    padding: clamp(6px, 1.5vh, 12px) clamp(0px, 0.5vw, 4px);
     background-color: var(--background);
   }
 
@@ -152,5 +157,11 @@
 
   div.terminal :global(.xterm-screen) {
     margin: auto;
+  }
+
+  @media (max-width: 500px) {
+    header h3 {
+      margin: 0.45rem;
+    }
   }
 </style>

@@ -1,9 +1,15 @@
 #!/usr/bin/env sh
+bold()   { printf '\e[1m%s\e[0m' "$1"; }
+dark()   { printf '\e[3%dm%s\e[0m' "$1" "$2"; }
+light()  { printf '\e[9%dm%s\e[0m' "$1" "$2"; }
+faint()  { printf '\e[2m%s\e[0m' "$1"; }
+hidden() { printf '\e[8m%s\e[0m' "$1"; }
+
 clear
 neofetch
 echo
-echo -e "Welcome to \e[1mlibdb.so\e[0m <3"
-echo -e "Type \e[1mhelp\e[0m for a list of commands"
+echo -e "Welcome to $(light 5 "$(bold "libdb.so")") $(light 5 "<3")"
+echo -e "Type $(bold "help") for a list of commands, also try $(bold "cd"), $(bold "ls"), $(bold "cat") $(faint "$(dark 0 "and $(bold nsfw)")")"
 
 if [ $(nsfw get) == true ]; then
 	echo

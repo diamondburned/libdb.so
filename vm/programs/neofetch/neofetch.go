@@ -103,8 +103,6 @@ func info() string {
 
 	b.WriteByte('\n')
 
-	b.WriteByte('\n')
-
 	var mastodonCode string
 	if nsfw.IsEnabled() {
 		mastodonCode = splink(
@@ -119,34 +117,38 @@ func info() string {
 		)
 	}
 
-	columnate2(&b,
-		spcolor("Blog:", color.FgHiGreen, color.Bold),
-		splink("b.libdb.so", "https://b.libdb.so"),
-
-		spcolor("GitHub:", color.FgHiCyan, color.Bold),
-		splink("diamondburned", "https://github.com/diamondburned"),
-
-		spcolor("Mastodon:", color.FgHiBlue, color.Bold),
-		mastodonCode,
-	)
-
-	b.WriteByte('\n')
-
 	source := splink("GitHub", "https://github.com/diamondburned/libdb.so")
 	if rev := programRev(); rev != "" {
 		source += " (" + rev + ")"
 	}
 
 	columnate2(&b,
-		spcolor("Go:", color.FgCyan),
+		spcolor("Blog", color.FgHiYellow, color.Bold),
+		splink("b.libdb.so", "https://b.libdb.so"),
+
+		spcolor("GitHub", color.FgHiCyan, color.Bold),
+		splink("diamondburned", "https://github.com/diamondburned"),
+
+		spcolor("Matrix", color.FgHiRed, color.Bold),
+		splink("@diamondburned:matrix.org", "https://matrix.to/#/@diamondburned:matrix.org"),
+
+		spcolor("Discord", color.FgHiBlue, color.Bold),
+		"diamondburned#4507",
+
+		spcolor("Mastodon", color.FgHiGreen, color.Bold),
+		mastodonCode,
+
+		"", "",
+
+		spcolor("Go", color.Reset, color.FgCyan),
 		fmt.Sprintf("%s on %s/%s",
 			strings.Replace(runtime.Version(), "go", "v", 1),
 			runtime.GOOS, runtime.GOARCH),
 
-		spcolor("NumCPU:", color.FgCyan),
+		spcolor("NumCPU", color.Reset, color.FgCyan),
 		cpuCount(),
 
-		spcolor("Source:", color.FgCyan),
+		spcolor("Source", color.Reset, color.FgCyan),
 		source,
 	)
 
@@ -158,13 +160,13 @@ func info() string {
 }
 
 func columnate2(w io.Writer, values ...string) {
-	columnate(w, 2, values...)
-}
-
-func columnate(w io.Writer, n int, values ...string) {
-	tw := tabwriter.NewWriter(w, 0, 0, 1, ' ', 0)
+	tw := tabwriter.NewWriter(w, 0, 0, 2, ' ', tabwriter.DiscardEmptyColumns)
 	for i := 0; i < len(values); i += 2 {
-		fmt.Fprintf(tw, "%s\t%s\n", values[i], values[i+1])
+		if values[i] == "" && values[i+1] == "" {
+			fmt.Fprintf(tw, "\t\n")
+		} else {
+			fmt.Fprintf(tw, "%s\t%s\n", values[i], values[i+1])
+		}
 	}
 	tw.Flush()
 }
@@ -254,7 +256,7 @@ func splink(text, url string) string {
 func printInfo(env vm.Environment, str string) {
 	const pad = 2
 	const up = 16
-	const right = 36
+	const right = 39
 
 	lines := strings.Split(str, "\n")
 	var maxLine int
