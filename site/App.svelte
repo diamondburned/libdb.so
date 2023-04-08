@@ -59,10 +59,11 @@
     height: min(calc(100% - clamp(6px, 7vw, 5rem)), max(70vh, 800px));
   }
 
-  #screen {
-    position: absolute;
-    border: 2px solid aliceblue;
-    border-radius: 8px;
-    padding: 4px;
+  @media (max-width: 500px) {
+    #terminal {
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+    }
   }
 </style>

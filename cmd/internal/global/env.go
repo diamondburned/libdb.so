@@ -59,6 +59,11 @@ func PromptColored() vm.PromptFunc {
 		}
 
 		s.Reset()
+
+		lineprompt.Blend(&s, "", q.Width, transBlend, lineprompt.Opts{
+			LOD:       15,
+			Underline: true,
+		})
 		s.WriteByte('\n')
 
 		line1 := fmt.Sprintf("$ libdb.so @ %s", env.Cwd)
@@ -68,10 +73,10 @@ func PromptColored() vm.PromptFunc {
 
 		lineprompt.Blend(&s, line1, q.Width, transBlend, lineprompt.Opts{
 			LOD:       15,
-			Underline: true,
+			Underline: false,
 		})
-
 		s.WriteByte('\n')
+
 		s.WriteString("\033[38;2;85;205;252m―❤―\033[0m\033[38;2;247;157;208m▶\033[m ")
 
 		lastcol = q.Width
