@@ -35,6 +35,12 @@ var date = cli.App{
 		},
 	},
 	Action: func(c *cli.Context) error {
+		switch c.Args().First() {
+		case "diamond", "me":
+			fmt.Println("I love you <3")
+			return nil
+		}
+
 		env := vm.EnvironmentFromContext(c.Context)
 
 		now := time.Now()
