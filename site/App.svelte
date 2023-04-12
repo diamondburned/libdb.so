@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as svelte from "svelte";
   import * as vm from "#/libdb.so/site/lib/vm.js";
+  import favicon from "#/libdb.so/public/favicon.ico?url";
   import type * as xterm from "xterm";
 
   import Terminal from "#/libdb.so/site/components/Terminal/index.svelte";
@@ -12,6 +13,10 @@
     vm.start(terminal, publicFS).catch((err) => console.error(err));
   }
 </script>
+
+<svelte:head>
+  <link rel="icon" href={favicon} />
+</svelte:head>
 
 <main>
   <div class="backdrop">
