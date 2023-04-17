@@ -50,11 +50,14 @@ func PromptColored() vm.PromptFunc {
 	var s strings.Builder
 	s.Grow(1024)
 
-	var lastcol int
+	var state struct {
+		Column int
+		Dir    string
+	}
 
 	return func(env vm.Environment) string {
 		q := env.Terminal.Query()
-		if q.Width == lastcol {
+		if q.Width == state.Column && state.Dir == env.Cwd {
 			return s.String()
 		}
 
@@ -79,7 +82,8 @@ func PromptColored() vm.PromptFunc {
 
 		s.WriteString("\033[38;2;85;205;252m―❤―\033[0m\033[38;2;247;157;208m▶\033[m ")
 
-		lastcol = q.Width
+		state.Column = q.Width
+		state.Dir = env.Cwd
 		return s.String()
 	}
 }
