@@ -80,7 +80,7 @@
     }
 
     terminal.open(terminalElement);
-    terminal.write("Starting VM...\n");
+    terminal.write("Starting VM...\r\n");
 
     onResize();
     window.addEventListener("resize", onResize);

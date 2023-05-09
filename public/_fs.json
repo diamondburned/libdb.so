@@ -1,0 +1,35 @@
+{
+  "base": "_fs",
+  "tree": {
+    "bingle.txt": {
+      "size": 22
+    },
+    "Pictures/": {
+      "gopher.sixel": {
+        "size": 112538
+      },
+      "background.jpg": {
+        "size": 9309
+      }
+    },
+    ".nsfw/": {
+      "02.jpg": {
+        "size": 182731
+      },
+      "01.jpg": {
+        "size": 172303
+      },
+      "04.jpg": {
+        "size": 172021
+      },
+      "03.jpg": {
+        "size": 251939
+      }
+    },
+    ".ssh/": {
+      "id_rsa.pub": {
+        "size": 400
+      }
+    }
+  }
+}

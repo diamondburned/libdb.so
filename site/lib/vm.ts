@@ -97,33 +97,36 @@ type FilesystemJSON = {
   tree: FileTree;
 };
 
-export async function start(
-  terminal: xterm.Terminal,
-  publicFS: FilesystemJSON
-) {
+export async function start(terminal: xterm.Terminal, publicFSURL: string) {
   if (running) return;
 
   // @ts-ignore
   const go = new globalThis.Go();
   const proxy = new TerminalProxy(terminal);
 
-  const resp = await fetch(consoleBlob);
-  const module = await WebAssembly.compileStreaming(resp);
-  const instance = await WebAssembly.instantiate(module, go.importObject);
+  try {
+    const resp = await fetch(consoleBlob);
+    const module = await WebAssembly.compileStreaming(resp);
+    const instance = await WebAssembly.instantiate(module, go.importObject);
 
-  console.log("loaded wasm blob from", consoleBlob);
+    console.log("loaded wasm blob from", consoleBlob);
 
-  console.log("starting wasm...");
-  running = go.run(instance).catch((err: any) => {
-    console.error("error running wasm blob", err);
-  });
+    console.log("starting wasm...");
+    running = go.run(instance).catch((err: any) => {
+      console.error("error running wasm blob", err);
+    });
 
-  console.log("initialize public httpfs");
-  globalThis.vm_set_public_fs(JSON.stringify(publicFS.tree), publicFS.base);
+    console.log("initialize public httpfs");
+    const publicFS = await fetch(publicFSURL).then((r) => r.json());
+    globalThis.vm_set_public_fs(JSON.stringify(publicFS.tree), publicFS.base);
 
-  console.log("starting console...");
-  proxy.updateQuery();
-  globalThis.vm_start();
+    console.log("starting console...");
+    proxy.updateQuery();
+    globalThis.vm_start();
 
-  console.log("done");
+    console.log("done");
+  } catch (err) {
+    console.error("error starting vm", err);
+    terminal.write(`Error starting VM: ${err}\r\n`);
+  }
 }
