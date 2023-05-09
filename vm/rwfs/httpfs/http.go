@@ -26,7 +26,6 @@ func (c *httpClient) get(filepath string, info FileInfo) (io.ReadCloser, error) 
 	if err != nil {
 		return nil, err
 	}
-	defer req.Body.Close()
 
 	resp, err := c.client.Do(req)
 	if err != nil {
