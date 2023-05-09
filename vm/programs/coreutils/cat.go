@@ -7,6 +7,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v3"
+	"libdb.so/internal/nsfw"
 	"libdb.so/vm"
 	"libdb.so/vm/internal/cliprog"
 	"libdb.so/vm/programs"
@@ -27,15 +28,26 @@ var cat = cli.App{
 		},
 	},
 	Action: func(c *cli.Context) error {
+		if c.NArg() == 0 {
+			if nsfw.IsEnabled() {
+				env := vm.EnvironmentFromContext(c.Context)
+				env.Println("nyaa~")
+				return nil
+			}
+			return errors.New("no files given")
+		}
+
 		var failed bool
 		for _, arg := range c.Args().Slice() {
 			if !printFile(c, arg) {
 				failed = true
 			}
 		}
+
 		if failed {
 			return errors.New("failed to print one or more files")
 		}
+
 		return nil
 	},
 }
