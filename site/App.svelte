@@ -5,12 +5,11 @@
   import type * as xterm from "xterm";
 
   import Terminal from "#/libdb.so/site/components/Terminal/index.svelte";
-  import publicFS from "#/libdb.so/build/publicfs.json";
 
   let screen: HTMLElement;
 
   function init(terminal: xterm.Terminal) {
-    vm.start(terminal, publicFS).catch((err) => console.error(err));
+    vm.start(terminal, "/_fs.json").catch((err) => console.error(err));
   }
 </script>
 

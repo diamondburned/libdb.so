@@ -1,7 +1,7 @@
 .PHONY: all clean dev
 
 SITE    = $(shell find site -type f) node_modules vite.config.ts package*.json
-PUBLIC  = $(shell find public -type f)
+PUBLIC  = $(shell find public/_fs -type f)
 GOFILES = $(shell find cmd internal vm -type f) go.mod go.sum
 
 # phony
@@ -11,21 +11,21 @@ all: build/dist
 dev: dist-deps
 	vite dev
 
-dist-deps: $(SITE) site/components/Terminal/color-schemes.json build/publicfs.json build/vm.wasm
+dist-deps: $(SITE) site/components/Terminal/color-schemes.json public/_fs.json build/vm.wasm
 
 clean:
 	rm -r build
 
 # real
 
+public/_fs.json: $(PUBLIC) ./scripts/jsonfs
+	bash ./scripts/jsonfs public/_fs > public/_fs.json
+
 build/dist: dist-deps
 	vite build
 
 site/components/Terminal/color-schemes.json: ./scripts/xtermjs-colors
 	./scripts/xtermjs-colors > $@
-
-build/publicfs.json: $(PUBLIC) ./scripts/jsonfs
-	bash ./scripts/jsonfs public/_fs > build/publicfs.json
 
 build/vm.wasm: $(GOFILES)
 	mkdir -p build
