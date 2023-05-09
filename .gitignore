@@ -1,3 +1,5 @@
-build
 result
-node_modules
+/build
+/node_modules
+/public/_fs
+/public/_fs.json

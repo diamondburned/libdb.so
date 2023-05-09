@@ -26,10 +26,15 @@ basename() {
 
 # jsonobj varname
 jsonobj() {
+	declare -n obj=$1
+	if [[ "${!obj[@]}" == "" ]]; then
+		echo "{}"
+		return
+	fi
+
 	args=()
 	keys=()
 
-	declare -n obj=$1
 	i=0
 	for k in "${!obj[@]}"; do
 		v="${obj[$k]}"

@@ -1,7 +1,7 @@
 .PHONY: all clean dev
 
 SITE    = $(shell find site -type f) node_modules vite.config.ts package*.json
-PUBLIC  = $(shell find public/_fs -type f)
+PUBLIC  = $(shell find public/_fs -type f 2> /dev/null)
 GOFILES = $(shell find cmd internal vm -type f) go.mod go.sum
 
 # phony
@@ -19,7 +19,7 @@ clean:
 # real
 
 public/_fs.json: $(PUBLIC) ./scripts/jsonfs
-	cd public && bash ../scripts/jsonfs _fs > _fs.json
+	cd public && if [[ -d _fs ]]; then bash ../scripts/jsonfs _fs > _fs.json; fi
 
 build/dist: dist-deps
 	vite build
