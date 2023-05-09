@@ -19,7 +19,7 @@ clean:
 # real
 
 public/_fs.json: $(PUBLIC) ./scripts/jsonfs
-	bash ./scripts/jsonfs public/_fs > public/_fs.json
+	cd public && bash ../scripts/jsonfs _fs > _fs.json
 
 build/dist: dist-deps
 	vite build

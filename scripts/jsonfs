@@ -47,14 +47,7 @@ main() {
 		exit 1
 	fi
 
-	if [[ "$1/" != public/* ]]; then
-		echo "Path must be in public/" >&2
-		exit 1
-	fi
-
-	cd "public"
-
-	dir=${1#public/}
+	dir="$1"
 	if [[ "$dir" == "" ]]; then
 		dir="."
 	fi
