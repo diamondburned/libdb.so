@@ -17,7 +17,7 @@ require (
 	gitlab.com/diamondburned/dotfiles/Scripts/lineprompt v0.0.0-20230407082541-a6924ecdc0d4
 	golang.org/x/crypto v0.7.0
 	golang.org/x/image v0.6.0
-	mvdan.cc/sh/v3 v3.6.1-0.20230318112031-1e04c5bd318f
+	mvdan.cc/sh/v3 v3.6.1-0.20230510000419-96a1c48ec2d7
 )
 
 require (
