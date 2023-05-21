@@ -73,6 +73,9 @@ schema = 3
   [mod."golang.org/x/term"]
     version = "v0.6.0"
     hash = "sha256-Ao0yXpwY8GyG+/23dVfJUYrfEfNUTES3RF45v1VhUAk="
+  [mod."libdb.so/libwebring-go"]
+    version = "v0.0.0-20230521133149-d80b3d3c5163"
+    hash = "sha256-PQjXuoOp27qbNgEm3VRUV4IoCA/ukvPQdfyDsaUz2kM="
   [mod."mvdan.cc/sh/v3"]
     version = "v3.0.0-20230318131347-17d55f04e1ac"
     hash = "sha256-ZKBbtCRW34QYUIDbVJ66geg7zAfqU/Suibk/riTJ/TQ="
