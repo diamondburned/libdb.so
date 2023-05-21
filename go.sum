@@ -91,3 +91,5 @@ golang.org/x/tools v0.0.0-20191119224855-298f0cb1881e/go.mod h1:b+2E5dAYhXwXZwtn
 golang.org/x/tools v0.1.12/go.mod h1:hNGJHUnrk76NpqgfD5Aqm5Crs+Hm0VOH/i9J2+nxYbc=
 golang.org/x/tools v0.6.0/go.mod h1:Xwgl3UAJ/d3gWutnCtw505GrjyAbvKui8lOU390QaIU=
 golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
+libdb.so/libwebring-go v0.0.0-20230521133149-d80b3d3c5163 h1:G5nzwpIKRiF03o9isD9ywrA4Efx4JVGsvj3zVmZ38NY=
+libdb.so/libwebring-go v0.0.0-20230521133149-d80b3d3c5163/go.mod h1:x9ttq6474WtMk4JeJ/YXZDePKa3P+MPzPZAEPBY9CWE=

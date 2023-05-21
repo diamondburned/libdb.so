@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"regexp"
 	"runtime"
 	"runtime/debug"
 	"strings"
@@ -13,11 +12,11 @@ import (
 	_ "embed"
 
 	"github.com/fatih/color"
-	"github.com/leaanthony/go-ansi-parser"
 	"github.com/lucasb-eyer/go-colorful"
 	"gitlab.com/diamondburned/dotfiles/Scripts/lineprompt/lineprompt"
 	"libdb.so/internal/nsfw"
 	"libdb.so/vm"
+	"libdb.so/vm/internal/ansi"
 	"libdb.so/vm/programs"
 )
 
@@ -105,32 +104,32 @@ func info() string {
 
 	var mastodonCode string
 	if nsfw.IsEnabled() {
-		mastodonCode = splink(
+		mastodonCode = ansi.Link(
 			"@diamond@girlcock.club",
 			"https://girlcock.club/@diamond",
 		)
 		mastodonCode += " (nsfw)"
 	} else {
-		mastodonCode = splink(
+		mastodonCode = ansi.Link(
 			"@diamond@hachyderm.io",
 			"https://hachyderm.io/@diamond",
 		)
 	}
 
-	source := splink("GitHub", "https://github.com/diamondburned/libdb.so")
+	source := ansi.Link("GitHub", "https://github.com/diamondburned/libdb.so")
 	if rev := programRev(); rev != "" {
 		source += " (" + rev + ")"
 	}
 
 	columnate2(&b,
 		spcolor("Blog", color.FgHiYellow, color.Bold),
-		splink("b.libdb.so", "https://b.libdb.so"),
+		ansi.Link("b.libdb.so", "https://b.libdb.so"),
 
 		spcolor("GitHub", color.FgHiCyan, color.Bold),
-		splink("diamondburned", "https://github.com/diamondburned"),
+		ansi.Link("diamondburned", "https://github.com/diamondburned"),
 
 		spcolor("Matrix", color.FgHiRed, color.Bold),
-		splink("@diamondburned:matrix.org", "https://matrix.to/#/@diamondburned:matrix.org"),
+		ansi.Link("@diamondburned:matrix.org", "https://matrix.to/#/@diamondburned:matrix.org"),
 
 		spcolor("Discord", color.FgHiBlue, color.Bold),
 		"diamondburned#4507",
@@ -238,21 +237,6 @@ func programRev() string {
 	return fmt.Sprintf("%s revision %s", vcs, rev)
 }
 
-var ansiLinkRe = regexp.MustCompile(`(?m)\x1b]8;;([^\x1b]*)\x1b\\([^\x1b]*)\x1b]8;;\x1b\\`)
-
-const ansiLinkf = "\x1b]8;;%s\x1b\\%s\x1b]8;;\x1b\\"
-
-func init() {
-	// keep in sync with the regex
-	if !ansiLinkRe.MatchString(ansiLinkf) {
-		panic("ansiLinkf is not in sync with ansiLinkRe")
-	}
-}
-
-func splink(text, url string) string {
-	return fmt.Sprintf(ansiLinkf, url, text)
-}
-
 func printInfo(env vm.Environment, str string) {
 	const pad = 2
 	const up = 16
@@ -261,11 +245,7 @@ func printInfo(env vm.Environment, str string) {
 	lines := strings.Split(str, "\n")
 	var maxLine int
 	for _, line := range lines {
-		// Replace all ANSI links with their text.
-		line = ansiLinkRe.ReplaceAllString(line, "$2")
-		// Count the length excluding ANSI codes.
-		llen, _ := ansi.Length(line)
-		if llen > maxLine {
+		if llen := ansi.StringWidth(line); llen > maxLine {
 			maxLine = llen
 		}
 	}
