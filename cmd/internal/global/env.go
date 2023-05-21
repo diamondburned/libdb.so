@@ -17,6 +17,7 @@ import (
 	_ "libdb.so/vm/programs/sixel"
 	_ "libdb.so/vm/programs/spew"
 	_ "libdb.so/vm/programs/termio"
+	_ "libdb.so/vm/programs/webring"
 )
 
 const InitialCwd = "/"

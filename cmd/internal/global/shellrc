@@ -11,7 +11,16 @@ echo
 echo -e "Welcome to $(light 5 "$(bold "libdb.so")") $(light 5 "<3")"
 echo -e "Type $(bold "help") for a list of commands, also try $(bold "cd"), $(bold "ls"), $(bold "cat") $(faint "$(dark 0 "and $(bold nsfw)")")"
 
+sizes=( $(termsize) )
+width=${sizes[0]}
+if (( width > 80 )); then
+	width=80
+fi
+
+echo
+webring -w $width
+
+echo
 if [ $(nsfw get) == true ]; then
-	echo
 	echo -e "hey!! just a heads up, you have \e[1mnsfw\e[0m mode enabled!"
 fi
