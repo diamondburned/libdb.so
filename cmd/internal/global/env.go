@@ -14,6 +14,7 @@ import (
 	_ "libdb.so/vm/programs/hewwo"
 	_ "libdb.so/vm/programs/neofetch"
 	_ "libdb.so/vm/programs/nsfw"
+	_ "libdb.so/vm/programs/resume"
 	_ "libdb.so/vm/programs/sixel"
 	_ "libdb.so/vm/programs/spew"
 	_ "libdb.so/vm/programs/termio"

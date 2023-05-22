@@ -9,7 +9,7 @@ clear
 neofetch
 echo
 echo -e "Welcome to $(light 5 "$(bold "libdb.so")") $(light 5 "<3")"
-echo -e "Type $(bold "help") for a list of commands, also try $(bold "cd"), $(bold "ls"), $(bold "cat") $(faint "$(dark 0 "and $(bold nsfw)")")"
+echo -e "Type $(bold "help") for a list of commands, also try $(bold "cd"), $(bold "ls"), $(bold "cat"), $(bold "resume") $(faint "$(dark 0 "and $(bold nsfw)")")"
 
 sizes=( $(termsize) )
 width=${sizes[0]}
