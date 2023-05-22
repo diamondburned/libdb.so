@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/urfave/cli/v3"
 	"libdb.so/libwebring-go"
@@ -56,6 +57,9 @@ type Opts struct {
 
 // Print prints the webring.
 func Print(ctx context.Context, opts Opts) error {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+
 	env := vm.EnvironmentFromContext(ctx)
 	log := vm.LoggerFromContext(ctx)
 
@@ -68,12 +72,10 @@ func Print(ctx context.Context, opts Opts) error {
 		}
 
 		s, err := libwebring.FetchStatusForWebring(ctx, url)
-		if err != nil {
-			log.Println("cannot check webring:", err)
-			continue
+		if err == nil {
+			w.Ring = w.Ring.ExcludeAnomalies(s.Anomalies)
 		}
 
-		w.Ring = w.Ring.ExcludeAnomalies(s.Anomalies)
 		webrings = append(webrings, w)
 	}
 
@@ -117,7 +119,7 @@ func Print(ctx context.Context, opts Opts) error {
 		}
 
 		left, right := w.Ring.SurroundingLinks(*mine)
-		printAligned(env, width,
+		ansi.PrintAligned(env, width,
 			"← "+ansi.Link(left.Name, ensureScheme(left.Link)),
 			"─── "+ringPrefix+ring+" webring ───",
 			ansi.Link(right.Name, ensureScheme(right.Link))+" →",
@@ -154,54 +156,4 @@ func findWebring(webrings []*libwebring.Data, name string) *libwebring.Data {
 		}
 	}
 	return nil
-}
-
-func printAligned(env vm.Environment, width int, left, center, right string) {
-	w := env.Terminal.Stdout
-
-	leftWidth := ansi.StringWidth(left)
-	rightWidth := ansi.StringWidth(right)
-	centerWidth := ansi.StringWidth(center)
-	halfCenterWidth := centerWidth / 2
-
-	totalWidth := ansi.StringWidth(left) + ansi.StringWidth(center) + ansi.StringWidth(right) + 3
-	if totalWidth > width {
-		centerPad := max((width-centerWidth)/2, 0)
-		rightPad := max(width-rightWidth, 0)
-
-		fmt.Fprintln(w, left)
-
-		fmt.Fprint(w, strings.Repeat(" ", centerPad))
-		fmt.Fprintln(w, center)
-
-		fmt.Fprint(w, strings.Repeat(" ", rightPad))
-		fmt.Fprintln(w, right)
-		return
-	}
-
-	pivot := width / 2
-	leftPad := max(pivot-halfCenterWidth-leftWidth, 1)
-	rightPad := max(width-leftWidth-leftPad-centerWidth-rightWidth, 1)
-
-	fmt.Fprint(w, left)
-	fmt.Fprint(w, strings.Repeat(" ", leftPad))
-	fmt.Fprint(w, center)
-	fmt.Fprint(w, strings.Repeat(" ", rightPad))
-	fmt.Fprint(w, right)
-
-	fmt.Fprintln(w)
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
 }
