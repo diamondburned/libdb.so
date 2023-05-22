@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"go/doc"
-	"io"
 	"strings"
+
+	_ "embed"
 
 	"github.com/fatih/color"
 	"github.com/pkg/errors"
@@ -15,6 +16,9 @@ import (
 	"libdb.so/vm/internal/cliprog"
 	"libdb.so/vm/programs"
 )
+
+//go:embed resume.json
+var resumeJSON string
 
 func init() {
 	programs.Register(cliprog.Wrap(app))
@@ -118,19 +122,13 @@ func action(c *cli.Context) error {
 		width = minWidth
 	}
 
-	f, err := env.Open("/resume.json")
-	if err != nil {
-		return errors.Wrap(err, "failed to open resume.json")
-	}
-	defer f.Close()
-
 	if c.Bool("json") {
-		_, err := io.Copy(env.Terminal.Stdout, f)
-		return errors.Wrap(err, "failed to copy resume.json to stdout")
+		env.Println(resumeJSON)
+		return nil
 	}
 
 	var doc Document
-	if err := json.NewDecoder(f).Decode(&doc); err != nil {
+	if err := json.Unmarshal([]byte(resumeJSON), &doc); err != nil {
 		return errors.Wrap(err, "failed to decode resume.json")
 	}
 
