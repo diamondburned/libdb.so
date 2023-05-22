@@ -1,0 +1,130 @@
+{
+  "selectedTemplate": 3,
+  "headings": {
+    "skills": "",
+    "awards": ""
+  },
+  "basics": {
+    "email": "jobs@libdb.so",
+    "name": "'",
+    "website": "libdb.so"
+  },
+  "education": [
+    {
+      "institution": "California State University, Fullerton",
+      "location": "Fullerton, CA",
+      "studyType": "BS",
+      "area": "Computer Science",
+      "startDate": "Aug 2020",
+      "endDate": "May 2024"
+    }
+  ],
+  "work": [
+    {
+      "highlights": [
+        "Implemented monitoring framework in Go for Kubernetes node registration.",
+        "Reduced on-call resolution time by automatically identifying common problems during registration.",
+        "Deployed across production GKE nodes for use by all GKE customers."
+      ],
+      "company": "Google",
+      "position": "STEP Intern",
+      "location": "Seattle, WA",
+      "startDate": "May 2022",
+      "endDate": "August 2022"
+    },
+    {
+      "highlights": [
+        "TBD"
+      ],
+      "company": "Google",
+      "position": "Software Enginner Intern",
+      "location": "Sunnyvale, CA",
+      "startDate": "May 2023",
+      "endDate": "August 2023"
+    }
+  ],
+  "skills": [
+    {
+      "level": "",
+      "keywords": [
+        "Go, Bash, JavaScript, C, C++, SQL, HTML/CSS"
+      ],
+      "name": "Languages"
+    },
+    {
+      "keywords": [
+        "Linux, Git, Nix, Docker, Kubernetes, SQL, CI/CD, OpenAPI"
+      ],
+      "name": "Developer Tools"
+    }
+  ],
+  "projects": [
+    {
+      "description": "GUI chat apps made by reverse-engineering Discord with over 1100 stars on GitHub.",
+      "keywords": [
+        "C",
+        "Go",
+        "GTK4"
+      ],
+      "name": "gtkcord4",
+      "url": "libdb.so/gtkcord4"
+    },
+    {
+      "keywords": [
+        "Terraform",
+        "NixOS",
+        "GitHub Actions"
+      ],
+      "name": "acm-aws",
+      "description": "Infrastructure as code for ACM's AWS resources, with CI/CD pipelines and automatic deployment.",
+      "url": "libdb.so/acm-aws"
+    },
+    {
+      "keywords": [
+        "Go"
+      ],
+      "name": "arikawa",
+      "description": "Discord library with idiomatic Go and modular structure, having over 400 stars on GitHub.",
+      "url": "libdb.so/arikawa"
+    },
+    {
+      "keywords": [
+        "Python",
+        "FastAPI",
+        "OpenAPI",
+        "Flutter"
+      ],
+      "name": "Layover Party",
+      "url": "layover.party",
+      "description": "Mobile/web application to match people with long layover flights for partying, won LAHacks 2023 Travel category."
+    },
+    {
+      "keywords": [
+        "TypeScript",
+        "NodeJS",
+        "Svelte",
+        "Vercel"
+      ],
+      "name": "acmcsuf.com",
+      "url": "acmcsuf.com",
+      "description": "ACM at CSUF's club website with modern style guides, live club updates and automatic deployment."
+    }
+  ],
+  "awards": [
+    {
+      "title": "",
+      "date": "",
+      "awarder": "",
+      "summary": ""
+    }
+  ],
+  "sections": [
+    "templates",
+    "profile",
+    "education",
+    "work",
+    "skills",
+    "projects",
+    "awards"
+  ]
+}
