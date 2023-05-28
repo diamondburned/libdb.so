@@ -1,7 +1,6 @@
 <script lang="ts">
   import "xterm/css/xterm.css";
 
-  import { WebglAddon as WebGLAddon } from "xterm-addon-webgl";
   import { ImageAddon, IImageAddonOptions } from "xterm-addon-image";
   import { FitAddon } from "xterm-addon-fit";
   import * as svelte from "svelte";
@@ -71,14 +70,6 @@
     const imageAddon = new ImageAddon(imageAddonSettings);
     terminal.loadAddon(imageAddon);
 
-    try {
-      const webglAddon = new WebGLAddon();
-      webglAddon.onContextLoss(() => webglAddon.dispose());
-      terminal.loadAddon(webglAddon);
-    } catch (err) {
-      console.log("WebGL not supported, using canvas fallback");
-    }
-
     terminal.open(terminalElement);
     terminal.write("Starting VM...\r\n");
 
@@ -93,7 +84,6 @@
 
     return () => {
       terminal.dispose();
-      webglAddon.dispose();
       fitAddon.dispose();
       onTitleChange.dispose();
       window.removeEventListener("resize", onResize);
