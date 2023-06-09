@@ -16,7 +16,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v3"
 	"libdb.so/vm"
+	"libdb.so/vm/internal/ansi"
 	"libdb.so/vm/internal/cliprog"
+	"libdb.so/vm/internal/vmutil"
 	"libdb.so/vm/programs"
 )
 
@@ -147,10 +149,14 @@ func ls_(c *cli.Context, arg string, multiple bool) error {
 }
 
 func printName(env vm.Environment, dirEntry fs.DirEntry) string {
-	if env.HasTerminal && dirEntry.IsDir() {
-		return color.New(color.FgBlue, color.Bold).Sprint(dirEntry.Name())
+	name := dirEntry.Name()
+	if env.HasTerminal {
+		name = ansi.Link(name, vmutil.MakeTerminalWriteURI(name))
+		if dirEntry.IsDir() {
+			return color.New(color.FgBlue, color.Bold).Sprint(name)
+		}
 	}
-	return dirEntry.Name()
+	return name
 }
 
 func printPerm(mode fs.FileMode) string {
