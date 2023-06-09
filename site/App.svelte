@@ -5,12 +5,6 @@
   import type * as xterm from "xterm";
 
   import Terminal from "#/libdb.so/site/components/Terminal/index.svelte";
-
-  let screen: HTMLElement;
-
-  function init(terminal: xterm.Terminal) {
-    vm.start(terminal, "/_fs.json").catch((err) => console.error(err));
-  }
 </script>
 
 <svelte:head>
@@ -19,7 +13,12 @@
 
 <main>
   <div class="backdrop">
-    <Terminal id="terminal" done={init} />
+    <Terminal
+      id="terminal"
+      done={(terminal) => {
+        vm.start(terminal, "/_fs.json").catch((err) => console.error(err));
+      }}
+    />
   </div>
 </main>
 

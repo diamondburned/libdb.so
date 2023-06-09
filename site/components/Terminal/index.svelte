@@ -1,8 +1,6 @@
 <script lang="ts">
   import "xterm/css/xterm.css";
 
-  import { ImageAddon, IImageAddonOptions } from "xterm-addon-image";
-  import { FitAddon } from "xterm-addon-fit";
   import * as svelte from "svelte";
   import colorScheme from "./color-schemes.json";
   import type * as xterm from "xterm";
@@ -16,24 +14,14 @@
   let title = "libdb.so";
   $: combinedColors = { ...colorScheme, ...colors };
 
-  const imageAddonSettings: IImageAddonOptions = {
-    enableSizeReports: true,
-    sixelSupport: true,
-    sixelScrolling: true,
-    sixelPaletteLimit: 4096,
-    showPlaceholder: true,
-  };
-
   svelte.onMount(async () => {
-    const xterm = await import("xterm");
+    const libterminal = await import("#/libdb.so/site/lib/terminal.js");
 
-    const terminal = new xterm.Terminal({
+    const terminal = new libterminal.Terminal({
       fontFamily: "monospace",
       fontWeight: "500",
       fontWeightBold: "700",
       lineHeight: 1.1,
-      allowTransparency: true,
-      convertEol: true,
       theme: combinedColors,
       drawBoldTextInBrightColors: false,
       linkHandler: {
@@ -43,38 +31,8 @@
       },
     });
 
-    terminal.attachCustomKeyEventHandler(function (e) {
-      // Bind Ctrl + C to copy if there is a selection.
-      if (e.ctrlKey && e.key == "c") {
-        if (terminal.hasSelection()) {
-          console.log("copying");
-          navigator.clipboard.writeText(terminal.getSelection());
-          return false;
-        }
-      }
-
-      // Bind Ctrl + V to paste for consistency with Ctrl + C. We don't actually
-      // need to do anything here because the browser will automatically paste
-      // the clipboard contents into the terminal.
-      if (e.ctrlKey && e.key == "v") {
-        return false;
-      }
-
-      return true;
-    });
-
-    const fitAddon = new FitAddon();
-    const onResize = () => fitAddon.fit();
-    terminal.loadAddon(fitAddon);
-
-    const imageAddon = new ImageAddon(imageAddonSettings);
-    terminal.loadAddon(imageAddon);
-
     terminal.open(terminalElement);
     terminal.write("Starting VM...\r\n");
-
-    onResize();
-    window.addEventListener("resize", onResize);
 
     const onTitleChange = terminal.onTitleChange((t) => {
       title = t;
@@ -84,9 +42,7 @@
 
     return () => {
       terminal.dispose();
-      fitAddon.dispose();
       onTitleChange.dispose();
-      window.removeEventListener("resize", onResize);
     };
   });
 </script>
