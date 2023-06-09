@@ -1,6 +1,7 @@
 import "./wasm_exec.js";
 import consoleBlob from "#/libdb.so/build/vm.wasm?url";
 import type * as xterm from "xterm";
+import type * as libterminal from "#/libdb.so/site/lib/terminal.js";
 
 declare global {
   function vm_write_stdin(data: string): void;
@@ -22,7 +23,7 @@ class TerminalProxy {
   private onDataDisposer: xterm.IDisposable;
   private onResizeDisposer: xterm.IDisposable;
 
-  constructor(public readonly terminal: xterm.Terminal) {
+  constructor(public readonly terminal: libterminal.Terminal) {
     const lineBuffer: number[] = [];
 
     globalThis.console_write = (fd: number, bytes: Uint8Array) => {
@@ -97,7 +98,10 @@ type FilesystemJSON = {
   tree: FileTree;
 };
 
-export async function start(terminal: xterm.Terminal, publicFSURL: string) {
+export async function start(
+  terminal: libterminal.Terminal,
+  publicFSURL: string
+) {
   if (running) return;
 
   // @ts-ignore
