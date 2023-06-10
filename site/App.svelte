@@ -8,6 +8,7 @@
 </script>
 
 <svelte:head>
+  <meta name="darkreader-lock" />
   <link rel="icon" href={favicon} />
 </svelte:head>
 
