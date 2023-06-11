@@ -58,7 +58,7 @@
   <header>
     <h3>{title} – xterm.js</h3>
   </header>
-  <div class="terminal" bind:this={terminalElement} />
+  <div class="terminal monospace" bind:this={terminalElement} />
 </div>
 
 <style>
