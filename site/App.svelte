@@ -27,6 +27,7 @@
   @import "normalize.css";
   @import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;500;600;700&display=swap");
   @import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap");
+  @import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;700;900&display=swap");
 
   body {
     font-family: "Lato", "Source Sans Pro", "Noto Sans", "Helvetica", "Segoe UI",
