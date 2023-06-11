@@ -18,7 +18,7 @@
     const libterminal = await import("#/libdb.so/site/lib/terminal.js");
 
     const terminal = new libterminal.Terminal({
-      fontFamily: "monospace",
+      fontFamily: "inherit",
       fontWeight: "500",
       fontWeightBold: "700",
       lineHeight: 1.1,
