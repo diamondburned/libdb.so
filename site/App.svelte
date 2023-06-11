@@ -12,6 +12,21 @@
   <link rel="icon" href={favicon} />
   <link rel="stylesheet" href="normalize.css" />
   <link
+    rel="preload"
+    as="style"
+    href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;500;600;700;900&display=swap"
+  />
+  <link
+    rel="preload"
+    as="style"
+    href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap"
+  />
+  <link
+    rel="preload"
+    as="style"
+    href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;700;900&display=swap"
+  />
+  <link
     rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;500;600;700;900&display=swap"
   />
