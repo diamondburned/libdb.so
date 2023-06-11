@@ -2,6 +2,10 @@ import * as xterm from "xterm";
 import { ImageAddon, IImageAddonOptions } from "xterm-addon-image";
 import { FitAddon } from "xterm-addon-fit";
 
+if (document?.fonts) {
+  await document.fonts.ready;
+}
+
 export type InitOptions = Omit<
   xterm.ITerminalOptions & xterm.ITerminalInitOnlyOptions,
   "linkHandler"
