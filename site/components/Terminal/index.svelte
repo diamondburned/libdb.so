@@ -105,6 +105,17 @@
     margin: auto;
   }
 
+  div.terminal :global(.xterm-underline-5) {
+    text-decoration: dotted underline !important;
+    text-decoration-thickness: 0.05em !important;
+  }
+
+  div.terminal
+    :global(.xterm-underline-5[style="text-decoration: underline;"]) {
+    text-decoration: underline !important;
+    text-decoration-thickness: 0.05em !important;
+  }
+
   @media (max-width: 500px) {
     header h3 {
       margin: 0.45rem;
