@@ -4,7 +4,7 @@
 
 Homepage for [libdb.so](https://libdb.so).
 
-![screenshot](.github/screenshot.png)
+![screenshot](.github/screenshot2.png)
 
 </div>
 
