@@ -6,8 +6,12 @@
   },
   "basics": {
     "email": "jobs@libdb.so",
-    "name": "'",
-    "website": "libdb.so"
+    "name": "",
+    "website": "libdb.so",
+    "phone": "",
+    "location": {
+      "address": "Fullerton, CA"
+    }
   },
   "education": [
     {
@@ -22,9 +26,9 @@
   "work": [
     {
       "highlights": [
-        "Implemented monitoring framework in Go for Kubernetes node registration.",
-        "Reduced on-call resolution time by automatically identifying common problems during registration.",
-        "Deployed across production GKE nodes for use by all GKE customers."
+        "Implement monitoring framework in Go for Kubernetes node registration.",
+        "Reduce on-call resolution time by automatically identifying common problems during registration.",
+        "Deploy across production GKE nodes for use by all GKE customers."
       ],
       "company": "Google",
       "position": "STEP Intern",
@@ -34,7 +38,8 @@
     },
     {
       "highlights": [
-        "TBD"
+        "Deployed Certificate Transparency Log monitors for Google Trust Services, Google Chrome, and other Google teams, ensuring up-to-date queryable transparency logs for millions of users.",
+        "Managed a database of billions of log entries, monitoring for new entries and ensuring timely detection of misissued certificates."
       ],
       "company": "Google",
       "position": "Software Enginner Intern",
