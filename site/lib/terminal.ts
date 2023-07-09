@@ -19,6 +19,7 @@ export class Terminal extends xterm.Terminal {
   linkHandlers: LinkHandlers = {
     https: (uri: string) => window.open(uri, "_blank"),
     http: (uri: string) => window.open(uri, "_blank"),
+    mailto: (uri: string) => window.open(uri, "_blank"),
     terminal: this.handleTerminalLink.bind(this),
   };
 
