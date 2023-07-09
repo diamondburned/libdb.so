@@ -125,6 +125,9 @@ func info() string {
 		spcolor("Blog", color.FgHiYellow, color.Bold),
 		ansi.Link("b.libdb.so", "https://b.libdb.so"),
 
+		spcolor("Email", color.FgHiMagenta, color.Bold),
+		ansi.Link("x@libdb.so", "mailto:x@libdb.so"),
+
 		spcolor("GitHub", color.FgHiCyan, color.Bold),
 		ansi.Link("diamondburned", "https://github.com/diamondburned"),
 
@@ -132,7 +135,7 @@ func info() string {
 		ansi.Link("@diamondburned:matrix.org", "https://matrix.to/#/@diamondburned:matrix.org"),
 
 		spcolor("Discord", color.FgHiBlue, color.Bold),
-		"diamondburned#4507",
+		"@diamondburned",
 
 		spcolor("Mastodon", color.FgHiGreen, color.Bold),
 		mastodonCode,
@@ -143,9 +146,6 @@ func info() string {
 		fmt.Sprintf("%s on %s/%s",
 			strings.Replace(runtime.Version(), "go", "v", 1),
 			runtime.GOOS, runtime.GOARCH),
-
-		spcolor("NumCPU", color.Reset, color.FgCyan),
-		cpuCount(),
 
 		spcolor("Source", color.Reset, color.FgCyan),
 		source,
