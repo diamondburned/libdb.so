@@ -21,6 +21,11 @@ func Enable() {
 	local.Set("nsfw-v1", true)
 }
 
+func Disable() {
+	local := js.Global().Get("localStorage")
+	local.Set("nsfw-v1", false)
+}
+
 func WrapFS(rofs fs.FS) fs.FS {
 	return nsfwFS{ro: rofs}
 }

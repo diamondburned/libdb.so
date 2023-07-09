@@ -35,6 +35,9 @@ func (prog) Run(ctx context.Context, env vm.Environment, args []string) error {
 		switch args[1] {
 		case "enable":
 			break
+		case "disable":
+			nsfw.Disable()
+			return nil
 		case "get":
 			env.Println(strconv.FormatBool(nsfw.IsEnabled()))
 			return nil
