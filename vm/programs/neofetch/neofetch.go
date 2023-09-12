@@ -93,10 +93,15 @@ func info() string {
 	var b strings.Builder
 	b.WriteByte('\n')
 
+	pronouns := "(she/they)"
+	if nsfw.IsEnabled() {
+		pronouns = "(she/they/it)"
+	}
+
 	fmt.Fprintln(&b,
 		transBand(false),
 		spcolor("diamondburned", color.FgHiMagenta, color.Bold),
-		spcolor("(she/they/it)", color.FgHiMagenta),
+		spcolor(pronouns, color.FgHiMagenta),
 		transBand(true),
 	)
 
