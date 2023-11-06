@@ -18,7 +18,6 @@ import (
 	"libdb.so/vm"
 	"libdb.so/vm/internal/ansi"
 	"libdb.so/vm/internal/cliprog"
-	"libdb.so/vm/internal/vmutil"
 	"libdb.so/vm/programs"
 )
 
@@ -151,7 +150,15 @@ func ls_(c *cli.Context, arg string, multiple bool) error {
 func printName(env vm.Environment, dirEntry fs.DirEntry) string {
 	name := dirEntry.Name()
 	if env.HasTerminal {
-		name = ansi.Link(name, vmutil.MakeTerminalWriteURI(name))
+		// TODO: skip either cd or cat if there is already input in the command
+		// prompt. This would require exposing *prompter in vm.Environment.
+		var link string
+		if dirEntry.IsDir() {
+			link = "cd " + name
+		} else {
+			link = "cat " + name
+		}
+		name = ansi.Link(name, link)
 		if dirEntry.IsDir() {
 			return color.New(color.FgBlue, color.Bold).Sprint(name)
 		}
