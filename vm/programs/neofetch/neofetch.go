@@ -116,8 +116,8 @@ func info() string {
 		mastodonCode += " (nsfw)"
 	} else {
 		mastodonCode = ansi.Link(
-			"@diamond@hachyderm.io",
-			"https://hachyderm.io/@diamond",
+			"@diamond@tech.lgbt",
+			"https://tech.lgbt/@diamond",
 		)
 	}
 
