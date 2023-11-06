@@ -71,7 +71,7 @@
   <nav id="navbar">
     <div class="left">
       <button class="start" on:click={() => alert("hii!!")}>
-        <img src="/favicon.ico" alt="diamondburned's eye" />
+        <img src={favicon} alt="diamondburned's eye" />
       </button>
       <div class="window-list">
         <button
