@@ -201,6 +201,7 @@
       border: none;
       background-color: transparent;
       font-weight: inherit;
+      font-family: inherit;
       color: white;
 
       display: flex;
