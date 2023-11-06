@@ -79,14 +79,14 @@
           on:click={() => switchView("portfolio")}
           disabled
         >
-          <img src="/papirus/system-users.svg" alt="diamondburned's eye" />
+          <img src="/_assets/papirus/system-users.svg" alt="Portfolio icon" />
           Portfolio
         </button>
         <button
           class:active={currentView == "terminal"}
           on:click={() => switchView("terminal")}
         >
-          <img src="/papirus/utilities-terminal.svg" alt="Terminal" />
+          <img src="/_assets/papirus/terminal.svg" alt="Terminal icon" />
           Terminal
         </button>
       </div>
