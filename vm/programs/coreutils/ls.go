@@ -18,6 +18,7 @@ import (
 	"libdb.so/vm"
 	"libdb.so/vm/internal/ansi"
 	"libdb.so/vm/internal/cliprog"
+	"libdb.so/vm/internal/vmutil"
 	"libdb.so/vm/programs"
 )
 
@@ -152,13 +153,13 @@ func printName(env vm.Environment, dirEntry fs.DirEntry) string {
 	if env.HasTerminal {
 		// TODO: skip either cd or cat if there is already input in the command
 		// prompt. This would require exposing *prompter in vm.Environment.
-		var link string
+		var cmd string
 		if dirEntry.IsDir() {
-			link = "cd " + name
+			cmd = "cd " + name
 		} else {
-			link = "cat " + name
+			cmd = "cat " + name
 		}
-		name = ansi.Link(name, link)
+		name = ansi.Link(name, vmutil.MakeTerminalWriteURI(cmd))
 		if dirEntry.IsDir() {
 			return color.New(color.FgBlue, color.Bold).Sprint(name)
 		}
