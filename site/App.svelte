@@ -171,9 +171,10 @@
 
     font-weight: 700;
     user-select: none;
+    color: white;
 
     .left {
-      width: 100%;
+      flex: 1;
     }
 
     .left,
