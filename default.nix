@@ -12,17 +12,20 @@ in
 		(./.),
 }:
 
-let stdenv = pkgs.stdenv;
+let
+	stdenv = pkgs.stdenv;
 in
 
-let ourPkgs = import sources.nixpkgs {
+let
+	ourPkgs = import sources.nixpkgs {
 		inherit (stdenv) system;
 		overlays = import ./nix/overlays.nix;
 	};
 in
 
 # use our nixpkgs for everything except stdenv
-let pkgs = ourPkgs;
+let
+	pkgs = ourPkgs;
 
 	version =
 		if src ? rev then
@@ -41,7 +44,7 @@ let pkgs = ourPkgs;
 		let module = pkgs.buildGoApplication {
 			inherit version src;
 			pname = "libdb.so-vm-wasm";
-			go = pkgs.go_1_20;
+			go = pkgs.go;
 			modules = ./gomod2nix.toml;
 			subPackages = [ "cmd/vm-wasm" ];
 
@@ -64,6 +67,7 @@ let pkgs = ourPkgs;
 
 	nodeModules = pkgs.npmlock2nix.v2.node_modules {
 		inherit src;
+		nodejs = pkgs.nodejs;
 		# mkDerivation hates us because we have a Makefile. We'll override
 		# installPhase to fix that.
 		installPhase = "mv node_modules $out/";
