@@ -128,13 +128,15 @@
     .content {
       width: 100%;
       height: 100%;
-      overflow: auto;
+      overflow: hidden;
 
       & > div {
-        transition: opacity 0.075s ease-in-out;
+        transition: all 0.2s cubic-bezier(0, 1.005, 0.165, 1);
+        transform: translateY(0) scale(1);
 
         &:not(.active) {
           opacity: 0;
+          transform: translateY(50vh) scale(0);
           pointer-events: none;
         }
       }
