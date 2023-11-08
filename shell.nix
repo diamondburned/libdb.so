@@ -1,4 +1,5 @@
-let sources = import ./nix/sources.nix;
+let
+	sources = import ./nix/sources.nix;
 	ourPkgs = import sources.nixpkgs {
 		overlays = import ./nix/overlays.nix;
 	};
@@ -16,7 +17,8 @@ let mkShell = pkgs.mkShell;
 in
 
 # prefer our Nixpkgs
-let pkgs = ourPkgs;
+let
+	pkgs = ourPkgs;
 	lib = pkgs.lib;
 
 	tinygo = pkgs.callPackage ./nix/packages/tinygo { };
