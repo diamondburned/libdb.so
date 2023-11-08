@@ -553,6 +553,9 @@
           },
         },
       };
+      // Workaround to support Go 1.21+.
+      // See https://github.com/golang/go/issues/38248.
+      this.importObject.gojs = this.importObject.go;
     }
 
     async run(instance) {
