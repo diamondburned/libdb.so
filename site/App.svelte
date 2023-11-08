@@ -3,22 +3,10 @@
   import * as vm from "#/libdb.so/site/lib/vm.js";
   import favicon from "#/libdb.so/public/favicon.ico?url";
   import type * as xterm from "xterm";
+  import { view, viewDesktop, switchView } from "#/libdb.so/site/lib/views.js";
 
   import Terminal from "#/libdb.so/site/components/Terminal/index.svelte";
   import Portfolio from "#/libdb.so/site/components/Portfolio/index.svelte";
-
-  type View = null | "terminal" | "portfolio";
-
-  let currentView: View = "terminal";
-  let lastView: View = null;
-  function switchView(view: View) {
-    currentView = currentView == view ? null : view;
-    lastView = null;
-  }
-  function viewDesktop() {
-    if (!lastView) lastView = currentView;
-    currentView = currentView == null ? lastView : null;
-  }
 
   let currentTime = "00:00";
   function updateTime() {
@@ -31,6 +19,11 @@
 
   const updateTimer = setInterval(() => updateTime(), 5000);
   svelte.onDestroy(() => clearInterval(updateTimer));
+
+  svelte.onMount(() => {
+    // Default view is Terminal.
+    switchView("terminal");
+  });
 </script>
 
 <svelte:head>
@@ -51,11 +44,11 @@
   />
 </svelte:head>
 
-<main>
+<div class="screen">
   <div class="backdrop" />
 
   <div class="content">
-    <div class="centered" class:active={currentView == "terminal"}>
+    <div class:active={$view == "terminal"}>
       <Terminal
         id="terminal"
         done={(terminal) => {
@@ -63,7 +56,7 @@
         }}
       />
     </div>
-    <div class:active={currentView == "portfolio"}>
+    <div class:active={$view == "portfolio"}>
       <Portfolio />
     </div>
   </div>
@@ -75,7 +68,7 @@
       </button>
       <div class="window-list">
         <button
-          class:active={currentView == "portfolio"}
+          class:active={$view == "portfolio"}
           on:click={() => switchView("portfolio")}
           disabled
         >
@@ -83,11 +76,11 @@
           Portfolio
         </button>
         <button
-          class:active={currentView == "terminal"}
+          class:active={$view == "terminal"}
           on:click={() => switchView("terminal")}
         >
           <img src="/_assets/papirus/terminal.svg" alt="Terminal icon" />
-          Terminal
+          xterm.js
         </button>
       </div>
     </div>
@@ -96,7 +89,7 @@
       <button class="view-desktop" on:click={() => viewDesktop()} />
     </div>
   </nav>
-</main>
+</div>
 
 <style global lang="scss">
   html,
@@ -113,7 +106,7 @@
     font-family: "Inconsolata", "Noto Mono", "Source Code Pro", monospace;
   }
 
-  main {
+  div.screen {
     width: 100vw;
     height: 100%;
 
@@ -125,12 +118,15 @@
     display: flex;
     flex-direction: column;
 
-    .content {
+    & > .content {
       width: 100%;
       height: 100%;
       overflow: hidden;
 
       & > div {
+        width: 100%;
+        height: 100%;
+
         transition: all 0.2s cubic-bezier(0, 1.005, 0.165, 1);
         transform: translateY(0) scale(1);
 
@@ -140,15 +136,6 @@
           pointer-events: none;
         }
       }
-    }
-
-    .centered {
-      width: 100%;
-      height: 100%;
-
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
     & > * {
@@ -270,17 +257,6 @@
       &:hover {
         background-color: var(--bg-hover);
       }
-    }
-  }
-
-  #terminal {
-    width: min(calc(100% - clamp(6px, 5vw, 3rem)), max(80vw, 1000px));
-    height: min(calc(100% - clamp(6px, 7vw, 5rem)), max(70vh, 800px));
-
-    @media (max-width: 500px) {
-      width: 100%;
-      height: 100%;
-      border-radius: 0;
     }
   }
 </style>

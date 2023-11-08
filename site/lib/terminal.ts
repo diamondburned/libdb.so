@@ -84,6 +84,11 @@ export class Terminal extends xterm.Terminal {
     }
   }
 
+  fit() {
+    this.fitAddon.fit();
+    console.log("fitting");
+  }
+
   dispose() {
     super.dispose();
     this.fitAddon.dispose();

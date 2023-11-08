@@ -1,5 +1,5 @@
 {
-  "black": "#272224",
+  "black": "#141414",
   "red": "#FF473D",
   "green": "#3DCCB2",
   "yellow": "#FF9600",
@@ -15,6 +15,6 @@
   "brightMagenta": "#F7A8B8",
   "brightCyan": "#55CDFC",
   "brightWhite": "#EEEEEC",
-  "background": "#1D1D1D",
-  "foreground": "#FFFFFF"
+  "background": "#0f0f0f",
+  "foreground": "#fcfcfc"
 }
