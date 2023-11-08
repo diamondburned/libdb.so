@@ -99,6 +99,11 @@
 </main>
 
 <style global lang="scss">
+  html,
+  body {
+    height: 100%;
+  }
+
   body {
     font-family: "Lato", "Source Sans Pro", "Noto Sans", "Helvetica", "Segoe UI",
       sans-serif;
@@ -110,7 +115,7 @@
 
   main {
     width: 100vw;
-    height: 100vh;
+    height: 100%;
 
     /* https://www.joshwcomeau.com/gradient-generator?colors=f690dc|4e98fa&angle=55&colorMode=hcl&precision=20&easingCurve=0.25|0.75|0.75|0.25 */
     background-color: dimgray;
@@ -184,13 +189,20 @@
     }
 
     .window-list {
+      --button-width: clamp(125px, 20%, 200px);
+
       width: 100%;
 
       display: grid;
-      grid-template-columns: repeat(auto-fit, clamp(100px, 20%, 200px));
+      grid-auto-flow: column;
+      grid-template-columns: repeat(auto-fit, var(--button-width));
       grid-template-rows: 1fr;
 
-      overflow-x: auto;
+      overflow: auto;
+
+      button {
+        min-width: var(--button-width);
+      }
     }
 
     button {
@@ -202,6 +214,7 @@
       background-color: transparent;
       font-weight: inherit;
       font-family: inherit;
+      font-size: 0.9em;
       color: white;
 
       display: flex;
