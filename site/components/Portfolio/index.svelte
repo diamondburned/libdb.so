@@ -341,6 +341,7 @@
         grid-template-rows: 1fr;
         grid-template-columns: auto 1fr auto;
         grid-gap: 0.5em;
+        align-items: baseline;
 
         .name {
           grid-area: name;
