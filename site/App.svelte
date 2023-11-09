@@ -20,28 +20,21 @@
   const updateTimer = setInterval(() => updateTime(), 5000);
   svelte.onDestroy(() => clearInterval(updateTimer));
 
-  svelte.onMount(() => {
-    // Default view is Terminal.
-    switchView("terminal");
-  });
+  const fonts = ["Inconsolata", "Lato", "Nunito", "Source Code Pro"];
 </script>
 
 <svelte:head>
   <meta name="darkreader-lock" />
   <link rel="icon" href={favicon} />
   <link rel="stylesheet" href="normalize.css" />
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;500;600;700;900&display=swap"
-  />
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap"
-  />
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;700;900&display=swap"
-  />
+  {#each fonts as font}
+    <link
+      rel="stylesheet"
+      href={"https://fonts.googleapis.com/css2?family=" +
+        font.replaceAll(" ", "+") +
+        ":wght@400;500;600;700;900&display=swap"}
+    />
+  {/each}
 </svelte:head>
 
 <div class="screen">
@@ -70,10 +63,9 @@
         <button
           class:active={$view == "portfolio"}
           on:click={() => switchView("portfolio")}
-          disabled
         >
           <img src="/_assets/papirus/system-users.svg" alt="Portfolio icon" />
-          Portfolio
+          About
         </button>
         <button
           class:active={$view == "terminal"}
@@ -92,6 +84,14 @@
 </div>
 
 <style global lang="scss">
+  :root {
+    --blue: rgba(85, 205, 252, 1);
+    --pink: rgba(247, 168, 184, 1);
+
+    --blue-rgb: 85, 205, 252;
+    --pink-rgb: 247, 168, 184;
+  }
+
   html,
   body {
     height: 100%;
@@ -122,18 +122,68 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
+      position: relative;
 
       & > div {
         width: 100%;
         height: 100%;
+        position: absolute;
 
-        transition: all 0.2s cubic-bezier(0, 1.005, 0.165, 1);
-        transform: translateY(0) scale(1);
+        --ease-function: cubic-bezier(0, 1.005, 0.165, 1);
+        --ease-duration: 0.2s;
+
+        @keyframes minimize-animation {
+          /*
+		   * Do a silly little hack here. When the window is minimized, its
+		   * scale is 0, which causes xterm.js to get the completely wrong
+		   * size.
+		   *
+		   * To get around this, we'll scale to 0.0001 at the 99% mark, and
+		   * then instantly set opacity to 0 so that we can scale it back to 1
+		   * at the end.
+		   */
+          0% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+          98% {
+            opacity: 1;
+          }
+          99% {
+            opacity: 0;
+            transform: translateY(50vh) scale(0.0001);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(50vh) scale(1);
+          }
+        }
 
         &:not(.active) {
           opacity: 0;
-          transform: translateY(50vh) scale(0);
+          animation: minimize-animation var(--ease-duration)
+            var(--ease-function);
           pointer-events: none;
+        }
+
+        @keyframes unminimize-animation {
+          0% {
+            opacity: 0;
+            transform: translateY(50vh) scale(0);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        &.active {
+          animation: unminimize-animation var(--ease-duration)
+            var(--ease-function);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          --ease-duration: 0s;
         }
       }
     }

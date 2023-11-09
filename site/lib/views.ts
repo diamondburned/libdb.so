@@ -2,7 +2,16 @@ import * as store from "svelte/store";
 
 type View = null | "terminal" | "portfolio";
 
-const currentView = store.writable<View>(null);
+export const defaultView: View = "terminal";
+
+const currentView = store.writable<View>(
+  (JSON.parse(localStorage.getItem("current_view") ?? "null") as View) ||
+    defaultView
+);
+currentView.subscribe((currentView) => {
+  localStorage.setItem("current_view", JSON.stringify(currentView));
+});
+
 const lastView = store.writable<View>(null);
 
 // switchView switches to the given view, or minimizes the current view if it

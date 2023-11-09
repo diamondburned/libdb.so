@@ -6,6 +6,10 @@
 
   export let id = "";
   export let maximized = false;
+  export let scrollable = false; // allows content scrolling up and down
+
+  export let maxWidth = "max(80vw, 1000px)";
+  export let maxHeight = "max(80vh, 600px)";
 
   // minimize sets the minimize callback. If null, then the minimize button is
   // hidden. If undefined, then the minimize button minimizes the window.
@@ -32,7 +36,15 @@
 </script>
 
 <div class="window-container" class:maximized>
-  <main class="window" class:maximized {id}>
+  <main
+    class="window"
+    class:maximized
+    {id}
+    style="
+	  --max-width: {maxWidth};
+	  --max-height: {maxHeight};
+	"
+  >
     <header class="titlebar">
       <div class="title">
         <slot name="title" />
@@ -54,7 +66,7 @@
         {/if}
       </div>
     </header>
-    <div class="content">
+    <div class="content" class:scrollable>
       <slot />
     </div>
   </main>
@@ -85,8 +97,11 @@
     outline: 1px solid var(--window-border-color);
     outline-offset: -1px;
 
-    width: min(calc(100% - clamp(6px, 5vw, 3rem)), max(80vw, 1000px));
-    height: min(calc(100% - clamp(6px, 7vw, 5rem)), max(70vh, 800px));
+    width: min(calc(100% - clamp(6px, 5vw, 3rem)), var(--max-width));
+    height: min(calc(100% - clamp(6px, 7vw, 5rem)), var(--max-height));
+
+    color: #fcfcfc;
+    background-color: #0f0f0f;
 
     @mixin maximize {
       border-radius: 0;
@@ -106,6 +121,11 @@
     .content {
       flex: 1;
       overflow: hidden;
+
+      &.scrollable {
+        overflow-y: auto;
+        height: 100%;
+      }
     }
 
     header.titlebar {
@@ -169,13 +189,13 @@
 
           &.minimize {
             :global(svg *) {
-              fill: rgba(85, 205, 252, 1);
+              fill: var(--blue);
             }
           }
 
           &.maximize {
             :global(svg *) {
-              fill: rgba(247, 168, 184, 1);
+              fill: var(--pink);
             }
             @media (max-width: 500px) {
               /* Always maximize on mobile */
