@@ -70,7 +70,6 @@
         <button
           class:active={$view == "portfolio"}
           on:click={() => switchView("portfolio")}
-          disabled
         >
           <img src="/_assets/papirus/system-users.svg" alt="Portfolio icon" />
           Portfolio
@@ -122,10 +121,12 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
+      position: relative;
 
       & > div {
         width: 100%;
         height: 100%;
+        position: absolute;
 
         transition: all 0.2s cubic-bezier(0, 1.005, 0.165, 1);
         transform: translateY(0) scale(1);

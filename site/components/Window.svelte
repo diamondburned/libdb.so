@@ -88,6 +88,9 @@
     width: min(calc(100% - clamp(6px, 5vw, 3rem)), max(80vw, 1000px));
     height: min(calc(100% - clamp(6px, 7vw, 5rem)), max(70vh, 800px));
 
+    color: #fcfcfc;
+    background-color: #0f0f0f;
+
     @mixin maximize {
       border-radius: 0;
       width: 100%;
