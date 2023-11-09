@@ -27,13 +27,10 @@
 
     <section class="about">
       <div class="intro">
-        <img
-          src="https://avatars.githubusercontent.com/u/8463786?v=4"
-          alt="Diamond"
-        />
+        <img src="/_assets/avatar.webp" alt="Diamond" />
         <div>
           <span>Hi, I'm</span>
-          <h1>Diamond</h1>
+          <h1>Diamond!</h1>
         </div>
       </div>
       <p>
