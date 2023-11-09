@@ -9,7 +9,6 @@
 
   let terminalElement: HTMLElement;
 
-  export let id: string;
   export let done: (_: xterm.Terminal) => void;
   export let colors: Record<string, string> = {};
 
@@ -54,7 +53,7 @@
   });
 </script>
 
-<Window {id}>
+<Window view="terminal">
   <h3 slot="title">{title ? `${title} – xterm.js` : "xterm.js"}</h3>
   <div
     class="terminal-box monospace"

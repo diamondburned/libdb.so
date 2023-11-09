@@ -13,7 +13,7 @@
 </script>
 
 <Window
-  id="portfolio"
+  view="portfolio"
   maxWidth="max(50vw, 600px)"
   maxHeight="max(90vh, 1000px)"
   scrollable

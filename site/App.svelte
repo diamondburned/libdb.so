@@ -3,7 +3,12 @@
   import * as vm from "#/libdb.so/site/lib/vm.js";
   import favicon from "#/libdb.so/public/favicon.ico?url";
   import type * as xterm from "xterm";
-  import { view, viewDesktop, switchView } from "#/libdb.so/site/lib/views.js";
+  import {
+    activeViews,
+    toggleView,
+    focusedView,
+    toggleShowDesktop,
+  } from "#/libdb.so/site/lib/views.js";
 
   import Terminal from "#/libdb.so/site/components/Terminal/index.svelte";
   import Portfolio from "#/libdb.so/site/components/Portfolio/index.svelte";
@@ -41,17 +46,12 @@
   <div class="backdrop" />
 
   <div class="content">
-    <div class:active={$view == "terminal"}>
-      <Terminal
-        id="terminal"
-        done={(terminal) => {
-          vm.start(terminal, "/_fs.json").catch((err) => console.error(err));
-        }}
-      />
-    </div>
-    <div class:active={$view == "portfolio"}>
-      <Portfolio />
-    </div>
+    <Terminal
+      done={(terminal) => {
+        vm.start(terminal, "/_fs.json").catch((err) => console.error(err));
+      }}
+    />
+    <Portfolio />
   </div>
 
   <nav id="navbar">
@@ -61,15 +61,15 @@
       </button>
       <div class="window-list">
         <button
-          class:active={$view == "portfolio"}
-          on:click={() => switchView("portfolio")}
+          class:active={$focusedView == "portfolio"}
+          on:click={() => toggleView("portfolio")}
         >
           <img src="/_assets/papirus/system-users.svg" alt="Portfolio icon" />
           About
         </button>
         <button
-          class:active={$view == "terminal"}
-          on:click={() => switchView("terminal")}
+          class:active={$focusedView == "terminal"}
+          on:click={() => toggleView("terminal")}
         >
           <img src="/_assets/papirus/terminal.svg" alt="Terminal icon" />
           xterm.js
@@ -78,7 +78,7 @@
     </div>
     <div class="right">
       <span class="clock">{currentTime}</span>
-      <button class="view-desktop" on:click={() => viewDesktop()} />
+      <button class="view-desktop" on:click={() => toggleShowDesktop()} />
     </div>
   </nav>
 </div>
@@ -123,69 +123,6 @@
       height: 100%;
       overflow: hidden;
       position: relative;
-
-      & > div {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-
-        --ease-function: cubic-bezier(0, 1.005, 0.165, 1);
-        --ease-duration: 0.2s;
-
-        @keyframes minimize-animation {
-          /*
-		   * Do a silly little hack here. When the window is minimized, its
-		   * scale is 0, which causes xterm.js to get the completely wrong
-		   * size.
-		   *
-		   * To get around this, we'll scale to 0.0001 at the 99% mark, and
-		   * then instantly set opacity to 0 so that we can scale it back to 1
-		   * at the end.
-		   */
-          0% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-          98% {
-            opacity: 1;
-          }
-          99% {
-            opacity: 0;
-            transform: translateY(50vh) scale(0.0001);
-          }
-          100% {
-            opacity: 0;
-            transform: translateY(50vh) scale(1);
-          }
-        }
-
-        &:not(.active) {
-          opacity: 0;
-          animation: minimize-animation var(--ease-duration)
-            var(--ease-function);
-          pointer-events: none;
-        }
-
-        @keyframes unminimize-animation {
-          0% {
-            opacity: 0;
-            transform: translateY(50vh) scale(0);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-
-        &.active {
-          animation: unminimize-animation var(--ease-duration)
-            var(--ease-function);
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          --ease-duration: 0s;
-        }
-      }
     }
 
     & > * {
@@ -301,7 +238,8 @@
     }
 
     .view-desktop {
-      width: 0.35em;
+      padding: 0;
+      padding-left: 0.5em;
       border-left: 1px solid rgba(255, 255, 255, 0.25);
 
       &:hover {
