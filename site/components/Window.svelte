@@ -45,7 +45,7 @@
 	  --max-height: {maxHeight};
 	"
   >
-    <header class="titlebar">
+    <header class="titlebar" on:dblclick={() => onMaximize()}>
       <div class="title">
         <slot name="title" />
       </div>
@@ -138,6 +138,8 @@
       display: flex;
       flex-direction: row;
       justify-content: space-between;
+
+      user-select: none;
 
       :global(h1),
       :global(h2),
