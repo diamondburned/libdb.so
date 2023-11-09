@@ -1,6 +1,6 @@
 <script lang="ts">
   import Window from "#/libdb.so/site/components/Window.svelte";
-  import FolderDocuments from "#/libdb.so/site/components/Papirus/folder-documents.svelte";
+  import OpenInNew from "#/libdb.so/site/components/MaterialIcons/open_in_new.svelte";
 
   const resumeURL =
     "https://raw.githubusercontent.com/diamondburned/resume/main/resume.json";
@@ -62,13 +62,17 @@
 
     <section class="resume">
       <h2>Resume</h2>
-      <p>
-        <a href="https://github.com/diamondburned/resume/blob/main/resume.pdf">
-          <FolderDocuments />
+      <div>
+        <a
+          role="button"
+          href="https://github.com/diamondburned/resume/blob/main/resume.pdf"
+          target="_blank"
+        >
+          <OpenInNew />
           <span class="filename">resume.pdf</span>
+          <span class="source">(github.com)</span>
         </a>
-        for quick access to my resume!
-      </p>
+      </div>
     </section>
 
     {#await resume}
@@ -100,6 +104,7 @@
           {/each}
         </ol>
       </section>
+
       <section class="projects">
         <h2>Projects</h2>
         <ul class="projects-list">
@@ -188,7 +193,7 @@
         line-height: 1.25;
       }
 
-      p {
+      & > * {
         margin: 1em 0;
       }
 
@@ -214,6 +219,7 @@
         image-rendering: pixelated;
         width: 100%;
         height: 100%;
+        margin: 0;
         object-fit: cover;
         border-radius: 10px;
       }
@@ -269,19 +275,36 @@
     }
 
     section.resume {
-      a {
+      & > div {
+        display: flex;
+        flex-direction: row;
+      }
+
+      a[role="button"] {
         text-decoration: none;
-        margin-right: 0.15em;
 
-        &:hover .filename {
-          text-decoration: underline;
-        }
+        width: 100%;
+        padding: 0.5em;
+        border-radius: 5px;
+        align-self: center;
 
-        :global(svg) {
-          width: 1.25em;
-          height: 1.25em;
-          vertical-align: sub;
+        background-color: rgba(var(--blue-rgb), 0.1);
+        transition: background-color 0.1s ease-in-out;
+
+        &:hover {
+          background-color: rgba(var(--blue-rgb), 0.2);
         }
+      }
+
+      .source {
+        display: inline;
+        font-size: 0.8em;
+        vertical-align: baseline;
+        opacity: 0.65;
+      }
+
+      :global(svg) {
+        vertical-align: top;
       }
     }
 
