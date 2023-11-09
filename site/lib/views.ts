@@ -2,20 +2,19 @@ import * as store from "svelte/store";
 
 export type View = "terminal" | "portfolio";
 
-export const activeViews = store.writable<Record<View, boolean>>();
+export const activeViews = store.writable<Record<View, boolean>>({
+  portfolio: true,
+  terminal: false,
+});
 export const focusedView = store.writable<View | null>("portfolio");
 
 // Load from local storage.
 const localStorageActiveViews = localStorage.getItem("active_views");
-activeViews.set(
-  localStorageActiveViews
-    ? (JSON.parse(localStorageActiveViews) as Record<View, boolean>)
-    : { portfolio: true, terminal: false }
-);
 const localStorageTopView = localStorage.getItem("top_view");
-focusedView.set(
-  localStorageTopView ? (JSON.parse(localStorageTopView) as View | null) : null
-);
+if (localStorageActiveViews && localStorageTopView) {
+  activeViews.set(JSON.parse(localStorageActiveViews) as Record<View, boolean>);
+  focusedView.set(JSON.parse(localStorageTopView) as View | null);
+}
 
 // Bind to local storage.
 activeViews.subscribe((activeViews) => {
