@@ -1,8 +1,13 @@
 {
   "base": "_fs",
   "tree": {
+    "Pictures/": {
+      "background.jpg": {
+        "size": 9309
+      }
+    },
     "girl": {
-      "size": 4
+      "size": 5
     }
   }
 }
