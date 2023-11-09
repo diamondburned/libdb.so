@@ -20,28 +20,21 @@
   const updateTimer = setInterval(() => updateTime(), 5000);
   svelte.onDestroy(() => clearInterval(updateTimer));
 
-  svelte.onMount(() => {
-    // Default view is Terminal.
-    switchView("terminal");
-  });
+  const fonts = ["Inconsolata", "Lato", "Nunito", "Source Code Pro"];
 </script>
 
 <svelte:head>
   <meta name="darkreader-lock" />
   <link rel="icon" href={favicon} />
   <link rel="stylesheet" href="normalize.css" />
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;500;600;700;900&display=swap"
-  />
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap"
-  />
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;700;900&display=swap"
-  />
+  {#each fonts as font}
+    <link
+      rel="stylesheet"
+      href={"https://fonts.googleapis.com/css2?family=" +
+        font.replaceAll(" ", "+") +
+        ":wght@400;500;600;700;900&display=swap"}
+    />
+  {/each}
 </svelte:head>
 
 <div class="screen">
