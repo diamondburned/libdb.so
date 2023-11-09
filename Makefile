@@ -18,6 +18,9 @@ clean:
 
 # real
 
+node_modules: package-lock.json package.json
+	npm install
+
 public/_fs.json: $(PUBLIC) ./scripts/jsonfs
 	cd public && if [[ -d _fs ]]; then bash ../scripts/jsonfs _fs > _fs.json; fi
 
