@@ -12,10 +12,15 @@
   import WindowMinimize from "#/libdb.so/site/components/Papirus/window-minimize.svelte";
   import WindowMaximize from "#/libdb.so/site/components/Papirus/window-maximize.svelte";
   import WindowRestore from "#/libdb.so/site/components/Papirus/window-restore.svelte";
+  import WindowControl from "#/libdb.so/site/components/WindowControl.svelte";
 
   export let view: View;
   export let maximized = false;
   export let scrollable = false; // allows content scrolling up and down
+
+  export let windowClass = "";
+  export let headerClass = "";
+  export let contentClass = "";
 
   export let maxWidth = "max(80vw, 1000px)";
   export let maxHeight = "max(80vh, 600px)";
@@ -147,7 +152,7 @@
 
 <div
   bind:this={windowContainer}
-  class="window-container"
+  class="window-container {windowClass}"
   class:maximized
   class:focused={$focused}
   class:active={$active}
@@ -166,7 +171,7 @@
     "
   >
     <header
-      class="titlebar"
+      class="titlebar {headerClass}"
       on:dblclick={onMaximize}
       on:mousedown={(ev) => dragBegin(ev)}
     >
@@ -175,23 +180,28 @@
       </div>
       <div class="controls">
         {#if minimize !== null}
-          <button class="minimize" on:click={onMinimize}>
+          <WindowControl class="minimize" clicked={onMinimize}>
             <WindowMinimize />
-          </button>
+          </WindowControl>
         {/if}
         {#if maximize !== null}
-          <button class="maximize" on:click={onMaximize}>
+          <WindowControl class="maximize" clicked={onMaximize}>
             {#if maximized}
               <WindowRestore />
             {:else}
               <WindowMaximize />
             {/if}
-          </button>
+          </WindowControl>
         {/if}
       </div>
     </header>
-    <div class="content" class:scrollable>
-      <slot />
+    <div class="content-wrapper">
+      <div class="overlays">
+        <slot name="overlay" />
+      </div>
+      <div class="content {contentClass}" class:scrollable>
+        <slot />
+      </div>
     </div>
   </main>
 </div>
@@ -313,8 +323,30 @@
       @include maximize;
     }
 
-    .content {
+    .content-wrapper {
       flex: 1;
+      overflow: hidden;
+
+      /* Hack to make position: fixed work.
+       * See https://stackoverflow.com/a/38796408/5041327. */
+      transform: translateZ(0);
+    }
+
+    .overlays {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+
+      & > :global(*) {
+        pointer-events: auto;
+      }
+    }
+
+    .content {
+      height: 100%;
       overflow: hidden;
 
       &.scrollable {
@@ -326,7 +358,7 @@
     header.titlebar {
       color: white;
       background-color: #030303;
-      border-bottom: 1px solid var(--window-border-color);
+      box-shadow: 0 -4px 6px 6px rgba(0, 0, 0, 0.47);
 
       text-align: center;
 
@@ -361,44 +393,6 @@
         margin: 0 0.65rem;
         @media (max-width: 500px) {
           margin: 0 0.45rem;
-        }
-
-        button {
-          color: white;
-          border: none;
-          border-radius: 99px;
-          width: 1.5rem;
-          height: 1.5rem;
-          font-size: 0.75rem;
-          font-weight: 900;
-          line-height: 0;
-          background-color: rgba(255, 255, 255, 0.1);
-          transition: all 0.1s ease-in-out;
-          padding: 0;
-
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-          &:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-          }
-
-          &.minimize {
-            :global(svg *) {
-              fill: var(--blue);
-            }
-          }
-
-          &.maximize {
-            :global(svg *) {
-              fill: var(--pink);
-            }
-            @media (max-width: 500px) {
-              /* Always maximize on mobile */
-              display: none;
-            }
-          }
         }
       }
     }
