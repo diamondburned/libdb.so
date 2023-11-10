@@ -2,6 +2,7 @@
   import * as svelte from "svelte";
   import * as vm from "#/libdb.so/site/lib/vm.js";
   import favicon from "#/libdb.so/public/favicon.ico?url";
+  import normalizeCSS from "normalize.css/normalize.css?url";
   import type * as xterm from "xterm";
   import {
     activeViews,
@@ -30,9 +31,7 @@
 
 <svelte:head>
   <link rel="icon" href={favicon} />
-  <link rel="stylesheet" href="normalize.css" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin />
+  <link rel="stylesheet" href={normalizeCSS} />
   {#each fonts as font}
     <link
       rel="stylesheet"
