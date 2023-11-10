@@ -29,9 +29,10 @@
 </script>
 
 <svelte:head>
-  <meta name="darkreader-lock" />
   <link rel="icon" href={favicon} />
   <link rel="stylesheet" href="normalize.css" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin />
   {#each fonts as font}
     <link
       rel="stylesheet"
@@ -40,6 +41,8 @@
         ":wght@400;500;600;700;900&display=swap"}
     />
   {/each}
+  <meta name="description" content="Hi, I'm Diamond!" />
+  <meta name="author" content="diamondburned" />
 </svelte:head>
 
 <div class="screen">
