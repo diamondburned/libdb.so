@@ -267,7 +267,7 @@
   }
 
   .portfolio-content {
-    padding-top: 1em;
+    padding: 1em 0;
     margin: 0 auto;
 
     width: 100%;
