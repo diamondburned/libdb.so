@@ -1,6 +1,23 @@
 <script lang="ts">
+  import * as store from "svelte/store";
+  import { fly } from "svelte/transition";
+  import { ToastStore } from "#/libdb.so/site/lib/toasts.js";
+
+  import Toasts from "#/libdb.so/site/components/Toasts.svelte";
   import Window from "#/libdb.so/site/components/Window.svelte";
   import OpenInNew from "#/libdb.so/site/components/MaterialIcons/open_in_new.svelte";
+  import WindowClose from "#/libdb.so/site/components/Papirus/window-close.svelte";
+  import WindowControl from "#/libdb.so/site/components/WindowControl.svelte";
+
+  import GitHubIcon from "super-tiny-icons/images/svg/github.svg";
+  import GitLabIcon from "super-tiny-icons/images/svg/gitlab.svg";
+  import MastodonIcon from "super-tiny-icons/images/svg/mastodon.svg";
+  import DiscordIcon from "super-tiny-icons/images/svg/discord.svg";
+  import MatrixIcon from "super-tiny-icons/images/svg/matrix.svg";
+  import LinkedInIcon from "super-tiny-icons/images/svg/linkedin.svg";
+  import EmailIcon from "super-tiny-icons/images/svg/email.svg";
+
+  const toasts = new ToastStore();
 
   const resumeURL =
     "https://raw.githubusercontent.com/diamondburned/resume/main/resume.json";
@@ -10,6 +27,79 @@
       console.error("Failed to fetch resume:", err);
       throw err;
     });
+
+  type Link = {
+    url?: string; // copy name to clipboard if not present
+    name: string;
+    value: string;
+    iconURL: string;
+    colorRGB: string; // RGB triplet
+  };
+
+  function hexToTriplet(hex: string): string {
+    hex = hex.slice(1);
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    return `${r}, ${g}, ${b}`;
+  }
+
+  const links: Link[] = [
+    {
+      url: "https://blog.libdb.so",
+      name: "Blog",
+      value: "blog.libdb.so",
+      colorRGB: "var(--pink-rgb)",
+    },
+    {
+      url: "https://github.com/diamondburned",
+      name: "GitHub",
+      value: "@diamondburned",
+      iconURL: GitHubIcon,
+      colorRGB: hexToTriplet("#773ec6"),
+    },
+    {
+      url: "https://gitlab.com/diamondburned",
+      name: "GitLab",
+      value: "@diamondburned",
+      iconURL: GitLabIcon,
+      colorRGB: hexToTriplet("#fca326"),
+    },
+    {
+      url: "https://tech.lgbt/@diamond",
+      name: "Mastodon",
+      value: "@diamond@tech.lgbt",
+      iconURL: MastodonIcon,
+      colorRGB: hexToTriplet("#2a9d8f"),
+    },
+    {
+      name: "Discord",
+      value: "@diamondburned",
+      iconURL: DiscordIcon,
+      colorRGB: hexToTriplet("#7289da"),
+    },
+    {
+      url: "https://matrix.to/#/@diamondburned:matrix.org",
+      name: "Matrix",
+      value: "@diamondburned:matrix.org",
+      iconURL: MatrixIcon,
+      colorRGB: hexToTriplet("#ffffff"),
+    },
+    {
+      url: "https://www.linkedin.com/in/diamondnotburned",
+      name: "LinkedIn",
+      value: "Diamond Dinh",
+      iconURL: LinkedInIcon,
+      colorRGB: hexToTriplet("#0077b5"),
+    },
+    {
+      url: "mailto:diamond@libdb.so",
+      name: "Email",
+      value: "diamond@libdb.so",
+      iconURL: EmailIcon,
+      colorRGB: "var(--blue-rgb)",
+    },
+  ];
 </script>
 
 <Window
@@ -19,6 +109,12 @@
   scrollable
 >
   <h3 slot="title">About</h3>
+
+  <div slot="overlay">
+    <div class="toasts">
+      <Toasts {toasts} toastClass="portfolio-toast" />
+    </div>
+  </div>
 
   <div class="portfolio-content">
     <section class="banner">
@@ -54,7 +150,33 @@
 
     <section class="links">
       <h2>Links</h2>
-      <p>For quick access, here are my <b>links</b>!</p>
+      <div class="links-list" role="list">
+        {#each links as link}
+          <a
+            style={`--color: ${link.colorRGB};`}
+            role="button"
+            href={link.url}
+            target="_blank"
+            on:click={(ev) => {
+              if (!link.url) {
+                ev.preventDefault();
+                navigator.clipboard.writeText(link.value);
+                toasts.add({ text: `Copied to clipboard!` }, 5000);
+              }
+            }}
+          >
+            <span class="icon">
+              {#if link.iconURL}
+                <img src={link.iconURL} alt={link.name} />
+              {:else}
+                <OpenInNew />
+              {/if}
+            </span>
+            <span class="name">{link.name}</span>
+            <span class="value">{link.value}</span>
+          </a>
+        {/each}
+      </div>
     </section>
 
     <section class="resume">
@@ -140,17 +262,23 @@
 </Window>
 
 <style lang="scss">
+  .toasts {
+    margin: 1.5em 0;
+  }
+
   .portfolio-content {
-    padding: 1em 0;
+    padding-top: 1em;
     margin: 0 auto;
 
     width: 100%;
     max-width: clamp(400px, 80vw, 550px);
     line-height: 1.5;
 
+    position: relative;
+
     display: flex;
-    flex-direction: column;
     gap: 1em;
+    flex-direction: column;
 
     @media (max-width: 400px) {
       gap: 0.5em;
@@ -200,6 +328,20 @@
 
         &:hover {
           text-decoration: underline;
+        }
+      }
+
+      a[role="button"] {
+        --color: 255 255 255;
+
+        text-decoration: none;
+        padding: 0.5em;
+        border-radius: 5px;
+        transition: all 0.1s ease-in-out;
+
+        background-color: rgba(var(--color), 0.1);
+        &:hover {
+          background-color: rgba(var(--color), 0.2);
         }
       }
 
@@ -271,6 +413,60 @@
       background-color: rgba(var(--pink-rgb), 0.1);
     }
 
+    section.links {
+      .links-list {
+        list-style: none;
+        padding: 0;
+
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto auto 1fr auto;
+        grid-gap: 0.5em;
+      }
+
+      a[role="button"] {
+        width: 100%;
+        cursor: pointer;
+        box-sizing: border-box;
+
+        display: grid;
+        grid-gap: 0.5em;
+        grid-column: span 3;
+        grid-template-columns: subgrid;
+        /* grid-template-columns: auto auto 1fr auto; */
+      }
+
+      .icon {
+        user-select: none;
+      }
+
+      .name {
+        font-weight: bold;
+        margin-right: 0.5em;
+      }
+
+      :global(img),
+      :global(svg) {
+        width: 1.5em;
+        height: 1.5em;
+        vertical-align: bottom;
+      }
+
+      :global(img) {
+        border-radius: 40px;
+      }
+
+      @media (max-width: 400px) {
+        .links-list {
+          grid-template-columns: auto 1fr;
+        }
+
+        .name {
+          display: none;
+        }
+      }
+    }
+
     section.resume {
       & > div {
         display: flex;
@@ -278,19 +474,9 @@
       }
 
       a[role="button"] {
-        text-decoration: none;
-
+        --color: var(--blue-rgb);
         width: 100%;
-        padding: 0.5em;
-        border-radius: 5px;
         align-self: center;
-
-        background-color: rgba(var(--blue-rgb), 0.1);
-        transition: background-color 0.1s ease-in-out;
-
-        &:hover {
-          background-color: rgba(var(--blue-rgb), 0.2);
-        }
       }
 
       .source {
