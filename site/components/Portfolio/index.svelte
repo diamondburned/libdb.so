@@ -420,7 +420,7 @@
 
         width: 100%;
         display: grid;
-        grid-template-columns: auto auto 1fr auto;
+        grid-template-columns: auto auto 1fr;
         grid-gap: 0.5em;
       }
 
