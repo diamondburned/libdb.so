@@ -302,19 +302,19 @@
       box-shadow: 0 2px 16px -6px rgba(0, 0, 0, 0.52);
       box-sizing: border-box;
 
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
+      :global(h1),
+      :global(h2),
+      :global(h3),
+      :global(h4),
+      :global(h5),
+      :global(h6) {
         margin: 1rem 0;
         font-family: "Nunito";
       }
 
-      h1,
-      h2,
-      h3 {
+      :global(h1),
+      :global(h2),
+      :global(h3) {
         line-height: 1.25;
       }
 
