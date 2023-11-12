@@ -8,9 +8,11 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.0.2",
+    "@material-design-icons/svg": "^0.14.13",
     "@tsconfig/svelte": "^3.0.0",
     "env": "^0.0.2",
     "normalize.css": "^8.0.1",
+    "libwebring": "github:diamondburned/libwebring#nightly",
     "prettier": "^2.8.4",
     "prettier-plugin-svelte": "^2.8.1",
     "sass": "^1.69.5",
@@ -33,7 +35,5 @@
   "imports": {
     "#/libdb.so/*": "./*"
   },
-  "dependencies": {
-    "libwebring": "github:diamondburned/libwebring#nightly"
-  }
+  "dependencies": {}
 }
