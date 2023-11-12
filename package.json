@@ -32,5 +32,8 @@
   },
   "imports": {
     "#/libdb.so/*": "./*"
+  },
+  "dependencies": {
+    "libwebring": "github:diamondburned/libwebring#nightly"
   }
 }
