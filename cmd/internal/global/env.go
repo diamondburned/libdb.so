@@ -19,12 +19,22 @@ import (
 	_ "libdb.so/vm/programs/spew"
 	_ "libdb.so/vm/programs/termio"
 	_ "libdb.so/vm/programs/webring"
+	"libdb.so/vm/rwfs"
+	"libdb.so/vm/rwfs/kvfs"
 )
 
 const InitialCwd = "/"
 
 //go:embed shellrc
-var RC string
+var shellrc []byte
+
+// RootFS is the filesystem that contains default read-only files, such as the
+// shellrc file.
+var RootFS = rwfs.ReadOnlyFS(kvfs.New(kvfs.MemoryStorageFromExisting(
+	map[string]kvfs.StoredValue{
+		"/.shellrc": kvfs.StoredFile{Data: shellrc},
+	},
+)))
 
 var InitialEnv = vm.EnvironFromMap(map[string]string{
 	"TERM":  "xterm-256color",
