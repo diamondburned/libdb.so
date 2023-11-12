@@ -5,25 +5,42 @@ package nsfw
 import (
 	"fmt"
 	"io/fs"
+	"strconv"
 	"syscall/js"
 
 	"libdb.so/vm/rwfs"
 )
 
+var (
+	localStorage  = js.Global().Get("localStorage")
+	dispatchEvent = js.Global().Get("dispatchEvent")
+)
+
 func IsEnabled() bool {
-	local := js.Global().Get("localStorage")
-	nsfw := local.Get("nsfw-v1")
+	nsfw := localStorage.Get("nsfw-v1")
 	return nsfw.String() == "true"
 }
 
 func Enable() {
-	local := js.Global().Get("localStorage")
-	local.Set("nsfw-v1", true)
+	setNSFW(true)
 }
 
 func Disable() {
-	local := js.Global().Get("localStorage")
-	local.Set("nsfw-v1", false)
+	setNSFW(false)
+}
+
+func setNSFW(nsfw bool) {
+	oldValue := localStorage.Get("nsfw-v1")
+	newValue := js.ValueOf(strconv.FormatBool(nsfw))
+
+	localStorage.Set("nsfw-v1", newValue)
+
+	event := js.Global().Get("StorageEvent").New("storage", map[string]any{
+		"key":      "nsfw-v1",
+		"oldValue": oldValue,
+		"newValue": newValue,
+	})
+	dispatchEvent.Invoke(event)
 }
 
 func WrapFS(rofs fs.FS) fs.FS {
