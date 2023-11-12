@@ -63,6 +63,7 @@ func main() {
 		Programs: programs.All(),
 		Filesystem: rwfs.OverlayFS(
 			kvfs.New(kvfs.LocalStorage()),
+			rwfs.ReadOnlyFS(global.RootFS),
 			rwfs.ReadOnlyFS(nsfw.WrapFS(publicFS)),
 		),
 		Cwd:     global.InitialCwd,
@@ -70,9 +71,9 @@ func main() {
 	}
 
 	interp, err := vm.NewInterpreter(&env, vm.InterpreterOpts{
-		RunCommands: global.RC,
 		Prompt:      global.PromptColored(),
 		IgnoreEOF:   true,
+		RunCommands: ". .shellrc",
 	})
 	if err != nil {
 		log.Panicln("cannot make new interpreter:", err)

@@ -73,6 +73,8 @@ func UnmarshalStoredValue(b json.RawMessage) (StoredValue, error) {
 type StoredFile struct {
 	// ModTime is the file's modification time.
 	ModTime int64 `json:"mod_time"`
+	// Mode is the file's mode and permission bits.
+	Mode os.FileMode `json:"mode,omitempty"`
 	// Data is the file's data.
 	Data []byte `json:"data,omitempty"`
 }

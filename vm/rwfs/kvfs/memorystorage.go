@@ -13,6 +13,13 @@ func MemoryStorage() Store {
 	}
 }
 
+// MemoryStorageFromExisting creates a new MemoryStorage from an existing map.
+func MemoryStorageFromExisting(m map[string]StoredValue) Store {
+	return &memoryStorage{
+		m: m,
+	}
+}
+
 type memoryStorage struct {
 	mu sync.RWMutex
 	m  map[string]StoredValue
