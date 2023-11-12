@@ -18,9 +18,6 @@ if (( width > 80 )); then
 fi
 
 echo
-webring -w $width
-
-echo
 if [ $(nsfw get) == true ]; then
 	echo -e "hey!! just a heads up, you have \e[1mnsfw\e[0m mode enabled!"
 fi

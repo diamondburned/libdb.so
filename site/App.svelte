@@ -14,6 +14,9 @@
   import Terminal from "#/libdb.so/site/components/Terminal/index.svelte";
   import Portfolio from "#/libdb.so/site/components/Portfolio/index.svelte";
 
+  import "libwebring/dist/webring.css";
+  import "libwebring/dist/webring-element.js";
+
   let currentTime = "00:00";
   function updateTime() {
     currentTime = new Date().toLocaleTimeString(undefined, {

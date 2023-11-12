@@ -258,6 +258,20 @@
         Maybe the console can help?
       </span>
     {/await}
+
+    <footer>
+      <webring-element
+        src="https://raw.githubusercontent.com/diamondburned/acmfriends-webring/%3C3-spring-2023/webring.json"
+        name="diamond"
+      >
+        <span class="ring" />
+        <div>
+          <a class="left" target="_blank" />
+          <span class="middle" />
+          <a class="right" target="_blank" />
+        </div>
+      </webring-element>
+    </footer>
   </div>
 </Window>
 
@@ -597,6 +611,61 @@
       opacity: 0.5;
       font-size: 0.9em;
       text-align: center;
+    }
+
+    footer {
+      margin: 0 calc(0.5em + 1px);
+      border-radius: 10px;
+      border: 1px solid rgba(var(--blue-rgb), 0.4);
+      background-color: rgba(var(--blue-rgb), 0.1);
+      padding: 1em;
+      font-size: 0.9em;
+
+      webring-element {
+        display: flex;
+        flex-direction: column;
+
+        & > :nth-child(1) {
+          align-self: center;
+        }
+
+        & > :nth-child(2) {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+
+          a {
+            color: var(--blue);
+            text-decoration: none;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+
+        .left {
+          text-align: left;
+          &::before {
+            content: "‹ ";
+          }
+        }
+
+        .middle {
+          text-align: center;
+          opacity: 0.5;
+        }
+
+        .right {
+          text-align: right;
+          &::after {
+            content: " ›";
+          }
+        }
+
+        .ring {
+          opacity: 0.75;
+        }
+      }
     }
   }
 </style>
