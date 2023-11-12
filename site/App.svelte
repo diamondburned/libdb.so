@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as svelte from "svelte";
   import * as vm from "#/libdb.so/site/lib/vm.js";
+  import nsfw from "#/libdb.so/internal/nsfw/nsfw.js";
   import favicon from "#/libdb.so/public/favicon.ico?url";
   import normalizeCSS from "normalize.css/normalize.css?url";
   import type * as xterm from "xterm";
@@ -13,6 +14,8 @@
 
   import Terminal from "#/libdb.so/site/components/Terminal/index.svelte";
   import Portfolio from "#/libdb.so/site/components/Portfolio/index.svelte";
+  import VisibilityIcon from "@material-design-icons/svg/filled/visibility.svg?raw";
+  import VisibilityOffIcon from "@material-design-icons/svg/filled/visibility_off.svg?raw";
 
   import "libwebring/dist/webring.css";
   import "libwebring/dist/webring-element.js";
@@ -30,6 +33,8 @@
   svelte.onDestroy(() => clearInterval(updateTimer));
 
   const fonts = ["Inconsolata", "Lato", "Nunito", "Source Code Pro"];
+
+  let visibilityIcon = VisibilityIcon;
 </script>
 
 <svelte:head>
@@ -82,6 +87,17 @@
       </div>
     </div>
     <div class="right">
+      {#if $nsfw}
+        <button
+          class="icon toggle-nsfw"
+          title="Disable NSFW"
+          on:click={() => ($nsfw = false)}
+          on:mouseenter={() => (visibilityIcon = VisibilityOffIcon)}
+          on:mouseleave={() => (visibilityIcon = VisibilityIcon)}
+        >
+          {@html visibilityIcon}
+        </button>
+      {/if}
       <span class="clock">{currentTime}</span>
       <button class="view-desktop" on:click={() => toggleShowDesktop()} />
     </div>
@@ -95,6 +111,29 @@
 
     --blue-rgb: 85, 205, 252;
     --pink-rgb: 247, 168, 184;
+
+    --glow-radius: 0.35em;
+    --glow-alpha: 0.65;
+    --pink-glow: 0 0 var(--glow-radius) rgba(var(--pink-rgb), var(--glow-alpha));
+    --blue-glow: 0 0 var(--glow-radius) rgba(var(--blue-rgb), var(--glow-alpha));
+  }
+
+  .text-pink {
+    color: var(--pink);
+  }
+
+  .text-blue {
+    color: var(--blue);
+  }
+
+  .text-pink-glow {
+    @extend .text-pink;
+    text-shadow: var(--pink-glow);
+  }
+
+  .text-blue-glow {
+    @extend .text-blue;
+    text-shadow: var(--blue-glow);
   }
 
   html,
@@ -180,10 +219,6 @@
       grid-template-rows: 1fr;
 
       overflow: auto;
-
-      button {
-        min-width: var(--button-width);
-      }
     }
 
     button {
@@ -202,10 +237,11 @@
       align-items: center;
 
       padding: 0.35em 0.5em;
-      padding-left: 0;
 
       border-top: 2px solid transparent;
       border-bottom: 2px solid transparent;
+
+      transition: all 0.075s ease-in-out;
 
       &:hover:not(:disabled) {
         background-color: var(--bg-hover);
@@ -224,15 +260,39 @@
         }
       }
 
-      img {
+      img,
+      :global(svg) {
         width: 1.5em;
         height: 1.5em;
+      }
+    }
+
+    .window-list button {
+      min-width: var(--button-width);
+      padding-left: 0;
+
+      img {
         margin: 0 0.5em;
       }
     }
 
-    .start {
-      padding-right: 0;
+    .toggle-nsfw {
+      :global(svg) {
+        --color: var(--pink-rgb);
+
+        fill: rgb(var(--color));
+        width: 1.5em;
+        height: 1.5em;
+        filter: drop-shadow(
+          0 0 var(--glow-radius) rgba(var(--color), var(--glow-alpha))
+        );
+        opacity: 0.75;
+      }
+
+      &:hover :global(svg) {
+        --color: var(--blue-rgb);
+        opacity: 1;
+      }
     }
 
     .clock {

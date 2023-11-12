@@ -53,7 +53,7 @@ let
 
 			ldflags =
 				[ "-s" "-w" ]
-				++ (if src ? rev then [ "-X main.gitrev=${version}" ] else [ ]);
+				++ (if version != "dirty" then [ "-X main.gitrev=${version}" ] else [ ]);
 
 			postInstall = ''
 				mv $out/bin/js_wasm/vm-wasm $out/bin/vm.wasm
@@ -95,6 +95,7 @@ stdenv.mkDerivation {
 		chown -R $(id -u):$(id -g) node_modules
 		chmod -R +w node_modules
 		export PATH="$PATH:$PWD/node_modules/.bin"
+		export VERSION="$version"
 
 		set +x
 	'';

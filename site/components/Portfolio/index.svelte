@@ -1,5 +1,6 @@
 <script lang="ts">
   import * as store from "svelte/store";
+  import nsfw from "#/libdb.so/internal/nsfw/nsfw.js";
   import { fly } from "svelte/transition";
   import { ToastStore } from "#/libdb.so/site/lib/toasts.js";
 
@@ -32,8 +33,10 @@
     url?: string; // copy name to clipboard if not present
     name: string;
     value: string;
+    color?: string; // RGB triplet
     iconURL: string;
-    colorRGB: string; // RGB triplet
+    class?: string;
+    hidden?: boolean;
   };
 
   function hexToTriplet(hex: string): string {
@@ -44,62 +47,73 @@
     return `${r}, ${g}, ${b}`;
   }
 
-  const links: Link[] = [
+  $: links = [
     {
       url: "https://blog.libdb.so",
       name: "Blog",
       value: "blog.libdb.so",
-      colorRGB: "var(--pink-rgb)",
+      color: "var(--pink-rgb)",
     },
     {
       url: "https://github.com/diamondburned",
       name: "GitHub",
       value: "@diamondburned",
+      color: hexToTriplet("#773ec6"),
       iconURL: GitHubIcon,
-      colorRGB: hexToTriplet("#773ec6"),
+      class: "icon-invert",
     },
     {
       url: "https://gitlab.com/diamondburned",
       name: "GitLab",
       value: "@diamondburned",
+      color: hexToTriplet("#fca326"),
       iconURL: GitLabIcon,
-      colorRGB: hexToTriplet("#fca326"),
     },
     {
       url: "https://tech.lgbt/@diamond",
       name: "Mastodon",
       value: "@diamond@tech.lgbt",
+      color: hexToTriplet("#6364FF"),
       iconURL: MastodonIcon,
-      colorRGB: hexToTriplet("#2a9d8f"),
+    },
+    {
+      url: "https://girlcock.club/@diamond",
+      name: "Mastodon",
+      value: "@diamond@girlcock.club",
+      iconURL: MastodonIcon,
+      color: hexToTriplet("#6364FF"),
+      class: "nsfw",
+      hidden: !$nsfw,
     },
     {
       name: "Discord",
       value: "@diamondburned",
+      color: hexToTriplet("#7289da"),
       iconURL: DiscordIcon,
-      colorRGB: hexToTriplet("#7289da"),
     },
     {
       url: "https://matrix.to/#/@diamondburned:matrix.org",
       name: "Matrix",
       value: "@diamondburned:matrix.org",
+      color: hexToTriplet("#ffffff"),
       iconURL: MatrixIcon,
-      colorRGB: hexToTriplet("#ffffff"),
     },
     {
       url: "https://www.linkedin.com/in/diamondnotburned",
       name: "LinkedIn",
       value: "Diamond Dinh",
+      color: hexToTriplet("#0077b5"),
       iconURL: LinkedInIcon,
-      colorRGB: hexToTriplet("#0077b5"),
+      hidden: $nsfw,
     },
     {
       url: "mailto:diamond@libdb.so",
       name: "Email",
       value: "diamond@libdb.so",
+      color: "var(--blue-rgb)",
       iconURL: EmailIcon,
-      colorRGB: "var(--blue-rgb)",
     },
-  ];
+  ] as Link[];
 </script>
 
 <Window
@@ -117,24 +131,34 @@
   </div>
 
   <div class="portfolio-content">
-    <section class="banner">
-      <img src="/_assets/banner.png" alt="Banner" />
+    <section class="banner" class:nsfw={$nsfw}>
+      <img
+        src={$nsfw ? "/_fs/.nsfw/banner.webp" : "/_assets/banner.webp"}
+        alt="Banner"
+      />
     </section>
 
     <section class="about">
       <div class="intro">
-        <img src="/_assets/avatar.webp" alt="Diamond" />
+        <img
+          src={$nsfw ? "/_fs/.nsfw/avatar.jpg" : "/_assets/avatar.webp"}
+          alt="Diamond"
+        />
         <div>
           <span>Hi, I'm</span>
           <h1>Diamond!</h1>
         </div>
       </div>
       <p>
-        I'm a <b>4th-year Computer Science major 👩🎓</b>
+        I'm a
+        {#if $nsfw}<b class="text-pink-glow">catgirl pet</b>{/if},
+        <b>4th-year Computer Science major 👩🎓</b>
         and past <b>Software Engineer Intern 👩‍💻 🖥️</b>
       </p>
       <p>
-        I am what ChatGPT calls the world's biggest "open source cheerleader"!
+        I am what ChatGPT calls the world's biggest "open source
+        {#if $nsfw}<span class="text-pink-glow">slut</span
+          >{:else}cheerleader{/if}"!
         <br />
         I'm passionate about making the world a better place through technology and
         open source.
@@ -151,9 +175,10 @@
     <section class="links">
       <h2>Links</h2>
       <div class="links-list" role="list">
-        {#each links as link}
+        {#each links.filter((link) => !link.hidden) as link}
           <a
-            style={`--color: ${link.colorRGB};`}
+            style={`--color: ${link.color};`}
+            class={link.class ?? ""}
             role="button"
             href={link.url}
             target="_blank"
@@ -259,19 +284,19 @@
       </span>
     {/await}
 
-    <footer>
-      <webring-element
-        src="https://raw.githubusercontent.com/diamondburned/acmfriends-webring/%3C3-spring-2023/webring.json"
-        name="diamond"
-      >
+    <webring-element
+      src="https://raw.githubusercontent.com/diamondburned/acmfriends-webring/%3C3-spring-2023/webring.json"
+      name="diamond"
+    >
+      <section class="webring">
         <span class="ring" />
         <div>
           <a class="left" target="_blank" />
           <span class="middle" />
           <a class="right" target="_blank" />
         </div>
-      </webring-element>
-    </footer>
+      </section>
+    </webring-element>
   </div>
 </Window>
 
@@ -333,7 +358,7 @@
       }
 
       & > * {
-        margin: 1em 0;
+        margin: 1rem 0;
       }
 
       a {
@@ -353,8 +378,13 @@
         border-radius: 5px;
         transition: all 0.1s ease-in-out;
 
+        outline: 1px solid rgba(var(--color), 0.4);
+        outline-offset: -1px;
+
+        box-shadow: 0 0 0.35em -0.1em rgba(var(--color), 0.5);
         background-color: rgba(var(--color), 0.1);
         &:hover {
+          box-shadow: 0 0 0.45em -0.1em rgba(var(--color), 0.8);
           background-color: rgba(var(--color), 0.2);
         }
       }
@@ -367,6 +397,10 @@
     section.banner {
       padding: 0;
       height: clamp(100px, 15vh, 150px);
+
+      &.nsfw {
+        border-color: rgba(var(--pink-rgb), 0.4);
+      }
 
       img {
         image-rendering: pixelated;
@@ -448,6 +482,18 @@
         grid-column: span 3;
         grid-template-columns: subgrid;
         /* grid-template-columns: auto auto 1fr auto; */
+
+        &.nsfw .value::after {
+          content: "(NSFW)";
+          color: rgba(var(--pink-rgb), 0.75);
+          text-shadow: var(--pink-glow);
+          font-size: 0.75em;
+          margin-left: 0.5em;
+        }
+
+        &.icon-invert .icon {
+          filter: invert(1);
+        }
       }
 
       .icon {
@@ -457,6 +503,11 @@
       .name {
         font-weight: bold;
         margin-right: 0.5em;
+        color: rgb(var(--color));
+      }
+
+      .value {
+        color: rgba(255, 255, 255, 0.75);
       }
 
       :global(img),
@@ -464,6 +515,10 @@
         width: 1.5em;
         height: 1.5em;
         vertical-align: bottom;
+      }
+
+      :global(svg) {
+        color: rgb(var(--color));
       }
 
       :global(img) {
@@ -572,6 +627,7 @@
           grid-area: keywords;
 
           &:not(:empty) {
+            opacity: 0.65;
             border-left: 1px solid rgba(255, 255, 255, 0.35);
             padding-left: 0.5em;
           }
@@ -586,7 +642,7 @@
           font-size: 0.95em;
         }
 
-        @media (max-width: 400px) {
+        @media (max-width: 500px) {
           grid-gap: 0;
           grid-template-areas:
             "name url"
@@ -607,23 +663,15 @@
       }
     }
 
-    .loading {
-      opacity: 0.5;
-      font-size: 0.9em;
-      text-align: center;
-    }
-
-    footer {
-      margin: 0 calc(0.5em + 1px);
-      border-radius: 10px;
-      border: 1px solid rgba(var(--blue-rgb), 0.4);
-      background-color: rgba(var(--blue-rgb), 0.1);
-      padding: 1em;
-      font-size: 0.9em;
-
-      webring-element {
+    webring-element {
+      section.webring {
         display: flex;
+        padding: 1em;
         flex-direction: column;
+
+        & > * {
+          margin: 0;
+        }
 
         & > :nth-child(1) {
           align-self: center;
@@ -666,6 +714,21 @@
           opacity: 0.75;
         }
       }
+    }
+
+    .loading {
+      opacity: 0.5;
+      font-size: 0.9em;
+      text-align: center;
+    }
+
+    footer {
+      margin: 0 calc(0.5em + 1px);
+      border-radius: 10px;
+      border: 1px solid rgba(var(--blue-rgb), 0.4);
+      background-color: rgba(var(--blue-rgb), 0.1);
+      padding: 1em;
+      font-size: 0.9em;
     }
   }
 </style>
