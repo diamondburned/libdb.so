@@ -85,7 +85,6 @@
 
     const outerRect = windowContainer.getBoundingClientRect();
     const innerRect = windowElement.getBoundingClientRect();
-    console.log(view, outerRect, innerRect);
     posX = (outerRect.width - innerRect.width) / 2;
     posY = (outerRect.height - innerRect.height) / 2;
     clampPositions();
@@ -130,11 +129,16 @@
     centerWindow();
   });
 
+  function checkMouseEnter(ev: MouseEvent) {
+    if (dragState && !ev.buttons) {
+      // Stop dragging if the mouse enters the window while not dragging.
+      // This prevents the window from being stuck in a dragging state.
+      dragEnd();
+    }
+  }
+
   svelte.onMount(() => {
-    // Specifically handle the case where the cursor leaves the window while
-    // dragging. This is to prevent the window from being stuck in a dragging
-    // state.
-    document.body.addEventListener("mouseleave", dragEnd);
+    document.body.addEventListener("mouseenter", checkMouseEnter);
     // Mouseup should also be handled by the window, even if the cursor leaves
     // the window while dragging.
     document.body.addEventListener("mouseup", dragEnd);
