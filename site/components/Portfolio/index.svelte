@@ -33,7 +33,7 @@
     url?: string; // copy name to clipboard if not present
     name: string;
     value: string;
-    color?: string; // RGB triplet
+    color?: string; // RGB triplet, make sure value=99 (HSV)!
     iconURL: string;
     class?: string;
     hidden?: boolean;
@@ -58,7 +58,7 @@
       url: "https://github.com/diamondburned",
       name: "GitHub",
       value: "@diamondburned",
-      color: hexToTriplet("#773ec6"),
+      color: hexToTriplet("#984ffc"),
       iconURL: GitHubIcon,
       class: "icon-invert",
     },
@@ -73,7 +73,7 @@
       url: "https://tech.lgbt/@diamond",
       name: "Mastodon",
       value: "@diamond@tech.lgbt",
-      color: hexToTriplet("#6364FF"),
+      color: hexToTriplet("#6263fc"),
       iconURL: MastodonIcon,
     },
     {
@@ -81,28 +81,28 @@
       name: "Mastodon",
       value: "@diamond@girlcock.club",
       iconURL: MastodonIcon,
-      color: hexToTriplet("#6364FF"),
+      color: hexToTriplet("#6263fc"),
       class: "nsfw",
       hidden: !$nsfw,
     },
     {
       name: "Discord",
       value: "@diamondburned",
-      color: hexToTriplet("#7289da"),
+      color: hexToTriplet("#849ffc"),
       iconURL: DiscordIcon,
     },
     {
       url: "https://matrix.to/#/@diamondburned:matrix.org",
       name: "Matrix",
       value: "@diamondburned:matrix.org",
-      color: hexToTriplet("#ffffff"),
+      color: hexToTriplet("#fcfcfc"),
       iconURL: MatrixIcon,
     },
     {
       url: "https://www.linkedin.com/in/diamondnotburned",
       name: "LinkedIn",
       value: "Diamond Dinh",
-      color: hexToTriplet("#0077b5"),
+      color: hexToTriplet("#00a6fc"),
       iconURL: LinkedInIcon,
       hidden: $nsfw,
     },
