@@ -396,7 +396,7 @@
 
     section.banner {
       padding: 0;
-      height: clamp(100px, 15vh, 150px);
+      height: clamp(150px, 20vw, 250px);
 
       &.nsfw {
         border-color: rgba(var(--pink-rgb), 0.4);
