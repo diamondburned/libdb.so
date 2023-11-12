@@ -329,6 +329,7 @@
 
     .content-wrapper {
       flex: 1;
+      z-index: 10;
       overflow: hidden;
 
       /* Hack to make position: fixed work.
