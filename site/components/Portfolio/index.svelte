@@ -151,7 +151,7 @@
       </div>
       <p>
         I'm a
-        {#if $nsfw}<b class="text-pink-glow">catgirl pet</b>{/if},
+        {#if $nsfw}<b class="text-pink-glow">catgirl pet</b>,{/if}
         <b>4th-year Computer Science major 👩🎓</b>
         and past <b>Software Engineer Intern 👩‍💻 🖥️</b>
       </p>
