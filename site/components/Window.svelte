@@ -53,8 +53,11 @@
   let moved = false; // whether the window has been moved
   let active = viewIsActive(view); // whether the window is visible
   let focused = viewIsFocused(view); // whether the window is focused
-  let windowElement: HTMLElement;
-  let windowContainer: HTMLElement;
+
+  let windowWidth = 0; // width of the window
+  let windowHeight = 0; // height of the window
+  let containerWidth = 0; // width of the container
+  let containerHeight = 0; // height of the container
 
   function clamp(min: number, val: number, max: number) {
     return Math.min(Math.max(val, min), max);
@@ -62,32 +65,18 @@
 
   function clampPositions() {
     const minVisible = 100; // minimum visible area per dimension
-    const outerRect = windowContainer.getBoundingClientRect();
-    const innerRect = windowElement.getBoundingClientRect();
-    posX = clamp(
-      minVisible - innerRect.width,
-      posX,
-      outerRect.width - minVisible
-    );
-    posY = clamp(
-      // Specifically prevent the window from being dragged above the top of the
-      // screen. This is to prevent the headerbar from being inaccessible.
-      0,
-      posY,
-      outerRect.height - minVisible
-    );
+    posX = clamp(minVisible - windowWidth, posX, containerWidth - minVisible);
+    // Specifically prevent the window from being dragged above the top of the
+    // screen. This is to prevent the headerbar from being inaccessible.
+    posY = clamp(0, posY, containerHeight - minVisible);
   }
 
-  function centerWindow() {
-    if (moved || !windowElement || !windowContainer) {
-      return;
+  $: {
+    if (!moved) {
+      posX = (containerWidth - windowWidth) / 2;
+      posY = (containerHeight - windowHeight) / 2;
+      clampPositions();
     }
-
-    const outerRect = windowContainer.getBoundingClientRect();
-    const innerRect = windowElement.getBoundingClientRect();
-    posX = (outerRect.width - innerRect.width) / 2;
-    posY = (outerRect.height - innerRect.height) / 2;
-    clampPositions();
   }
 
   let dragState: DragState | null = null; // null when not dragging
@@ -117,18 +106,6 @@
     }
   }
 
-  svelte.onMount(() => {
-    // Ensure window is centered when mounted until it is moved by the user.
-    const resizeObserver = new ResizeObserver(() => centerWindow());
-    resizeObserver.observe(windowContainer);
-    resizeObserver.observe(windowElement);
-    return () => resizeObserver.disconnect();
-  });
-
-  svelte.onMount(() => {
-    centerWindow();
-  });
-
   function checkMouseEnter(ev: MouseEvent) {
     if (dragState && !ev.buttons) {
       // Stop dragging if the mouse enters the window while not dragging.
@@ -136,26 +113,17 @@
       dragEnd();
     }
   }
-
-  svelte.onMount(() => {
-    document.body.addEventListener("mouseenter", checkMouseEnter);
-    // Mouseup should also be handled by the window, even if the cursor leaves
-    // the window while dragging.
-    document.body.addEventListener("mouseup", dragEnd);
-    // Also handle mousemove on the body, in case the cursor leaves the window
-    // while dragging.
-    document.body.addEventListener("mousemove", drag);
-
-    return () => {
-      document.body.removeEventListener("mouseleave", dragEnd);
-      document.body.removeEventListener("mouseup", dragEnd);
-      document.body.removeEventListener("mousemove", drag);
-    };
-  });
 </script>
 
+<svelte:body
+  on:mouseenter={checkMouseEnter}
+  on:mouseup={dragEnd}
+  on:mousemove={drag}
+/>
+
 <div
-  bind:this={windowContainer}
+  bind:clientWidth={containerWidth}
+  bind:clientHeight={containerHeight}
   class="window-container {windowClass}"
   class:maximized
   class:focused={$focused}
@@ -163,7 +131,8 @@
 >
   <main
     id={view}
-    bind:this={windowElement}
+    bind:clientWidth={windowWidth}
+    bind:clientHeight={windowHeight}
     on:mousedown={(ev) => bringToFocus(view)}
     class="window"
     class:maximized
