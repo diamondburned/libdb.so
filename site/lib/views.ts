@@ -1,28 +1,13 @@
 import * as store from "svelte/store";
+import { persisted } from "svelte-persisted-store";
 
 export type View = "terminal" | "portfolio";
 
-export const activeViews = store.writable<Record<View, boolean>>({
+export const activeViews = persisted<Record<View, boolean>>("active_views", {
   portfolio: true,
   terminal: false,
 });
-export const focusedView = store.writable<View | null>("portfolio");
-
-// Load from local storage.
-const localStorageActiveViews = localStorage.getItem("active_views");
-const localStorageTopView = localStorage.getItem("top_view");
-if (localStorageActiveViews && localStorageTopView) {
-  activeViews.set(JSON.parse(localStorageActiveViews) as Record<View, boolean>);
-  focusedView.set(JSON.parse(localStorageTopView) as View | null);
-}
-
-// Bind to local storage.
-activeViews.subscribe((activeViews) => {
-  localStorage.setItem("active_views", JSON.stringify(activeViews));
-});
-focusedView.subscribe((topView) => {
-  localStorage.setItem("top_view", JSON.stringify(topView));
-});
+export const focusedView = persisted<View | null>("top_view", "portfolio");
 
 export function toggleView(view: View) {
   focusedView.update((focusedView) => {
