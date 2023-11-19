@@ -2,7 +2,7 @@
 
 SITE    = $(shell find site -type f) node_modules vite.config.ts package*.json
 PUBLIC  = $(shell find public/_fs -type f 2> /dev/null)
-GOFILES = $(shell find cmd internal vm -type f) go.mod go.sum
+GOFILES = $(shell find vm -type f) go.mod go.sum
 
 # phony
 
@@ -32,7 +32,7 @@ site/components/Terminal/color-schemes.json: ./scripts/xtermjs-colors
 
 build/vm.wasm: $(GOFILES)
 	mkdir -p build
-	GOOS=js GOARCH=wasm go build -o build/vm.wasm ./cmd/vm-wasm
+	GOOS=js GOARCH=wasm go build -o build/vm.wasm ./vm/cmd/vm-wasm
 
 #build/console.wasm: build/wasm_exec.js $(GOFILES)
 #	mkdir -p build

@@ -7,9 +7,9 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v3"
-	"libdb.so/internal/nsfw"
 	"libdb.so/vm"
 	"libdb.so/vm/internal/cliprog"
+	"libdb.so/vm/internal/nsfw"
 	"libdb.so/vm/programs"
 )
 

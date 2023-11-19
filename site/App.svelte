@@ -1,7 +1,6 @@
 <script lang="ts">
   import * as svelte from "svelte";
   import * as vm from "#/libdb.so/site/lib/vm.js";
-  import nsfw from "#/libdb.so/internal/nsfw/nsfw.js";
   import favicon from "#/libdb.so/public/favicon.ico?url";
   import normalizeCSS from "normalize.css/normalize.css?url";
   import {
@@ -10,7 +9,7 @@
     viewWindows,
     toggleShowDesktop,
   } from "#/libdb.so/site/lib/views.js";
-  import { onekoCursor, dragWindows } from "#/libdb.so/site/lib/prefs.js";
+  import { onekoCursor, dragWindows, nsfw } from "#/libdb.so/site/lib/prefs.js";
 
   import Oneko from "#/libdb.so/site/components/Oneko/oneko.svelte";
   import Switch from "#/libdb.so/site/components/Switch.svelte";

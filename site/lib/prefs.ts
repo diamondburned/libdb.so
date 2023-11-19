@@ -6,6 +6,7 @@ const isReducedMotion = !!window.matchMedia(`(prefers-reduced-motion: reduce)`)
 
 export const onekoCursor = persisted("oneko-cursor", !isReducedMotion);
 export const dragWindows = persisted("drag-windows", true);
+export const nsfw = persisted("nsfw-v1", false);
 
 for (const store of [onekoCursor, dragWindows]) {
   store.set(get(store));

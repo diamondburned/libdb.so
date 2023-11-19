@@ -15,8 +15,8 @@ import (
 
 	"github.com/pkg/errors"
 	"libdb.so/go-mommy"
-	"libdb.so/internal/nsfw"
 	"libdb.so/vm/internal/liner"
+	"libdb.so/vm/internal/nsfw"
 	"libdb.so/vm/internal/vars"
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/interp"

@@ -1,14 +1,10 @@
 <script lang="ts">
-  import * as store from "svelte/store";
-  import nsfw from "#/libdb.so/internal/nsfw/nsfw.js";
-  import { fly } from "svelte/transition";
+  import { nsfw } from "#/libdb.so/site/lib/prefs.js";
   import { ToastStore } from "#/libdb.so/site/lib/toasts.js";
 
   import Toasts from "#/libdb.so/site/components/Toasts.svelte";
   import Window from "#/libdb.so/site/components/Window.svelte";
   import OpenInNew from "#/libdb.so/site/components/MaterialIcons/open_in_new.svelte";
-  import WindowClose from "#/libdb.so/site/components/Papirus/window-close.svelte";
-  import WindowControl from "#/libdb.so/site/components/WindowControl.svelte";
 
   import GitHubIcon from "super-tiny-icons/images/svg/github.svg";
   import GitLabIcon from "super-tiny-icons/images/svg/gitlab.svg";
