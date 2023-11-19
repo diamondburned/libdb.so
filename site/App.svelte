@@ -128,6 +128,8 @@
               <span class="text-pink-glow">NSFW Mode</span>
             </Switch>
           {/if}
+          <hr />
+          <small>Try the <code>vars</code> command too!</small>
         </div>
       </PopoverButton>
       <span class="clock">{currentTime}</span>
@@ -331,6 +333,17 @@
       label {
         width: 100%;
         display: flex;
+      }
+
+      hr {
+        width: 100%;
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.25);
+      }
+
+      small {
+        opacity: 0.5;
+        font-size: 0.85em;
       }
     }
 
