@@ -10,7 +10,16 @@ import (
 )
 
 var localStorage = js.Global().Get("localStorage")
+var storageEvent = js.Global().Get("StorageEvent")
+var dispatchEvent = js.Global().Get("dispatchEvent")
+
 var knownVariables = map[string]*VariableInfo{}
+
+// Variables defined in /site/lib/prefs.ts.
+var (
+	_ = New[bool]("oneko-cursor").WithDescription("Spawn Sakura who follows your cursor.")
+	_ = New[bool]("drag-windows").WithDescription("Allow dragging windows.")
+)
 
 // VariableInfo is the information about a variable.
 type VariableInfo struct {
@@ -68,11 +77,22 @@ func (v *VariableInfo) Set(value any) error {
 			"invalid type for variable %s: expected %s, got %s",
 			v.Key, v.Type, reflect.TypeOf(value))
 	}
+
 	s, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}
-	localStorage.Set(v.Key, string(s))
+
+	oldValue := localStorage.Get("nsfw-v1")
+	newValue := js.ValueOf(string(s))
+	localStorage.Set(v.Key, newValue)
+
+	event := storageEvent.New("storage", map[string]any{
+		"key":      v.Key,
+		"oldValue": oldValue,
+		"newValue": newValue,
+	})
+	dispatchEvent.Invoke(event)
 	return nil
 }
 
@@ -82,18 +102,16 @@ type Variable[T any] struct {
 }
 
 // New creates a new variable with the given key.
-func New[T any](key string, defaultValue T) *Variable[T] {
+func New[T any](key string) *Variable[T] {
 	if _, ok := knownVariables[key]; ok {
 		panic(fmt.Sprintf("variable %s already exists", key))
 	}
 
+	var z T
 	v := &Variable[T]{VariableInfo: VariableInfo{
 		Key:  key,
-		Type: reflect.TypeOf(defaultValue),
+		Type: reflect.TypeOf(z),
 	}}
-	if _, ok := v.Get(); !ok {
-		v.Set(defaultValue)
-	}
 
 	knownVariables[key] = &v.VariableInfo
 	return v
@@ -108,6 +126,14 @@ func (v *Variable[T]) WithDescription(desc string) *Variable[T] {
 // WithHidden sets whether the variable should be hidden.
 func (v *Variable[T]) WithHidden(hidden bool) *Variable[T] {
 	v.Hidden = hidden
+	return v
+}
+
+// WithDefault sets the default value of the variable.
+func (v *Variable[T]) WithDefault(z T) *Variable[T] {
+	if _, ok := v.Get(); !ok {
+		v.Set(z)
+	}
 	return v
 }
 
