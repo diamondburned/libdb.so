@@ -36,9 +36,10 @@ export function toggleView(view: View) {
         activeViews[view] = false;
         // Bring the next visible view to focus. If there is none, then set to
         // null.
-        focusedView = Object.keys(activeViews).find(
-          (view) => activeViews[view as View]
-        ) as View | null;
+        focusedView =
+          (Object.keys(activeViews).find(
+            (view) => activeViews[view as View]
+          ) as View) || null;
       } else {
         // Otherwise, bring to focus.
         focusedView = view;
