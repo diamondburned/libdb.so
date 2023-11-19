@@ -1,11 +1,11 @@
 module libdb.so
 
-go 1.20
+go 1.21.3
 
 replace mvdan.cc/sh/v3 => github.com/diamondburned/mvdan-sh/v3 v3.0.0-20230318131347-17d55f04e1ac
 
 require (
-	github.com/alecthomas/assert/v2 v2.2.2
+	github.com/alecthomas/assert/v2 v2.4.0
 	github.com/davecgh/go-spew v1.1.1
 	github.com/fatih/color v1.15.0
 	github.com/leaanthony/go-ansi-parser v1.6.0
@@ -17,12 +17,13 @@ require (
 	gitlab.com/diamondburned/dotfiles/Scripts/lineprompt v0.0.0-20230407082541-a6924ecdc0d4
 	golang.org/x/crypto v0.7.0
 	golang.org/x/image v0.6.0
+	libdb.so/go-mommy v0.1.1
 	libdb.so/libwebring-go v0.0.0-20230521133149-d80b3d3c5163
 	mvdan.cc/sh/v3 v3.6.1-0.20230510000419-96a1c48ec2d7
 )
 
 require (
-	github.com/alecthomas/repr v0.2.0 // indirect
+	github.com/alecthomas/repr v0.3.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

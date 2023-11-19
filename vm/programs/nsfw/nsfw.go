@@ -62,7 +62,6 @@ func (prog) Run(ctx context.Context, env vm.Environment, args []string) error {
 	switch answer {
 	case "yes", "y":
 		nsfw.Enable()
-		fmt.Println("yay! owo")
 		return nil
 	default:
 		return errors.New("user declined")

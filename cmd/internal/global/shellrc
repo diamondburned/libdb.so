@@ -17,7 +17,13 @@ if (( width > 80 )); then
 	width=80
 fi
 
-echo
 if [ $(nsfw get) == true ]; then
+	echo
 	echo -e "hey!! just a heads up, you have \e[1mnsfw\e[0m mode enabled!"
 fi
+
+echo
+echo "The following variables are available to you:"
+echo
+vars
+echo

@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/fs"
 	"log"
+	"math/rand"
 	"sort"
 	"strings"
 	"text/tabwriter"
@@ -13,11 +14,20 @@ import (
 	stderrors "errors"
 
 	"github.com/pkg/errors"
+	"libdb.so/go-mommy"
+	"libdb.so/internal/nsfw"
 	"libdb.so/vm/internal/liner"
+	"libdb.so/vm/internal/vars"
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
 )
+
+var shellMommy = vars.
+	New[bool]("shell-mommy", false).
+	WithDescription("Enable shell mommy mode (libdb.so/go-mommy)")
+
+var shellMommyGenerator, _ = mommy.NewGenerator(mommy.DefaultResponses)
 
 // PromptFunc is a function that returns the prompt string.
 type PromptFunc func(Environment) string
@@ -204,7 +214,8 @@ func (inst *Interpreter) Run(ctx context.Context) error {
 		}
 
 		inst.prompter.AppendHistory(line)
-		inst.exec(ctx, line)
+		ok := inst.exec(ctx, line)
+		inst.printMommy(ok)
 	}
 
 	// interactiveFunc := func(stmts []*syntax.Stmt) bool {
@@ -230,17 +241,41 @@ func (inst *Interpreter) Run(ctx context.Context) error {
 	// return inst.shParser.Interactive(inst.env.Terminal.Stdin, interactiveFunc)
 }
 
-func (inst *Interpreter) exec(ctx context.Context, line string) {
+func (inst *Interpreter) exec(ctx context.Context, line string) bool {
 	shFile, err := inst.shParser.Parse(strings.NewReader(line), "")
 	if err != nil {
 		inst.logger.Printf("error parsing: %v", err)
-		return
+		return false
 	}
 
 	if err := inst.shRunner.Run(ctx, shFile); err != nil {
 		inst.logger.Println(err)
+		return false
+	}
+
+	return true
+}
+
+func (inst *Interpreter) printMommy(success bool) {
+	if !shellMommy.Getz() {
 		return
 	}
+
+	mommyMood := mommy.Chill
+	if nsfw.IsEnabled() {
+		mommyMood = []string{mommy.Thirsty, mommy.Yikes}[rand.Intn(2)]
+	}
+
+	responseMood := mommy.PositiveResponse
+	if !success {
+		responseMood = mommy.NegativeResponse
+	}
+
+	response, _ := shellMommyGenerator.Generate(
+		responseMood,
+		mommy.Overrides{mommy.VariableMood: mommyMood},
+	)
+	inst.logger.Println(response)
 }
 
 func (inst *Interpreter) callHandler(ctx context.Context, args []string) ([]string, error) {
