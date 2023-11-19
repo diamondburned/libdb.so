@@ -8,8 +8,9 @@ import (
 
 	_ "embed"
 
-	"libdb.so/internal/nsfw"
 	"libdb.so/vm"
+	"libdb.so/vm/internal/nsfw"
+	"libdb.so/vm/internal/vars"
 	"libdb.so/vm/programs"
 )
 
@@ -37,6 +38,7 @@ func (prog) Run(ctx context.Context, env vm.Environment, args []string) error {
 			break
 		case "disable":
 			nsfw.Disable()
+			vars.Get("shell-mommy").Set(false)
 			return nil
 		case "get":
 			env.Println(strconv.FormatBool(nsfw.IsEnabled()))
@@ -62,6 +64,7 @@ func (prog) Run(ctx context.Context, env vm.Environment, args []string) error {
 	switch answer {
 	case "yes", "y":
 		nsfw.Enable()
+		vars.Get("shell-mommy").Set(true)
 		return nil
 	default:
 		return errors.New("user declined")

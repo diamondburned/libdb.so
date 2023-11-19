@@ -9,6 +9,8 @@ import (
 	"github.com/lucasb-eyer/go-colorful"
 	"gitlab.com/diamondburned/dotfiles/Scripts/lineprompt/lineprompt"
 	"libdb.so/vm"
+	"libdb.so/vm/rwfs"
+	"libdb.so/vm/rwfs/kvfs"
 
 	_ "libdb.so/vm/programs/coreutils"
 	_ "libdb.so/vm/programs/hewwo"
@@ -20,8 +22,6 @@ import (
 	_ "libdb.so/vm/programs/termio"
 	_ "libdb.so/vm/programs/vars"
 	_ "libdb.so/vm/programs/webring"
-	"libdb.so/vm/rwfs"
-	"libdb.so/vm/rwfs/kvfs"
 )
 
 const InitialCwd = "/"

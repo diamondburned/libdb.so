@@ -14,9 +14,9 @@ import (
 	"github.com/fatih/color"
 	"github.com/lucasb-eyer/go-colorful"
 	"gitlab.com/diamondburned/dotfiles/Scripts/lineprompt/lineprompt"
-	"libdb.so/internal/nsfw"
 	"libdb.so/vm"
 	"libdb.so/vm/internal/ansi"
+	"libdb.so/vm/internal/nsfw"
 	"libdb.so/vm/programs"
 )
 

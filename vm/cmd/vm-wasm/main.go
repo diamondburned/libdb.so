@@ -12,9 +12,9 @@ import (
 	"syscall/js"
 	"unsafe"
 
-	"libdb.so/cmd/internal/global"
-	"libdb.so/internal/nsfw"
 	"libdb.so/vm"
+	"libdb.so/vm/cmd/internal/global"
+	"libdb.so/vm/internal/nsfw"
 	"libdb.so/vm/programs"
 	"libdb.so/vm/programs/neofetch"
 	"libdb.so/vm/rwfs"
