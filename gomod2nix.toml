@@ -2,11 +2,11 @@ schema = 3
 
 [mod]
   [mod."github.com/alecthomas/assert/v2"]
-    version = "v2.2.2"
-    hash = "sha256-Djmp063lRGw61by7F8XBHjAXzM2lagxq9GGhuTDQmX4="
+    version = "v2.4.0"
+    hash = "sha256-1urmWJ3lozzuwbA4a28YDRn/TfRHpKI1aQaeqZIA+2A="
   [mod."github.com/alecthomas/repr"]
-    version = "v0.2.0"
-    hash = "sha256-vBRu5jLdJqlDGVflK0EZEUe40G+KAqI5P5fteHZxAvc="
+    version = "v0.3.0"
+    hash = "sha256-Epq2as8dLnFyOBEcMG8eh89cZXY8rbP8PKbMLyu2qeU="
   [mod."github.com/cpuguy83/go-md2man/v2"]
     version = "v2.0.2"
     hash = "sha256-OvWCtDsVrYzM84SMQwOXPLBxnWnMC1hDm+KiI6zm3uk="
@@ -73,6 +73,9 @@ schema = 3
   [mod."golang.org/x/term"]
     version = "v0.6.0"
     hash = "sha256-Ao0yXpwY8GyG+/23dVfJUYrfEfNUTES3RF45v1VhUAk="
+  [mod."libdb.so/go-mommy"]
+    version = "v0.1.1"
+    hash = "sha256-mtgnNTvV2twnZAJ/oGW53l6AiBX+VhXmwH1gjuNl0pI="
   [mod."libdb.so/libwebring-go"]
     version = "v0.0.0-20230521133149-d80b3d3c5163"
     hash = "sha256-PQjXuoOp27qbNgEm3VRUV4IoCA/ukvPQdfyDsaUz2kM="
