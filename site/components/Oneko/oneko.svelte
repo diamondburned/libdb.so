@@ -1,12 +1,10 @@
 <script lang="ts">
   import * as svelte from "svelte";
-  import {
-    Window,
-    focusedView,
-    viewWindows,
-  } from "#/libdb.so/site/lib/views.js";
-  import { speed, spriteSets } from "./oneko.ts";
+  import type { Window } from "#/libdb.so/site/lib/views.js";
+  import { speed, sakura } from "./oneko.js";
   import { fade } from "svelte/transition";
+
+  const character = sakura;
 
   let x = 16;
   let y = 16;
@@ -24,8 +22,6 @@
   let idleTime = 0;
   let idleAnimation: string | null = null;
   let idleAnimationFrame = 0;
-  let idleLastX = 0;
-  let idleLastY = 0;
 
   export let windows: Window[] = [];
 
@@ -38,10 +34,7 @@
     };
   }
 
-  const mouseSize = 16;
-
-  $: activeWindow = $viewWindows[$focusedView];
-  $: allWindows = [
+  $: rectangles = [
     // Main screen
     {
       top: 0,
@@ -49,21 +42,16 @@
       bottom: screenHeight,
       right: screenWidth,
     },
-    // Mouse cursor
-    {
-      top: mouseY - mouseSize / 2,
-      left: mouseX - mouseSize / 2,
-      bottom: mouseY + mouseSize / 2,
-      right: mouseX + mouseSize / 2,
-    },
-    // Active window
-    windowToRect(activeWindow),
-    // Other windows, usually the navigation bar
     ...windows.map(windowToRect),
-  ] as Rectangle[];
+  ];
+
+  $: midpoints = rectangles.map((rect) => ({
+    x: rect.left + (rect.right - rect.left) / 2,
+    y: rect.top + (rect.bottom - rect.top) / 2,
+  }));
 
   function setSprite(name: string, frame: number) {
-    const sprites = spriteSets[name];
+    const sprites = character.spriteSets[name];
     const sprite = sprites[frame % sprites.length];
     spriteX = sprite[0] * 32;
     spriteY = sprite[1] * 32;
@@ -77,8 +65,9 @@
     return Math.min(Math.max(val, min), max);
   }
 
-  function within(min: number, val: number, max: number) {
-    return val >= min && val <= max;
+  function resetIdleAnimation() {
+    idleAnimation = null;
+    idleAnimationFrame = 0;
   }
 
   function idle() {
@@ -86,40 +75,8 @@
 
     // every ~ 20 seconds
     if (idleTime > 10 && Math.random() < 0.05 && !idleAnimation) {
-      const edgeThreshold = 16;
-
-      let idleAnimations = ["sleeping", "scratchSelf"];
-      for (const window of allWindows) {
-        if (within(-edgeThreshold, x - window.right, 0)) {
-          // inside window left edge or outside window right edge
-          idleAnimations.push("scratchWallW");
-        }
-        if (within(0, x - window.right, edgeThreshold)) {
-          // inside window right edge or outside window left edge
-          idleAnimations.push("scratchWallE");
-        }
-        if (within(-edgeThreshold, y - window.top, 0)) {
-          // outside window top edge
-          idleAnimations.push("scratchWallN");
-        }
-        if (within(0, y - window.bottom, edgeThreshold)) {
-          // outside window bottom edge
-          idleAnimations.push("scratchWallS");
-        }
-      }
+      const idleAnimations = ["sleeping", "scratchSelf", "scratchWallS"];
       idleAnimation = idleAnimations[randomIntn(idleAnimations.length)];
-    }
-
-    function resetIdleAnimation() {
-      idleAnimation = null;
-      idleAnimationFrame = 0;
-      x = idleLastX;
-      y = idleLastY;
-    }
-
-    if (idleAnimationFrame == 0) {
-      idleLastX = x;
-      idleLastY = y;
     }
 
     switch (idleAnimation) {
@@ -134,10 +91,7 @@
         }
         break;
       }
-      case "scratchWallN":
       case "scratchWallS":
-      case "scratchWallE":
-      case "scratchWallW":
       case "scratchSelf": {
         setSprite(idleAnimation, idleAnimationFrame);
         if (idleAnimationFrame > 9) {
@@ -154,18 +108,35 @@
   }
 
   function update() {
-    frameCount += 1;
-    const diffX = x - mouseX;
-    const diffY = y - mouseY;
-    const distance = Math.sqrt(diffX ** 2 + diffY ** 2);
+    frameCount++;
 
-    if (distance < speed || distance < 16) {
+    let nearest = rectangles[0];
+    let nearestMid = midpoints[0];
+
+    for (let i = 1; i < rectangles.length; i++) {
+      const rect = rectangles[i];
+      const mid = midpoints[i];
+      if (
+        i == 1 ||
+        Math.abs(mid.y - mouseY) < Math.abs(nearestMid.y - mouseY)
+      ) {
+        nearest = rect;
+      }
+    }
+
+    const nextX = clamp(nearest.left + 16, mouseX, nearest.right - 16);
+    const nextY = nearest.top - 14;
+
+    const diffX = x - nextX;
+    const diffY = y - nextY;
+
+    const distance = Math.sqrt(diffX ** 2 + diffY ** 2);
+    if (distance < speed) {
       idle();
       return;
     }
 
-    idleAnimation = null;
-    idleAnimationFrame = 0;
+    resetIdleAnimation();
 
     if (idleTime > 1) {
       setSprite("alert", 0);
@@ -223,7 +194,12 @@
 <div
   aria-hidden="true"
   class="neko"
-  style="--x: {x}px; --y: {y}px; background-position: {spriteX}px {spriteY}px;"
+  style="
+    --x: {x}px;
+    --y: {y}px;
+    --url: url({character.url});
+    background-position: {spriteX}px {spriteY}px;
+  "
   transition:fade={{ duration: 100 }}
 />
 
@@ -233,7 +209,7 @@
     height: 32px;
     position: absolute;
     pointer-events: none;
-    background-image: url(./oneko.gif);
+    background-image: var(--url);
     image-rendering: pixelated;
     z-index: 9999;
     left: calc(var(--x) - 16px);

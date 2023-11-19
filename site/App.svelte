@@ -12,6 +12,7 @@
     activeViews,
     toggleView,
     focusedView,
+    viewWindows,
     toggleShowDesktop,
   } from "#/libdb.so/site/lib/views.js";
 
@@ -49,6 +50,8 @@
   let screenWidth = 0;
   let screenHeight = 0;
 
+  $: activeWindow = $viewWindows[$focusedView!] || null;
+
   const onekoCursor = persisted("prefs-oneko-cursor", !isReducedMotion);
 </script>
 
@@ -77,13 +80,14 @@
   {#if $onekoCursor}
     <Oneko
       windows={[
+        activeWindow,
         {
           x: screenWidth - navbarWidth,
           y: screenHeight - navbarHeight,
           width: navbarWidth,
           height: navbarHeight,
         },
-      ]}
+      ].filter((w) => w != null)}
     />
   {/if}
 

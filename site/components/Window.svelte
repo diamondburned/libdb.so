@@ -61,16 +61,17 @@
   let containerWidth = 0; // width of the container
   let containerHeight = 0; // height of the container
 
-  $: viewWindows.update((windows) => {
-    windows[view] = {
-      x,
-      y,
-      width: windowWidth,
-      height: windowHeight,
-      maximized,
-    };
-    return windows;
-  });
+  $: {
+    viewWindows.update((windows) => {
+      windows[view] = {
+        x,
+        y,
+        width: windowWidth,
+        height: windowHeight,
+      };
+      return windows;
+    });
+  }
 
   function clamp(min: number, val: number, max: number) {
     return Math.min(Math.max(val, min), max);

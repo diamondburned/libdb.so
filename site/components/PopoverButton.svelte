@@ -6,6 +6,10 @@
   export let direction: "top" | "bottom" = "top";
   export let open = false;
 
+  export let title = "";
+  let buttonClass = "";
+  export { buttonClass as class };
+
   let buttonHeight = 0;
   let maxX = 0;
   let maxY = 0;
@@ -83,9 +87,10 @@
 
 <div class="popover-container" bind:this={container}>
   <button
-    class="popover-button"
+    {title}
+    class="popover-button {buttonClass}"
     class:active={open}
-    on:click={(ev) => (open = !open)}
+    on:click={() => (open = !open)}
     on:mousedown={(ev) => ev.stopPropagation()}
     bind:offsetHeight={buttonHeight}
   >
