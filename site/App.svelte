@@ -4,17 +4,13 @@
   import nsfw from "#/libdb.so/internal/nsfw/nsfw.js";
   import favicon from "#/libdb.so/public/favicon.ico?url";
   import normalizeCSS from "normalize.css/normalize.css?url";
-  import type * as xterm from "xterm";
-  import { persisted } from "svelte-persisted-store";
-  import { writable } from "svelte/store";
   import {
-    View,
-    activeViews,
     toggleView,
     focusedView,
     viewWindows,
     toggleShowDesktop,
   } from "#/libdb.so/site/lib/views.js";
+  import { onekoCursor, dragWindows } from "#/libdb.so/site/lib/prefs.js";
 
   import Oneko from "#/libdb.so/site/components/Oneko/oneko.svelte";
   import Switch from "#/libdb.so/site/components/Switch.svelte";
@@ -40,10 +36,6 @@
 
   const fonts = ["Inconsolata", "Lato", "Nunito", "Source Code Pro"];
 
-  const isReducedMotion =
-    window.matchMedia(`(prefers-reduced-motion: reduce)`) === true ||
-    window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
-
   let navbarWidth = 0;
   let navbarHeight = 0;
 
@@ -51,8 +43,6 @@
   let screenHeight = 0;
 
   $: activeWindow = $viewWindows[$focusedView!] || null;
-
-  const onekoCursor = persisted("prefs-oneko-cursor", !isReducedMotion);
 </script>
 
 <svelte:head>
@@ -132,6 +122,7 @@
         <div slot="popover" class="preferences">
           <h4>Preferences</h4>
           <Switch bind:checked={$onekoCursor}>Oneko.js</Switch>
+          <Switch bind:checked={$dragWindows}>Drag Windows</Switch>
           {#if $nsfw}
             <Switch bind:checked={$nsfw}>
               <span class="text-pink-glow">NSFW Mode</span>

@@ -7,7 +7,7 @@
 </script>
 
 <label style="--width: {width}">
-  <slot />
+  <span class="label"><slot /></span>
   <div class="switch">
     <input type="checkbox" bind:checked />
     <span class="slider" />
@@ -23,6 +23,11 @@
     align-items: center;
     gap: 0.5em;
     cursor: pointer;
+  }
+
+  .label {
+    flex: 1;
+    margin-right: 0.25em;
   }
 
   .switch {

@@ -132,6 +132,8 @@
 
     const distance = Math.sqrt(diffX ** 2 + diffY ** 2);
     if (distance < speed) {
+      x = nextX;
+      y = nextY;
       idle();
       return;
     }
@@ -155,9 +157,6 @@
 
     x -= (diffX / distance) * speed;
     y -= (diffY / distance) * speed;
-
-    x = clamp(16, x, screenWidth - 16);
-    y = clamp(16, y, screenHeight - 16);
   }
 
   let drawing = false;
@@ -214,5 +213,7 @@
     z-index: 9999;
     left: calc(var(--x) - 16px);
     top: calc(var(--y) - 16px);
+    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.5))
+      drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35));
   }
 </style>
