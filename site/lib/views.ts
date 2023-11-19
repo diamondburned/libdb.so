@@ -1,7 +1,22 @@
 import * as store from "svelte/store";
 import { persisted } from "svelte-persisted-store";
+import { writable } from "svelte/store";
 
 export type View = "terminal" | "portfolio";
+
+export type Window = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+const zeroRect = { x: 0, y: 0, width: 0, height: 0 };
+
+export const viewWindows = writable<Record<View, Window>>({
+  portfolio: zeroRect,
+  terminal: zeroRect,
+});
 
 export const activeViews = persisted<Record<View, boolean>>("active_views", {
   portfolio: true,

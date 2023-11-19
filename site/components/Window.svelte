@@ -1,10 +1,12 @@
 <script lang="ts">
   import * as svelte from "svelte";
+  import * as store from "svelte/store";
 
   import {
     View,
     DragState,
     toggleView,
+    viewWindows,
     bringToFocus,
     viewIsActive,
     viewIsFocused,
@@ -48,8 +50,8 @@
     maximized = !maximized;
   }
 
-  let posX = 0; // position of the window
-  let posY = 0; // position of the window
+  export let x = 0; // position of the window
+  export let y = 0; // position of the window
   let moved = false; // whether the window has been moved
   let active = viewIsActive(view); // whether the window is visible
   let focused = viewIsFocused(view); // whether the window is focused
@@ -59,22 +61,33 @@
   let containerWidth = 0; // width of the container
   let containerHeight = 0; // height of the container
 
+  $: viewWindows.update((windows) => {
+    windows[view] = {
+      x,
+      y,
+      width: windowWidth,
+      height: windowHeight,
+      maximized,
+    };
+    return windows;
+  });
+
   function clamp(min: number, val: number, max: number) {
     return Math.min(Math.max(val, min), max);
   }
 
   function clampPositions() {
     const minVisible = 100; // minimum visible area per dimension
-    posX = clamp(minVisible - windowWidth, posX, containerWidth - minVisible);
+    x = clamp(minVisible - windowWidth, x, containerWidth - minVisible);
     // Specifically prevent the window from being dragged above the top of the
     // screen. This is to prevent the headerbar from being inaccessible.
-    posY = clamp(0, posY, containerHeight - minVisible);
+    y = clamp(0, y, containerHeight - minVisible);
   }
 
   $: {
     if (!moved) {
-      posX = (containerWidth - windowWidth) / 2;
-      posY = (containerHeight - windowHeight) / 2;
+      x = (containerWidth - windowWidth) / 2;
+      y = (containerHeight - windowHeight) / 2;
       clampPositions();
     }
   }
@@ -82,17 +95,11 @@
   let dragState: DragState | null = null; // null when not dragging
 
   function dragBegin(ev: MouseEvent) {
-    dragState = new DragState(
-      posX,
-      posY,
-      ev.clientX,
-      ev.clientY,
-      (newX, newY) => {
-        posX = newX;
-        posY = newY;
-        clampPositions();
-      }
-    );
+    dragState = new DragState(x, y, ev.clientX, ev.clientY, (newX, newY) => {
+      x = newX;
+      y = newY;
+      clampPositions();
+    });
   }
 
   function dragEnd() {
@@ -139,8 +146,8 @@
     style="
       --max-width: {maxWidth};
       --max-height: {maxHeight};
-      top: {posY}px;
-      left: {posX}px;
+      top: {y}px;
+      left: {x}px;
     "
   >
     <header

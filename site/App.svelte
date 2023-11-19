@@ -5,17 +5,22 @@
   import favicon from "#/libdb.so/public/favicon.ico?url";
   import normalizeCSS from "normalize.css/normalize.css?url";
   import type * as xterm from "xterm";
+  import { persisted } from "svelte-persisted-store";
+  import { writable } from "svelte/store";
   import {
+    View,
     activeViews,
     toggleView,
     focusedView,
     toggleShowDesktop,
   } from "#/libdb.so/site/lib/views.js";
 
+  import Oneko from "#/libdb.so/site/components/Oneko/oneko.svelte";
+  import Switch from "#/libdb.so/site/components/Switch.svelte";
   import Terminal from "#/libdb.so/site/components/Terminal/index.svelte";
   import Portfolio from "#/libdb.so/site/components/Portfolio/index.svelte";
-  import VisibilityIcon from "@material-design-icons/svg/filled/visibility.svg?raw";
-  import VisibilityOffIcon from "@material-design-icons/svg/filled/visibility_off.svg?raw";
+  import PopoverButton from "#/libdb.so/site/components/PopoverButton.svelte";
+  import AccessibilityIcon from "#/libdb.so/site/components/Papirus/preferences-desktop-accessibility-symbolic.svg?raw";
 
   import "libwebring/dist/webring.css";
   import "libwebring/dist/webring-element.js";
@@ -34,7 +39,17 @@
 
   const fonts = ["Inconsolata", "Lato", "Nunito", "Source Code Pro"];
 
-  let visibilityIcon = VisibilityIcon;
+  const isReducedMotion =
+    window.matchMedia(`(prefers-reduced-motion: reduce)`) === true ||
+    window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
+
+  let navbarWidth = 0;
+  let navbarHeight = 0;
+
+  let screenWidth = 0;
+  let screenHeight = 0;
+
+  const onekoCursor = persisted("prefs-oneko-cursor", !isReducedMotion);
 </script>
 
 <svelte:head>
@@ -52,8 +67,25 @@
   <meta name="author" content="diamondburned" />
 </svelte:head>
 
-<div class="screen">
+<div
+  class="screen"
+  bind:clientWidth={screenWidth}
+  bind:clientHeight={screenHeight}
+>
   <div class="backdrop" />
+
+  {#if $onekoCursor}
+    <Oneko
+      windows={[
+        {
+          x: screenWidth - navbarWidth,
+          y: screenHeight - navbarHeight,
+          width: navbarWidth,
+          height: navbarHeight,
+        },
+      ]}
+    />
+  {/if}
 
   <div class="content">
     <Terminal
@@ -64,7 +96,11 @@
     <Portfolio />
   </div>
 
-  <nav id="navbar">
+  <nav
+    id="navbar"
+    bind:clientWidth={navbarWidth}
+    bind:clientHeight={navbarHeight}
+  >
     <div class="left">
       <button class="start" on:click={() => alert("hii!!")}>
         <img src={favicon} alt="diamondburned's eye" />
@@ -87,17 +123,18 @@
       </div>
     </div>
     <div class="right">
-      {#if $nsfw}
-        <button
-          class="icon toggle-nsfw"
-          title="Disable NSFW"
-          on:click={() => ($nsfw = false)}
-          on:mouseenter={() => (visibilityIcon = VisibilityOffIcon)}
-          on:mouseleave={() => (visibilityIcon = VisibilityIcon)}
-        >
-          {@html visibilityIcon}
-        </button>
-      {/if}
+      <PopoverButton class="icon toggle-features" title="Toggle Features">
+        {@html AccessibilityIcon}
+        <div slot="popover" class="preferences">
+          <h4>Preferences</h4>
+          <Switch bind:checked={$onekoCursor}>Oneko.js</Switch>
+          {#if $nsfw}
+            <Switch bind:checked={$nsfw}>
+              <span class="text-pink-glow">NSFW Mode</span>
+            </Switch>
+          {/if}
+        </div>
+      </PopoverButton>
       <span class="clock">{currentTime}</span>
       <button class="view-desktop" on:click={() => toggleShowDesktop()} />
     </div>
@@ -219,6 +256,15 @@
       grid-template-rows: 1fr;
 
       overflow: auto;
+
+      button.active {
+        background-color: var(--bg-active);
+        border-bottom: 2px solid white;
+
+        &:hover {
+          background-color: var(--bg-active-hover);
+        }
+      }
     }
 
     button {
@@ -236,28 +282,20 @@
       display: flex;
       align-items: center;
 
-      padding: 0.35em 0.5em;
+      padding: 0.35em 0.65em;
 
       border-top: 2px solid transparent;
       border-bottom: 2px solid transparent;
 
       transition: all 0.075s ease-in-out;
 
-      &:hover:not(:disabled) {
+      &:hover:not(:disabled),
+      &.active {
         background-color: var(--bg-hover);
       }
 
       &:disabled {
         opacity: 0.5;
-      }
-
-      &.active {
-        background-color: var(--bg-active);
-        border-bottom: 2px solid white;
-
-        &:hover {
-          background-color: var(--bg-active-hover);
-        }
       }
 
       img,
@@ -273,6 +311,31 @@
 
       img {
         margin: 0 0.5em;
+      }
+    }
+
+    .right button {
+      img,
+      :global(svg) {
+        width: 1.25em;
+        height: 1.25em;
+      }
+    }
+
+    .preferences {
+      display: flex;
+      flex-direction: column;
+      padding: 1em 0;
+      gap: 0.5em;
+
+      h4 {
+        margin: 0;
+        margin-bottom: 0.25em;
+      }
+
+      label {
+        width: 100%;
+        display: flex;
       }
     }
 
