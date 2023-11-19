@@ -11,6 +11,7 @@
     viewIsActive,
     viewIsFocused,
   } from "#/libdb.so/site/lib/views.js";
+  import { dragWindows } from "#/libdb.so/site/lib/prefs.js";
   import WindowMinimize from "#/libdb.so/site/components/Papirus/window-minimize.svelte";
   import WindowMaximize from "#/libdb.so/site/components/Papirus/window-maximize.svelte";
   import WindowRestore from "#/libdb.so/site/components/Papirus/window-restore.svelte";
@@ -96,6 +97,9 @@
   let dragState: DragState | null = null; // null when not dragging
 
   function dragBegin(ev: MouseEvent) {
+    if (!$dragWindows) {
+      return;
+    }
     dragState = new DragState(x, y, ev.clientX, ev.clientY, (newX, newY) => {
       x = newX;
       y = newY;
@@ -144,6 +148,7 @@
     on:mousedown={(ev) => bringToFocus(view)}
     class="window"
     class:maximized
+    class:dragging={dragState !== null}
     style="
       --max-width: {maxWidth};
       --max-height: {maxHeight};
@@ -302,6 +307,10 @@
 
     @media (max-width: 500px) {
       @include maximize;
+    }
+
+    &.dragging {
+      cursor: move;
     }
 
     .content-wrapper {
