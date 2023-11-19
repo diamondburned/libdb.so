@@ -24,7 +24,8 @@ import (
 )
 
 var shellMommy = vars.
-	New[bool]("shell-mommy", false).
+	New[bool]("shell-mommy").
+	WithDefault(false).
 	WithDescription("Enable shell mommy mode (libdb.so/go-mommy)")
 
 var shellMommyGenerator, _ = mommy.NewGenerator(mommy.DefaultResponses)
