@@ -46,7 +46,7 @@ let
 			pname = "libdb.so-vm-wasm";
 			go = pkgs.go;
 			modules = ./gomod2nix.toml;
-			subPackages = [ "cmd/vm-wasm" ];
+			subPackages = [ "vm/cmd/vm-wasm" ];
 
 			CGO_ENABLED = 0;
 			doCheck = false; # none to run
