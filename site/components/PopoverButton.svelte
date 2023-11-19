@@ -4,7 +4,7 @@
 
   // direction is the direction that the popover will be shown.
   export let direction: "top" | "bottom" = "top";
-  export let open = true;
+  export let open = false;
 
   let buttonHeight = 0;
   let maxX = 0;
@@ -28,9 +28,15 @@
   let y = 0;
 
   let popover: HTMLDivElement;
+  let popoverWidth = 0;
+  let popoverHeight = 0;
+
   let container: HTMLDivElement;
 
   $: {
+    popoverWidth;
+    popoverHeight;
+
     if (container && popover) {
       const buttonRect = container.getBoundingClientRect();
       const { width: popoverWidth, height: popoverHeight } =
@@ -65,12 +71,22 @@
   }
 </script>
 
-<svelte:window bind:innerWidth={maxX} bind:innerHeight={maxY} />
+<svelte:window
+  bind:innerWidth={maxX}
+  bind:innerHeight={maxY}
+  on:mousedown={() => {
+    if (open) {
+      open = false;
+    }
+  }}
+/>
 
 <div class="popover-container" bind:this={container}>
   <button
     class="popover-button"
-    on:click={() => (open = !open)}
+    class:active={open}
+    on:click={(ev) => (open = !open)}
+    on:mousedown={(ev) => ev.stopPropagation()}
     bind:offsetHeight={buttonHeight}
   >
     <slot />
@@ -84,6 +100,9 @@
       class:popover-bottom={direction === "bottom"}
       transition:fly={{ y: buttonHeight / 2, duration: 100 }}
       bind:this={popover}
+      bind:offsetWidth={popoverWidth}
+      bind:offsetHeight={popoverHeight}
+      on:mousedown={(ev) => ev.stopPropagation()}
       style="--top: {y}px; --left: {x}px;"
     >
       <slot name="popover" />
