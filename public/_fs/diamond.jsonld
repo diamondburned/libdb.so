@@ -18,24 +18,39 @@
   "birthDate": "2002-02-27",
   "knowsLanguage": ["en", "vi"],
   "description": "Hi, I'm Diamond! I'm a 4th-year Computer Science major 👩🎓 and past Software Engineer Intern 👩‍💻 🖥️",
-  "webring": {
-    "@context": {
-      "version": "https://schema.org/version",
-      "name": "https://schema.org/name",
-      "link": "https://schema.org/url"
-    },
-    "@type": "Webring",
-    "version": 1,
-    "name": "robot girls",
-    "ring": [
-      {
-        "name": "diamond",
-        "link": "https://0xd14.id"
+  "webring": [
+    {
+      "@context": {
+        "version": "https://schema.org/version",
+        "name": "https://schema.org/name",
+        "link": "https://schema.org/url"
       },
-      {
-        "name": "SZOFIÁ",
-        "link": "https://737a6f6669e1.id"
-      }
-    ]
-  }
+      "@type": "Webring",
+      "version": 1,
+      "name": "robot girls",
+      "ring": [
+        {
+          "name": "diamond",
+          "link": "https://0xd14.id"
+        },
+        {
+          "name": "SZOFIÁ",
+          "link": "https://737a6f6669e1.id"
+        },
+        {
+          "name": "addi",
+          "link": "https://addi-bot.carrd.co"
+        }
+      ]
+    },
+    {
+      "@context": {
+        "version": "https://schema.org/version",
+        "name": "https://schema.org/name",
+        "link": "https://schema.org/url"
+      },
+      "@type": "Webring",
+      "@id": "https://raw.githubusercontent.com/diamondburned/acmfriends-webring/%3C3-spring-2023/webring.json"
+    }
+  ]
 }
