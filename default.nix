@@ -1,94 +1,10 @@
-{
-	pkgs,
-	lib ? pkgs.lib,
-	src ? builtins.filterSource
-		(path: type:
-			(baseNameOf path != ".git") &&
-			(baseNameOf path != "build") &&
-			(baseNameOf path != "node_modules"))
-		(./.),
-}:
-
-let
-	stdenv = pkgs.stdenv;
-in
-
-# use our nixpkgs for everything except stdenv
-let
-	version =
-		if src ? rev then
-			builtins.substring 0 7 src.rev
-		else
-			"dirty";
-
-	buildGoWasmModule = pkgs.buildGoModule.override {
-		go = pkgs.go // {
-			GOOS = "js";
-			GOARCH = "wasm";
-		};
-	};
-
-	vmWasm =
-		let module = pkgs.buildGoApplication {
-			inherit version src;
-			pname = "libdb.so-vm-wasm";
-			go = pkgs.go;
-			modules = ./gomod2nix.toml;
-			subPackages = [ "vm/cmd/vm-wasm" ];
-
-			CGO_ENABLED = 0;
-			doCheck = false; # none to run
-
-			ldflags =
-				[ "-s" "-w" ]
-				++ (if version != "dirty" then [ "-X main.gitrev=${version}" ] else [ ]);
-
-			postInstall = ''
-				mv $out/bin/js_wasm/vm-wasm $out/bin/vm.wasm
-				rmdir $out/bin/js_wasm
-			'';
-		};
-		in module.overrideAttrs (old: old // {
-			GOOS = "js";
-			GOARCH = "wasm";
-		});
-
-	nodeModules = pkgs.npmlock2nix.v2.node_modules {
-		inherit src;
-		nodejs = pkgs.nodejs;
-		# mkDerivation hates us because we have a Makefile. We'll override
-		# installPhase to fix that.
-		installPhase = "mv node_modules $out/";
-	};
-in
-
-stdenv.mkDerivation {
-	inherit version src;
-	pname = "libdb.so";
-
-	nativeBuildInputs = with pkgs; [
-		coreutils
-		bash
-		jq
-		nodejs
-	];
-
-	preBuild = ''
-		set -x
-
-		mkdir -p build
-		cp -r ${vmWasm}/bin/vm.wasm build/vm.wasm
-
-		cp -r ${nodeModules} node_modules
-		chown -R $(id -u):$(id -g) node_modules
-		chmod -R +w node_modules
-		export PATH="$PATH:$PWD/node_modules/.bin"
-		export VERSION="$version"
-
-		set +x
-	'';
-
-	installPhase = ''
-		cp -r build/dist $out
-	'';
-}
+(import
+	(
+		let lock = builtins.fromJSON (builtins.readFile ./flake.lock); in
+		fetchTarball {
+			url = lock.nodes.flake-compat.locked.url or "https://github.com/edolstra/flake-compat/archive/${lock.nodes.flake-compat.locked.rev}.tar.gz";
+			sha256 = lock.nodes.flake-compat.locked.narHash;
+		}
+	)
+	{ src = ./.; }
+).defaultNix
