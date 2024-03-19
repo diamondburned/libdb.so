@@ -6,6 +6,16 @@
     "dev": "vite",
     "build": "make"
   },
+  "prettier": {
+    "overrides": [
+      {
+        "files": "*.jsonld",
+        "options": {
+          "parser": "json"
+        }
+      }
+    ]
+  },
   "devDependencies": {
     "@material-design-icons/svg": "^0.14.13",
     "@sveltejs/vite-plugin-svelte": "^2.0.2",
