@@ -27,7 +27,10 @@
 						buildGoModule = super.buildGo121Module;
 					})
 					(self: super: {
-						npmlock2nix = super.callPackage npmlock2nix { pkgs = super; };
+						npmlock2nix = import npmlock2nix {
+							pkgs = super;
+							lib = super.lib;
+						};
 					})
 					(gomod2nix.overlays.default)
 				];
