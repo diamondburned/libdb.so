@@ -7,12 +7,35 @@
   "name": "Diamond",
   "url": ["https://libdb.so", "https://0xd14.id", "https://diamondx.pet"],
   "email": ["mailto:diamond@libdb.so"],
-  "sameAs": ["https://tech.lgbt/@diamond", "https://girlcock.club/@diamond",
-  "https://github.com/diamondburned"],
+  "sameAs": [
+    "https://tech.lgbt/@diamond",
+    "https://girlcock.club/@diamond",
+    "https://github.com/diamondburned"
+  ],
   "height": "169 cm",
   "gender": ["girlthing", "bot", "female", "transgender"],
   "pronouns": ["it/its", "she/her"],
   "birthDate": "2002-02-27",
   "knowsLanguage": ["en", "vi"],
-  "description": "Hi, I'm Diamond! I'm a 4th-year Computer Science major 👩🎓 and past Software Engineer Intern 👩‍💻 🖥️"
+  "description": "Hi, I'm Diamond! I'm a 4th-year Computer Science major 👩🎓 and past Software Engineer Intern 👩‍💻 🖥️",
+  "webring": {
+    "@context": {
+      "version": "https://schema.org/version",
+      "name": "https://schema.org/name",
+      "link": "https://schema.org/url"
+    },
+    "@type": "Webring",
+    "version": 1,
+    "name": "robot girls",
+    "ring": [
+      {
+        "name": "diamond",
+        "link": "https://0xd14.id"
+      },
+      {
+        "name": "SZOFIÁ",
+        "link": "https://737a6f6669e1.id"
+      }
+    ]
+  }
 }
