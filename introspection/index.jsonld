@@ -1,0 +1,17 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://0xd14.id",
+  "additionalType": ["Bot"],
+  "identifier": "d14",
+  "name": "Diamond",
+  "url": ["https://libdb.so", "https://0xd14.id", "https://diamondx.pet"],
+  "email": ["mailto:diamond@libdb.so"],
+  "sameAs": ["https://tech.lgbt/@diamond", "https://girlcock.club/@diamond"],
+  "height": "169 cm",
+  "gender": ["girlthing", "bot", "female", "transgender"],
+  "pronouns": ["it/its", "she/her"],
+  "birthDate": "2002-02-27",
+  "knowsLanguage": ["en", "vi"],
+  "description": "Hi, I'm Diamond! I'm a 4th-year Computer Science major 👩🎓 and past Software Engineer Intern 👩‍💻 🖥️"
+}
