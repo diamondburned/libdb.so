@@ -1,8 +1,5 @@
-let sources = import ./nix/sources.nix;
-in
-
 {
-	pkgs ? import sources.nixpkgs {},
+	pkgs,
 	lib ? pkgs.lib,
 	src ? builtins.filterSource
 		(path: type:
@@ -16,17 +13,8 @@ let
 	stdenv = pkgs.stdenv;
 in
 
-let
-	ourPkgs = import sources.nixpkgs {
-		inherit (stdenv) system;
-		overlays = import ./nix/overlays.nix;
-	};
-in
-
 # use our nixpkgs for everything except stdenv
 let
-	pkgs = ourPkgs;
-
 	version =
 		if src ? rev then
 			builtins.substring 0 7 src.rev

@@ -8,22 +8,20 @@ jobs:
   gomod2nix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Install Nix shell
-        uses: diamondburned/cache-install@main
+      - uses: actions/checkout@v4
         with:
-          nix-file: "" # we don't need this yet
-          shell-file: shell.nix
-          auto-optimise: true
+          submodules: true
+
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Tidy Go modules
-        run: go mod tidy
+        run: |-
+          nix develop -c go mod tidy
 
       - name: Update gomod2nix
-        id: gomod2nix
         run: |-
-          gomod2nix
+          nix develop -c gomod2nix
 
           if [[ $(git status --porcelain) ]]; then
             echo "updated=1" >> $GITHUB_OUTPUT
@@ -31,8 +29,7 @@ jobs:
 
       - name: Commit changes (if any)
         id: commit
-        if: ${{ steps.gomod2nix.outputs.updated == 1 }}
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: |-
             Update gomod2nix.toml
@@ -44,21 +41,17 @@ jobs:
     runs-on: ubuntu-latest
     needs: gomod2nix
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Cache Nix package builds
-        uses: diamondburned/cache-install@main
+      - uses: actions/checkout@v4
         with:
-          # We only need our default.nix expression and not shell.nix.
-          nix-file: ""
-          shell-file: ""
-          instantiated-expression: import ./. {}
-          auto-optimise: true
+          submodules: true
+
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Build
-        run: mkdir -p /tmp/result && cp -r $(nix-build)/. /tmp/result
+        run: mkdir -p /tmp/result && cp -r $(nix build .#)/. /tmp/result
 
       - name: Upload artifact(s)
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: result
