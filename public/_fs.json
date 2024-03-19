@@ -1,6 +1,9 @@
 {
   "base": "_fs",
   "tree": {
+    "diamond.jsonld": {
+      "size": 711
+    },
     "Pictures/": {
       "background.jpg": {
         "size": 9309
