@@ -4,6 +4,7 @@
 
   import Toasts from "#/libdb.so/site/components/Toasts.svelte";
   import Window from "#/libdb.so/site/components/Window.svelte";
+  import Webring from "#/libdb.so/site/components/Webring.svelte";
   import OpenInNew from "#/libdb.so/site/components/MaterialIcons/open_in_new.svelte";
 
   import GitHubIcon from "super-tiny-icons/images/svg/github.svg";
@@ -22,6 +23,14 @@
     .then((r) => r.json())
     .catch((err) => {
       console.error("Failed to fetch resume:", err);
+      throw err;
+    });
+
+  const jsonldURL = "https://0xd14.id";
+  const jsonld = fetch(jsonldURL)
+    .then((r) => r.json())
+    .catch((err) => {
+      console.error("Failed to fetch self JSON-LD:", err);
       throw err;
     });
 
@@ -208,14 +217,24 @@
 
     <section class="resume">
       <h2>Resume</h2>
-      <div>
+      <div class="links">
         <a
           role="button"
           href="https://github.com/diamondburned/resume/blob/main/resume.pdf"
           target="_blank"
         >
           <OpenInNew />
-          <span class="filename">resume.pdf</span>
+          <span class="filename">PDF</span>
+          <span class="source">(github.com)</span>
+        </a>
+        <a
+          role="button"
+          href="https://github.com/diamondburned/resume/blob/main/resume.json"
+          style="--color: var(--pink-rgb);"
+          target="_blank"
+        >
+          <OpenInNew />
+          <span class="filename">JSON</span>
           <span class="source">(github.com)</span>
         </a>
       </div>
@@ -278,7 +297,7 @@
           {/each}
         </ul>
       </section>
-    {:catch _}
+    {:catch}
       <span class="loading">
         I couldn't load my resume {":("}
         <br />
@@ -286,19 +305,25 @@
       </span>
     {/await}
 
-    <webring-element
-      src="https://raw.githubusercontent.com/diamondburned/acmfriends-webring/%3C3-spring-2023/webring.json"
-      name="diamond"
-    >
-      <section class="webring">
-        <span class="ring" />
-        <div>
-          <a class="left" target="_blank" />
-          <span class="middle" />
-          <a class="right" target="_blank" />
-        </div>
-      </section>
-    </webring-element>
+    {#await jsonld}
+      <span class="loading">Give me a bit, I'm loading the rest!</span>
+    {:then jsonld}
+      <!-- Render dynamic webrings -->
+      {#each jsonld.webring as webring}
+        <section class="webring">
+          <Webring
+            src={webring["@id"]}
+            data={webring["@id"] ? null : webring}
+          />
+        </section>
+      {/each}
+    {:catch}
+      <span class="loading">
+        I couldn't load my JSON-LD information either {":("}
+        <br />
+        Maybe the console can help?
+      </span>
+    {/await}
   </div>
 </Window>
 
@@ -375,6 +400,7 @@
       a[role="button"] {
         --color: 255 255 255;
 
+        color: rgb(var(--color));
         text-decoration: none;
         padding: 0.5em;
         border-radius: 5px;
@@ -385,6 +411,7 @@
 
         box-shadow: 0 0 0.35em -0.1em rgba(var(--color), 0.5);
         background-color: rgba(var(--color), 0.1);
+
         &:hover {
           box-shadow: 0 0 0.45em -0.1em rgba(var(--color), 0.8);
           background-color: rgba(var(--color), 0.2);
@@ -511,7 +538,6 @@
       .name {
         font-weight: bold;
         margin-right: 0.5em;
-        color: rgb(var(--color));
       }
 
       .value {
@@ -561,6 +587,16 @@
         font-size: 0.8em;
         vertical-align: baseline;
         opacity: 0.65;
+      }
+
+      .links {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5em;
+
+        @media (max-width: 400px) {
+          flex-wrap: wrap;
+        }
       }
 
       :global(svg) {
@@ -668,59 +704,6 @@
 
       .description {
         margin-top: 0.5em;
-      }
-    }
-
-    webring-element {
-      section.webring {
-        display: flex;
-        padding: 1em;
-        flex-direction: column;
-
-        & > * {
-          margin: 0;
-        }
-
-        & > :nth-child(1) {
-          align-self: center;
-        }
-
-        & > :nth-child(2) {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-
-          a {
-            color: var(--blue);
-            text-decoration: none;
-
-            &:hover {
-              text-decoration: underline;
-            }
-          }
-        }
-
-        .left {
-          text-align: left;
-          &::before {
-            content: "‹ ";
-          }
-        }
-
-        .middle {
-          text-align: center;
-          opacity: 0.5;
-        }
-
-        .right {
-          text-align: right;
-          &::after {
-            content: " ›";
-          }
-        }
-
-        .ring {
-          opacity: 0.75;
-        }
       }
     }
 

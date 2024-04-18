@@ -18,9 +18,6 @@
   import PopoverButton from "#/libdb.so/site/components/PopoverButton.svelte";
   import AccessibilityIcon from "#/libdb.so/site/components/Papirus/preferences-desktop-accessibility-symbolic.svg?raw";
 
-  import "libwebring/dist/webring.css";
-  import "libwebring/dist/webring-element.js";
-
   let currentTime = "00:00";
   function updateTime() {
     currentTime = new Date().toLocaleTimeString(undefined, {
