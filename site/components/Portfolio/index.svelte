@@ -114,7 +114,7 @@
 
 <Window
   view="portfolio"
-  maxWidth="max(50vw, 600px)"
+  maxWidth="max(50vw, 700px)"
   maxHeight="max(90vh, 1000px)"
   scrollable
 >
@@ -145,19 +145,25 @@
           <h1>Diamond!</h1>
         </div>
       </div>
+      <p class="i-am">I am a:</p>
+      <ul>
+        {#if $nsfw}
+          <li>
+            <b class="text-pink-glow">Cat girlthing toy/object</b>
+          </li>
+        {/if}
+        <li>
+          <b>4th-year Computer Science major 👩🎓</b> and a
+        </li>
+        <li>
+          <b>{">"}5 years Software Engineer 👩‍💻 🖥️</b>
+        </li>
+      </ul>
       <p>
-        I'm a
-        {#if $nsfw}<b class="text-pink-glow">catgirl pet</b>,{/if}
-        <b>4th-year Computer Science major 👩🎓</b>
-        and past <b>Software Engineer Intern 👩‍💻 🖥️</b>
-      </p>
-      <p>
-        I am what ChatGPT calls the world's biggest "open source
+        I consider myself the world's biggest "open source
         {#if $nsfw}<span class="text-pink-glow">slut</span
-          >{:else}cheerleader{/if}"!
-        <br />
-        I'm passionate about making the world a better place through technology and
-        open source.
+          >{:else}cheerleader{/if}"! I'm passionate about making the world a
+        better place through technology and open source.
       </p>
     </section>
 
@@ -306,7 +312,7 @@
     margin: 0 auto;
 
     width: 100%;
-    max-width: clamp(400px, 80vw, 550px);
+    max-width: clamp(400px, 80vw, 650px);
     line-height: 1.5;
 
     position: relative;
@@ -447,8 +453,14 @@
         }
       }
 
-      p:last-child {
-        max-width: 525px;
+      ul {
+        list-style: "🌟  ";
+        padding-left: 2em;
+        margin: 0;
+      }
+
+      p.i-am {
+        margin-bottom: 0.5em;
       }
     }
 
