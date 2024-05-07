@@ -1,6 +1,6 @@
 {
 	inputs = {
-		nixpkgs.url = "github:nixos/nixpkgs?ref=85f1ba3e51676fa8cc604a3d863d729026a6b8eb";
+		nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 		flake-utils.url = "github:numtide/flake-utils";
 		flake-compat.url = "https://flakehub.com/f/edolstra/flake-compat/1.tar.gz";
 		gomod2nix = {
@@ -23,10 +23,6 @@
 			let
 				overlays = [
 					(self: super: {
-						go = super.go_1_21;
-						buildGoModule = super.buildGo121Module;
-					})
-					(self: super: {
 						npmlock2nix = import npmlock2nix {
 							pkgs = super;
 							lib = super.lib;
@@ -38,6 +34,9 @@
 				pkgs = import nixpkgs {
 					inherit system overlays;
 				};
+
+				go = pkgs.go_1_21;
+				nodejs = pkgs.nodejs;
 
 				version =
 					if self ? rev then
@@ -52,7 +51,7 @@
 						go
 						gopls
 						jq
-						tinygo
+						# tinygo
 						gomod2nix.packages.${system}.default
 					];
 
@@ -105,9 +104,8 @@
 				};
 
 				packages.vm = (pkgs.buildGoApplication {
-					inherit version;
+					inherit version go;
 					pname = "libdb.so-vm-wasm";
-					go = pkgs.go;
 					src = self;
 					modules = ./gomod2nix.toml;
 					subPackages = [ "vm/cmd/vm-wasm" ];
