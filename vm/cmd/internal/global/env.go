@@ -9,7 +9,6 @@ import (
 	"github.com/lucasb-eyer/go-colorful"
 	"gitlab.com/diamondburned/dotfiles/Scripts/lineprompt/lineprompt"
 	"libdb.so/vm"
-	"libdb.so/vm/rwfs"
 	"libdb.so/vm/rwfs/kvfs"
 
 	_ "libdb.so/vm/programs/coreutils"
@@ -31,11 +30,11 @@ var shellrc []byte
 
 // RootFS is the filesystem that contains default read-only files, such as the
 // shellrc file.
-var RootFS = rwfs.ReadOnlyFS(kvfs.New(kvfs.MemoryStorageFromExisting(
+var RootFS = kvfs.New(kvfs.MemoryStorageFromExisting(
 	map[string]kvfs.StoredValue{
 		"/.shellrc": kvfs.StoredFile{Data: shellrc},
 	},
-)))
+))
 
 var InitialEnv = vm.EnvironFromMap(map[string]string{
 	"TERM":  "xterm-256color",

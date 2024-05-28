@@ -35,7 +35,7 @@
 					inherit system overlays;
 				};
 
-				go = pkgs.go_1_21;
+				go = pkgs.go_1_22;
 				nodejs = pkgs.nodejs;
 
 				version =

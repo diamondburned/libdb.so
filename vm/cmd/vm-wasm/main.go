@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
-	"reflect"
 	"runtime"
+	"slices"
 	"syscall/js"
 	"unsafe"
 
@@ -33,7 +34,7 @@ func init() {
 var input io.Writer // js writes to this
 var startCh = make(chan struct{}, 1)
 var terminal vm.Terminal
-var publicFS *httpfs.FS
+var publicFSes []fs.FS
 
 func main() {
 	wr, ww := io.Pipe()
@@ -53,6 +54,7 @@ func main() {
 		global.Set("vm_update_terminal", js.FuncOf(update_terminal))
 		global.Set("vm_start", js.FuncOf(start))
 		global.Set("vm_set_public_fs", js.FuncOf(set_public_fs))
+		global.Set("vm_add_public_fs", js.FuncOf(add_public_fs))
 	}
 
 	<-startCh
@@ -63,8 +65,7 @@ func main() {
 		Programs: programs.All(),
 		Filesystem: rwfs.OverlayFS(
 			kvfs.New(kvfs.LocalStorage()),
-			rwfs.ReadOnlyFS(global.RootFS),
-			rwfs.ReadOnlyFS(nsfw.WrapFS(publicFS)),
+			slices.Concat([]fs.FS{global.RootFS}, publicFSes)...,
 		),
 		Cwd:     global.InitialCwd,
 		Environ: global.InitialEnv,
@@ -101,14 +102,23 @@ func start(this js.Value, args []js.Value) any {
 // hold onto the bytes pointer after the write is complete.
 func write_stdin(this js.Value, args []js.Value) any { // (string) => void
 	s := args[0].String()
-	b := unsafe.Slice((*byte)(unsafe.Pointer((*reflect.StringHeader)(unsafe.Pointer(&s)).Data)), len(s))
+	b := unsafe.Slice(unsafe.StringData(s), len(s))
 	input.Write(b)
 	runtime.KeepAlive(s)
 	return nil
 }
 
 // set_public_fs sets the public file system to the given JSON string.
+//
+// Deprecated: use [add_public_fs] instead. This function acts the same as
+// that function.
 func set_public_fs(this js.Value, args []js.Value) any { // (string, string) => void
+	return add_public_fs(this, args)
+}
+
+// add_public_fs adds the given httpfs JSON string to the public file system.
+// It is added on top as a FS overlay.
+func add_public_fs(this js.Value, args []js.Value) any { // (string, string) => void
 	jsonStr := args[0].String()
 	basePath := args[1].String()
 
@@ -117,7 +127,11 @@ func set_public_fs(this js.Value, args []js.Value) any { // (string, string) => 
 		log.Panicln("cannot unmarshal public fs:", err)
 	}
 
-	publicFS = httpfs.New(*http.DefaultClient, tree, basePath)
+	var fs fs.FS
+	fs = httpfs.New(*http.DefaultClient, httpfs.FileTreeRoot{Tree: tree}, basePath)
+	fs = nsfw.WrapFS(fs)
+
+	publicFSes = append(publicFSes, fs)
 	return nil
 }
 
