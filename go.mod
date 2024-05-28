@@ -2,8 +2,6 @@ module libdb.so
 
 go 1.21.3
 
-replace mvdan.cc/sh/v3 => github.com/diamondburned/mvdan-sh/v3 v3.0.0-20230318131347-17d55f04e1ac
-
 require (
 	github.com/alecthomas/assert/v2 v2.4.0
 	github.com/davecgh/go-spew v1.1.1
@@ -19,7 +17,7 @@ require (
 	golang.org/x/image v0.6.0
 	libdb.so/go-mommy v0.1.1
 	libdb.so/libwebring-go v0.0.0-20230521133149-d80b3d3c5163
-	mvdan.cc/sh/v3 v3.6.1-0.20230510000419-96a1c48ec2d7
+	mvdan.cc/sh/v3 v3.8.0
 )
 
 require (
@@ -32,7 +30,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/soniakeys/quant v1.0.0 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
-	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/term v0.6.0 // indirect
+	golang.org/x/sync v0.6.0 // indirect
+	golang.org/x/sys v0.17.0 // indirect
+	golang.org/x/term v0.17.0 // indirect
 )
