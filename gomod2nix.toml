@@ -65,14 +65,14 @@ schema = 3
     version = "v0.6.0"
     hash = "sha256-fZc2Jfh6EqsjmMBUMaGHn8+bSMetuZ7K4AxU8BRXt94="
   [mod."golang.org/x/sync"]
-    version = "v0.1.0"
-    hash = "sha256-Hygjq9euZ0qz6TvHYQwOZEjNiTbTh1nSLRAWZ6KFGR8="
+    version = "v0.6.0"
+    hash = "sha256-LLims/wjDZtIqlYCVHREewcUOX4hwRwplEuZKPOJ/HI="
   [mod."golang.org/x/sys"]
-    version = "v0.6.0"
-    hash = "sha256-zAgxiTuL24sGhbXrna9R1UYqLQh46ldztpumOScmduY="
+    version = "v0.17.0"
+    hash = "sha256-e0qnE+SitE02IzvnJKI4Uzpq9EOZY+zvE8Wf5b2e6Kg="
   [mod."golang.org/x/term"]
-    version = "v0.6.0"
-    hash = "sha256-Ao0yXpwY8GyG+/23dVfJUYrfEfNUTES3RF45v1VhUAk="
+    version = "v0.17.0"
+    hash = "sha256-lCo7WPHe8Q9q76f0D8FrfoX90MTvwa21O+Dwr1mOAcA="
   [mod."libdb.so/go-mommy"]
     version = "v0.1.1"
     hash = "sha256-mtgnNTvV2twnZAJ/oGW53l6AiBX+VhXmwH1gjuNl0pI="
@@ -80,6 +80,5 @@ schema = 3
     version = "v0.0.0-20230521133149-d80b3d3c5163"
     hash = "sha256-PQjXuoOp27qbNgEm3VRUV4IoCA/ukvPQdfyDsaUz2kM="
   [mod."mvdan.cc/sh/v3"]
-    version = "v3.0.0-20230318131347-17d55f04e1ac"
-    hash = "sha256-ZKBbtCRW34QYUIDbVJ66geg7zAfqU/Suibk/riTJ/TQ="
-    replaced = "github.com/diamondburned/mvdan-sh/v3"
+    version = "v3.8.0"
+    hash = "sha256-MJvF/6uC5eGKk4po2syUk4d4tKKSOe++xmR2znxVb5s="
