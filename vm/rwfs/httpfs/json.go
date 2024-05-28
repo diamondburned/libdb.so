@@ -2,6 +2,7 @@ package httpfs
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 )
 
@@ -28,8 +29,7 @@ func (t *FileTree) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	*t = make(FileTree)
-
+	*t = make(map[string]FileTreeValue, len(m))
 	for k, b := range m {
 		if strings.HasSuffix(k, "/") {
 			var v FileTree
@@ -48,4 +48,32 @@ func (t *FileTree) UnmarshalJSON(b []byte) error {
 	}
 
 	return nil
+}
+
+// FileTreeRoot is a root file tree.
+type FileTreeRoot struct {
+	BaseURL string   `json:"base_url"`
+	Tree    FileTree `json:"tree"`
+}
+
+func (t *FileTreeRoot) UnmarshalJSON(b []byte) error {
+	var versionedTree struct {
+		Version int `json:"$version"`
+	}
+
+	if err := json.Unmarshal(b, &versionedTree); err != nil {
+		return fmt.Errorf("unmarshal file tree version: %w", err)
+	}
+
+	switch versionedTree.Version {
+	case 0:
+		return json.Unmarshal(b, &t.Tree)
+	case 1:
+		return fmt.Errorf("file tree version 1 is not used")
+	case 2:
+		type RawFileTreeRoot FileTreeRoot
+		return json.Unmarshal(b, (*RawFileTreeRoot)(t))
+	default:
+		return fmt.Errorf("unknown file tree version: %d", versionedTree.Version)
+	}
 }

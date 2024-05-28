@@ -3,6 +3,7 @@ package httpfs
 import (
 	"io/fs"
 	"net/http"
+	"path"
 
 	"github.com/pkg/errors"
 	"libdb.so/vm/rwfs"
@@ -10,7 +11,7 @@ import (
 
 // FS is a file system that reads from an HTTP server.
 type FS struct {
-	tree   FileTree
+	root   FileTreeRoot
 	client httpClient
 }
 
@@ -18,12 +19,12 @@ var _ fs.FS = (*FS)(nil)
 
 // New returns a new FS that obeys the given file tree. A cache may optionally
 // be provided to cache file contents.
-func New(client http.Client, tree FileTree, basePath string) *FS {
+func New(client http.Client, root FileTreeRoot, basePath string) *FS {
 	return &FS{
-		tree: tree,
+		root: root,
 		client: httpClient{
 			client:   client,
-			basePath: basePath,
+			basePath: path.Join(root.BaseURL, basePath),
 		},
 	}
 }
@@ -33,11 +34,11 @@ func (h *FS) Open(path string) (fs.File, error) {
 	if len(parts) == 0 {
 		return fsDir{
 			i: dirInfo(path),
-			d: h.tree,
+			d: h.root.Tree,
 		}, nil
 	}
 
-	current := h.tree
+	current := h.root.Tree
 	for i, part := range parts {
 		entry, ok := current[part]
 		if !ok {
