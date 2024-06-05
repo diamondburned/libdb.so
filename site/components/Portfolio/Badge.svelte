@@ -21,7 +21,7 @@
 >
   <img class="badge" src={badge.image} alt={badge.alt} />
   {#if badge.alt && hover}
-    <div class="tooltip" transition:fly={{ y: 20, duration: 250 }}>{badge.alt}</div>
+    <div class="popover tooltip" transition:fly={{ y: 20, duration: 250 }}>{badge.alt}</div>
   {/if}
 </a>
 
@@ -36,13 +36,16 @@
 
     & .tooltip {
       position: absolute;
+      z-index: 10;
       top: -2.5em;
       width: 100%;
-      font-size: 0.85em;
-      background: #aaa;
       padding: 0.35em;
+
+      font-size: 0.85em;
+      background: var(--adw-popover-bg-color);
+      border: 1px solid var(--adw-popover-shade-color);
       color: #fff;
-      z-index: 10;
+
       box-sizing: border-box;
       text-align: center;
       pointer-events: none;

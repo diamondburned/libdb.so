@@ -1,0 +1,21 @@
+@use "sass:meta";
+@use "root-light";
+@use "root-dark";
+@use "libadwaita/common" as common;
+
+:root {
+  @each $key, $value in meta.module-variables("common") {
+    --adw-#{$key}: #{$value};
+  }
+
+  --blue: rgba(85, 205, 252, 1);
+  --pink: rgba(247, 168, 184, 1);
+
+  --blue-rgb: 85, 205, 252;
+  --pink-rgb: 247, 168, 184;
+
+  --glow-radius: 0.35em;
+  --glow-alpha: 0.65;
+  --pink-glow: 0 0 var(--glow-radius) rgba(var(--pink-rgb), var(--glow-alpha));
+  --blue-glow: 0 0 var(--glow-radius) rgba(var(--blue-rgb), var(--glow-alpha));
+}

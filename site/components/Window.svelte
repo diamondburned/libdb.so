@@ -61,6 +61,8 @@
   let windowHeight = 0; // height of the window
   let containerWidth = 0; // width of the container
   let containerHeight = 0; // height of the container
+  let content: HTMLElement | null = null; // content element
+  let contentScrolled = false; // scroll position of the content
 
   $: {
     viewWindows.update((windows) => {
@@ -145,7 +147,7 @@
     id={view}
     bind:clientWidth={windowWidth}
     bind:clientHeight={windowHeight}
-    on:mousedown={(ev) => bringToFocus(view)}
+    on:mousedown={() => bringToFocus(view)}
     class="window"
     class:maximized
     class:dragging={dragState !== null}
@@ -158,6 +160,7 @@
   >
     <header
       class="titlebar {headerClass}"
+      class:scrolled={contentScrolled}
       on:dblclick={onMaximize}
       on:mousedown={(ev) => dragBegin(ev)}
     >
@@ -185,7 +188,12 @@
       <div class="overlays">
         <slot name="overlay" />
       </div>
-      <div class="content {contentClass}" class:scrollable>
+      <div
+        class="content {contentClass}"
+        class:scrollable
+        bind:this={content}
+        on:scroll={() => (contentScrolled = !!content && content.scrollTop > 0)}
+      >
         <slot />
       </div>
     </div>
@@ -271,23 +279,21 @@
   }
 
   main.window {
-    --window-border-color: rgba(255, 255, 255, 0.1);
-
     overflow: hidden;
     display: flex;
     flex-direction: column;
 
     box-shadow: 0 2px 16px -6px rgba(0, 0, 0, 0.77);
-    border-radius: 12px;
+    border-radius: var(--adw-window-radius);
 
-    outline: 1px solid var(--window-border-color);
+    outline: 1px solid var(--adw-thin-border-color);
     outline-offset: -1px;
 
     width: min(calc(100% - clamp(6px, 5vw, 3rem)), var(--max-width));
     height: min(calc(100% - clamp(6px, 7vw, 5rem)), var(--max-height));
 
-    color: #fcfcfc;
-    background-color: #0f0f0f;
+    color: var(--adw-window-fg-color);
+    background-color: var(--adw-window-bg-color);
 
     position: absolute;
     top: 0;
@@ -347,9 +353,8 @@
     }
 
     header.titlebar {
-      color: white;
-      background-color: #030303;
-      box-shadow: 0 -4px 6px 6px rgba(0, 0, 0, 0.47);
+      color: var(--adw-headerbar-fg-color);
+      background-color: var(--adw-headerbar-bg-color);
 
       text-align: center;
 
@@ -358,6 +363,10 @@
       justify-content: space-between;
 
       user-select: none;
+
+      &.scrolled {
+        box-shadow: 0 -4px 6px 6px rgba(0, 0, 0, 0.47);
+      }
 
       :global(h1),
       :global(h2),

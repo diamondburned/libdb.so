@@ -18,7 +18,7 @@
   .badges {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
-    gap: 0.25em;
+    grid-gap: 0.25em;
     justify-content: center;
     justify-items: center;
   }

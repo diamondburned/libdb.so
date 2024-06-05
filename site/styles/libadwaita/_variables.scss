@@ -1,0 +1,286 @@
+@use "sass:color";
+@use "palette" as *;
+
+@mixin theme($variant: "light", $contrast: "") {
+  // The main accent color and the matching text value
+  $accent-bg-color: $blue-3;
+  $accent-fg-color: white;
+  $accent-color: if($variant == "light", $blue-4, #78aeed);
+
+  // destructive-action buttons
+  $destructive-bg-color: if($variant == "light", $red-3, $red-4);
+  $destructive-fg-color: white;
+  $destructive-color: if($variant == "light", $red-4, #ff7b63);
+
+  // Levelbars, entries, labels and infobars. These don't need text colors
+  $success-bg-color: if($variant == "light", $green-4, $green-5);
+  $success-fg-color: white;
+  $success-color: if($variant == "light", #1b8553, $green-1);
+
+  $warning-bg-color: if($variant == "light", $yellow-5, #cd9309);
+  $warning-fg-color: rgba(0 0 0 / 80%);
+  $warning-color: if($variant == "light", #9c6e03, $yellow-2);
+
+  $error-bg-color: if($variant == "light", $red-3, $red-4);
+  $error-fg-color: white;
+  $error-color: if($variant == "light", $red-4, #ff7b63);
+
+  // Window
+  $window-bg-color: if($variant == "light", #fafafa, #242424);
+  $window-fg-color: if(
+    $variant == "light",
+    color.mix($window-bg-color, black, 80%),
+    white
+  );
+  // $window-fg-color: if($variant == "light", rgba(0 0 0 / 80%), white);
+
+  // Views - e.g. text view or tree view
+  $view-bg-color: if($variant == "light", #ffffff, #1e1e1e);
+  $view-fg-color: if($variant == "light", rgba(0 0 0 / 80%), white);
+
+  // Header bar, search bar, tab bar
+  $headerbar-bg-color: if($variant == "light", #ffffff, #303030);
+  $headerbar-fg-color: if($variant == "light", rgba(0 0 0 / 80%), white);
+  $headerbar-border-color: if($variant == "light", rgba(0 0 0 / 80%), white);
+  $headerbar-backdrop-color: $window-bg-color;
+  $headerbar-shade-color: if(
+    $variant == "light",
+    rgba(0 0 0 / 12%),
+    rgba(0 0 0 / 36%)
+  );
+  $headerbar-darker-shade-color: if(
+    $variant == "light",
+    rgba(0 0 0 / 12%),
+    rgba(0 0 0 / 90%)
+  );
+
+  // Split pane views
+  $sidebar-bg-color: if($variant == "light", #ebebeb, #303030);
+  $sidebar-fg-color: if($variant == "light", rgba(0 0 0 / 80%), white);
+  $sidebar-backdrop-color: if($variant == "light", #f2f2f2, #2a2a2a);
+  $sidebar-shade-color: if(
+    $variant == "light",
+    rgba(0 0 0 / 7%),
+    rgba(0 0 0 / 25%)
+  );
+  $sidebar-border-color: if(
+    $variant == "light",
+    rgba(0 0 0 / 7%),
+    rgba(0 0 0 / 36%)
+  );
+
+  $secondary-sidebar-bg-color: if($variant == "light", #f3f3f3, #2a2a2a);
+  $secondary-sidebar-fg-color: if(
+    $variant == "light",
+    rgba(0 0 0 / 80%),
+    white
+  );
+  $secondary-sidebar-backdrop-color: if($variant == "light", #f6f6f6, #272727);
+  $secondary-sidebar-shade-color: if(
+    $variant == "light",
+    rgba(0 0 0 / 7%),
+    rgba(0 0 0 / 25%)
+  );
+  $secondary-sidebar-border-color: if(
+    $variant == "light",
+    rgba(0 0 0 / 7%),
+    rgba(0 0 0 / 36%)
+  );
+
+  // Cards, boxed lists
+  $card-bg-color: if($variant == "light", #ffffff, rgba(255 255 255 / 8%));
+  $card-fg-color: if($variant == "light", rgba(0 0 0 / 80%), white);
+  $card-shade-color: if(
+    $variant == "light",
+    rgba(0 0 0 / 7%),
+    rgba(0 0 0 / 36%)
+  );
+
+  // Dialogs
+  $dialog-bg-color: if($variant == "light", #fafafa, #383838);
+  $dialog-fg-color: if($variant == "light", rgba(0 0 0 / 80%), white);
+
+  // Popovers
+  $popover-bg-color: if($variant == "light", #ffffff, #383838);
+  $popover-fg-color: if($variant == "light", rgba(0 0 0 / 80%), white);
+  $popover-shade-color: if(
+    $variant == "light",
+    rgba(0 0 0 / 7%),
+    rgba(0 0 0 / 25%)
+  );
+
+  // Thumbnails
+  $thumbnail-bg-color: if($variant == "light", #ffffff, #383838);
+  $thumbnail-fg-color: if($variant == "light", rgba(0 0 0 / 80%), white);
+
+  // Miscellaneous
+  $shade-color: if($variant == "light", rgba(0 0 0 / 7%), rgba(0 0 0 / 25%));
+  $scrollbar-outline-color: if($variant == "light", white, rgba(0 0 0 / 95%));
+
+  $border-opacity: if($contrast == "high", 0.5, 0.15);
+  $thin-border-opacity: if($contrast == "high", 0.25, 0.05);
+  $focus-border-opacity: if($contrast == "high", 0.8, 0.5);
+
+  // Other colors
+  $fg-color: $window-fg-color;
+
+  $border-color: color.change($fg-color, $alpha: $border-opacity);
+  $thin-border-color: color.change($fg-color, $alpha: $thin-border-opacity);
+  $headerbar-border-color: color.change($border-color, $alpha: $border-opacity);
+  $link-color: $accent-color;
+  $link-visited-color: color.mix($accent-color, $view-fg-color, 80%);
+
+  $hover-color: color.change($fg-color, $alpha: 0.07);
+  $active-color: color.change($fg-color, $alpha: 0.16);
+  $selected-color: color.change($fg-color, $alpha: 0.1);
+  $selected-hover-color: color.change($fg-color, $alpha: 0.13);
+  $selected-active-color: color.change($fg-color, $alpha: 0.19);
+
+  $view-hover-color: color.change($fg-color, $alpha: 0.04);
+  $view-active-color: color.change($fg-color, $alpha: 0.08);
+  $view-selected-color: color.change($accent-bg-color, $alpha: 0.25);
+  $view-selected-hover-color: color.change($accent-bg-color, $alpha: 0.32);
+  $view-selected-active-color: color.change($accent-bg-color, $alpha: 0.39);
+
+  $fill-color: $accent-bg-color;
+  $fill-text-color: $accent-fg-color;
+
+  $slider-color: color.mix(white, $view-bg-color, 80%);
+  $slider-hover-color: white;
+
+  $osd-fg-color: rgba(255 255 255 / 90%);
+  $osd-text-color: white;
+  $osd-bg-color: rgba(0 0 0 / 75%);
+  $osd-accent-bg-color: rgba(255 255 255 / 75%);
+  $osd-accent-fg-color: rgba(0 0 0 / 75%);
+  $osd-accent-color: white;
+  $osd-link-color: color.mix($accent-bg-color, $osd-text-color, 50%);
+  $osd-link-visited-color: color.mix($accent-bg-color, $osd-text-color, 75%);
+
+  $tooltip-border-color: rgba(255 255 255 / 10%);
+
+  $drop-target-color: $accent-bg-color;
+
+  // Special cased widget colors
+  $focus-border-color: color.change(
+    $accent-color,
+    $alpha: $focus-border-opacity
+  );
+
+  $dim-label-opacity: #{if($contrast == "high", 0.9, 0.55)};
+  $dimmer-opacity: #{if($contrast == "high", 0.8, 0.3)};
+  $disabled-opacity: #{if($contrast == "high", 0.4, 0.5)};
+  $strong-disabled-opacity: 0.3;
+
+  $trough-color: #if(
+    $contrast == "high",
+    color.adjust($fg-color, $alpha: 0.3),
+    color.adjust($fg-color, $alpha: 0.15)
+  );
+  $trough-hover-color: #if(
+    $contrast == "high",
+    color.adjust($fg-color, $alpha: 0.4),
+    color.adjust($fg-color, $alpha: 0.2)
+  );
+  $trough-active-color: #if(
+    $contrast == "high",
+    color.adjust($fg-color, $alpha: 0.5),
+    color.adjust($fg-color, $alpha: 0.25)
+  );
+  $window-outline-color: #if(
+    $contrast == "high",
+    rgba(255 255 255 / 30%),
+    rgba(255 255 255 / 7%)
+  );
+
+  // sed -n 's/^  $\([^:]*\):.*/  --adw-\1: #{$\1};/p' site/styles/libadwaita/_variables.scss
+  --adw-accent-bg-color: #{$accent-bg-color};
+  --adw-accent-fg-color: #{$accent-fg-color};
+  --adw-accent-color: #{$accent-color};
+  --adw-destructive-bg-color: #{$destructive-bg-color};
+  --adw-destructive-fg-color: #{$destructive-fg-color};
+  --adw-destructive-color: #{$destructive-color};
+  --adw-success-bg-color: #{$success-bg-color};
+  --adw-success-fg-color: #{$success-fg-color};
+  --adw-success-color: #{$success-color};
+  --adw-warning-bg-color: #{$warning-bg-color};
+  --adw-warning-fg-color: #{$warning-fg-color};
+  --adw-warning-color: #{$warning-color};
+  --adw-error-bg-color: #{$error-bg-color};
+  --adw-error-fg-color: #{$error-fg-color};
+  --adw-error-color: #{$error-color};
+  --adw-window-bg-color: #{$window-bg-color};
+  --adw-window-fg-color: #{$window-fg-color};
+  --adw-view-bg-color: #{$view-bg-color};
+  --adw-view-fg-color: #{$view-fg-color};
+  --adw-headerbar-bg-color: #{$headerbar-bg-color};
+  --adw-headerbar-fg-color: #{$headerbar-fg-color};
+  --adw-headerbar-border-color: #{$headerbar-border-color};
+  --adw-headerbar-backdrop-color: #{$headerbar-backdrop-color};
+  --adw-headerbar-shade-color: #{$headerbar-shade-color};
+  --adw-headerbar-darker-shade-color: #{$headerbar-darker-shade-color};
+  --adw-sidebar-bg-color: #{$sidebar-bg-color};
+  --adw-sidebar-fg-color: #{$sidebar-fg-color};
+  --adw-sidebar-backdrop-color: #{$sidebar-backdrop-color};
+  --adw-sidebar-shade-color: #{$sidebar-shade-color};
+  --adw-sidebar-border-color: #{$sidebar-border-color};
+  --adw-secondary-sidebar-bg-color: #{$secondary-sidebar-bg-color};
+  --adw-secondary-sidebar-fg-color: #{$secondary-sidebar-fg-color};
+  --adw-secondary-sidebar-backdrop-color: #{$secondary-sidebar-backdrop-color};
+  --adw-secondary-sidebar-shade-color: #{$secondary-sidebar-shade-color};
+  --adw-secondary-sidebar-border-color: #{$secondary-sidebar-border-color};
+  --adw-card-bg-color: #{$card-bg-color};
+  --adw-card-fg-color: #{$card-fg-color};
+  --adw-card-shade-color: #{$card-shade-color};
+  --adw-dialog-bg-color: #{$dialog-bg-color};
+  --adw-dialog-fg-color: #{$dialog-fg-color};
+  --adw-popover-bg-color: #{$popover-bg-color};
+  --adw-popover-fg-color: #{$popover-fg-color};
+  --adw-popover-shade-color: #{$popover-shade-color};
+  --adw-thumbnail-bg-color: #{$thumbnail-bg-color};
+  --adw-thumbnail-fg-color: #{$thumbnail-fg-color};
+  --adw-shade-color: #{$shade-color};
+  --adw-scrollbar-outline-color: #{$scrollbar-outline-color};
+  --adw-border-opacity: #{$border-opacity};
+  --adw-thin-border-opacity: #{$thin-border-opacity};
+  --adw-focus-border-opacity: #{$focus-border-opacity};
+  --adw-fg-color: #{$fg-color};
+  --adw-border-color: #{$border-color};
+  --adw-thin-border-color: #{$thin-border-color};
+  --adw-headerbar-border-color: #{$headerbar-border-color};
+  --adw-link-color: #{$link-color};
+  --adw-link-visited-color: #{$link-visited-color};
+  --adw-hover-color: #{$hover-color};
+  --adw-active-color: #{$active-color};
+  --adw-selected-color: #{$selected-color};
+  --adw-selected-hover-color: #{$selected-hover-color};
+  --adw-selected-active-color: #{$selected-active-color};
+  --adw-view-hover-color: #{$view-hover-color};
+  --adw-view-active-color: #{$view-active-color};
+  --adw-view-selected-color: #{$view-selected-color};
+  --adw-view-selected-hover-color: #{$view-selected-hover-color};
+  --adw-view-selected-active-color: #{$view-selected-active-color};
+  --adw-trough-color: #{$trough-color};
+  --adw-trough-hover-color: #{$trough-hover-color};
+  --adw-trough-active-color: #{$trough-active-color};
+  --adw-fill-color: #{$fill-color};
+  --adw-fill-text-color: #{$fill-text-color};
+  --adw-slider-color: #{$slider-color};
+  --adw-slider-hover-color: #{$slider-hover-color};
+  --adw-osd-fg-color: #{$osd-fg-color};
+  --adw-osd-text-color: #{$osd-text-color};
+  --adw-osd-bg-color: #{$osd-bg-color};
+  --adw-osd-accent-bg-color: #{$osd-accent-bg-color};
+  --adw-osd-accent-fg-color: #{$osd-accent-fg-color};
+  --adw-osd-accent-color: #{$osd-accent-color};
+  --adw-osd-link-color: #{$osd-link-color};
+  --adw-osd-link-visited-color: #{$osd-link-visited-color};
+  --adw-tooltip-border-color: #{$tooltip-border-color};
+  --adw-drop-target-color: #{$drop-target-color};
+  --adw-window-outline-color: #{$window-outline-color};
+  --adw-focus-border-color: #{$focus-border-color};
+  --adw-dim-label-opacity: #{$dim-label-opacity};
+  --adw-dimmer-opacity: #{$dimmer-opacity};
+  --adw-disabled-opacity: #{$disabled-opacity};
+  --adw-strong-disabled-opacity: #{$strong-disabled-opacity};
+}

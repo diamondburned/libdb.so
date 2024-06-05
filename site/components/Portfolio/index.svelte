@@ -208,14 +208,12 @@
     </section>
 
     <section class="annoyance">
-      <p>
-        <b>Hey!!</b> You should totally check out the <b><u>xterm.js</u></b> window underneath!
-      </p>
+      <b>Hey!!</b> You should totally check out the <b><u>xterm.js</u></b> window underneath!
     </section>
 
     <section class="links">
       <h2>Links</h2>
-      <div class="links-list" role="list">
+      <div class="content links-list" role="list">
         {#each links.filter((link) => !link.hidden) as link}
           <a
             style={`--color: ${link.color};`}
@@ -247,14 +245,13 @@
 
     <section class="resume">
       <h2>Resume</h2>
-      <div class="links">
+      <div class="content links">
         <a
           role="button"
           href="https://github.com/diamondburned/resume/blob/main/resume.pdf"
           target="_blank"
         >
-          <OpenInNew />
-          <span class="filename">PDF</span>
+          <OpenInNew /><span class="filename">PDF</span>
           <span class="source">(github.com)</span>
         </a>
         <a
@@ -263,8 +260,7 @@
           style="--color: var(--pink-rgb);"
           target="_blank"
         >
-          <OpenInNew />
-          <span class="filename">JSON</span>
+          <OpenInNew /><span class="filename">JSON</span>
           <span class="source">(github.com)</span>
         </a>
       </div>
@@ -275,7 +271,7 @@
     {:then resume}
       <section class="work">
         <h2>Experience</h2>
-        <ol class="work-list">
+        <ol class="content work-list">
           {#each resume.work as work}
             <li class="work-item">
               <h4>
@@ -302,7 +298,7 @@
 
       <section class="projects">
         <h2>Projects</h2>
-        <ul class="projects-list">
+        <ul class="content projects-list">
           {#each resume.projects as project}
             <li class="project-item">
               <div class="header">
@@ -336,13 +332,16 @@
     {#await jsonldDoc}
       <span class="loading">Give me a bit, I'm loading the rest!</span>
     {:then doc}
-      {#each doc.self["libdb:webring"] as webring}
-        {#await usingContext(doc, webring, "https://0xd14.id#Webring/") then webring}
-          <section class="webring">
-            <Webring data={webring} />
-          </section>
-        {/await}
-      {/each}
+      <section class="webring">
+        <h2>Webrings</h2>
+        <div class="content">
+          {#each doc.self["libdb:webring"] as webring}
+            {#await usingContext(doc, webring, "https://0xd14.id#Webring/") then webring}
+              <Webring data={webring} />
+            {/await}
+          {/each}
+        </div>
+      </section>
 
       {#await combined88x31s(doc) then badges}
         <div class="badges">
@@ -387,17 +386,30 @@
       margin-bottom: 1em;
     }
 
+    @mixin content {
+      box-shadow: 0 2px 16px -6px var(--adw-card-shade-color);
+      box-sizing: border-box;
+
+      background-color: var(--adw-card-bg-color);
+      min-height: 32px; /* should be tall even when only containing a label */
+
+      border-radius: var(--adw-card-radius);
+      overflow: hidden;
+    }
+
+    @mixin content-item {
+      margin: 0;
+      padding: var(--adw-menu-padding);
+      min-height: 32px;
+      box-sizing: border-box;
+
+      &:not(:last-child) {
+        border-bottom: 1px solid var(--adw-card-shade-color);
+      }
+    }
+
     section {
       margin: 0 0.5em;
-      padding: 0 1em;
-
-      font-family: "Lato";
-      font-size: 1.05em;
-
-      background-color: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--window-border-color);
-      border-radius: 10px;
-      box-shadow: 0 2px 16px -6px rgba(0, 0, 0, 0.52);
       box-sizing: border-box;
 
       :global(h1),
@@ -406,48 +418,20 @@
       :global(h4),
       :global(h5),
       :global(h6) {
-        margin: 1rem 0;
-        font-family: "Nunito";
+        font-size: 1em;
       }
 
-      :global(h1),
-      :global(h2),
-      :global(h3) {
-        line-height: 1.25;
-      }
+      & > :global(h1),
+      & > :global(h2),
+      & > :global(h3) {
+        // line-height: 1.25;
 
-      & > * {
-        margin: 1rem 0;
-      }
+        padding: 2px;
+        padding-top: 18px;
+        padding-bottom: 6px;
 
-      a {
-        text-decoration: none;
-        color: var(--blue);
-
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-
-      a[role="button"] {
-        --color: 255 255 255;
-
-        color: rgb(var(--color));
-        text-decoration: none;
-        padding: 0.5em;
-        border-radius: 5px;
-        transition: all 0.1s ease-in-out;
-
-        outline: 1px solid rgba(var(--color), 0.4);
-        outline-offset: -1px;
-
-        box-shadow: 0 0 0.35em -0.1em rgba(var(--color), 0.5);
-        background-color: rgba(var(--color), 0.1);
-
-        &:hover {
-          box-shadow: 0 0 0.45em -0.1em rgba(var(--color), 0.8);
-          background-color: rgba(var(--color), 0.2);
-        }
+        margin: 0;
+        margin-bottom: 6px;
       }
 
       @media (max-width: 400px) {
@@ -456,7 +440,6 @@
     }
 
     section.banner {
-      padding: 0;
       height: clamp(150px, 20vw, 250px);
 
       &.nsfw {
@@ -474,13 +457,16 @@
     }
 
     section.about {
+      @include content;
+      padding: 0 var(--adw-menu-padding);
+
       div.intro {
         display: flex;
         flex-direction: row;
         align-items: flex-end;
         gap: 1em;
         line-height: 1.15;
-        margin-top: 1em;
+        margin-top: var(--adw-menu-padding);
 
         @media (max-width: 400px) {
           flex-direction: column;
@@ -519,30 +505,33 @@
       }
 
       p.i-am {
-        margin-bottom: 0.5em;
+        margin-bottom: var(--adw-menu-margin);
       }
     }
 
     section.annoyance {
-      border: 1px solid rgba(var(--pink-rgb), 0.4);
+      @include content;
+
+      border: 1.5px solid rgba(var(--pink-rgb), 0.4);
+      padding: var(--adw-card-padding);
       background-color: rgba(var(--pink-rgb), 0.1);
     }
 
     section.links {
       .links-list {
+        @include content;
+
         list-style: none;
-        padding: 0;
 
         width: 100%;
         display: grid;
         grid-template-columns: auto auto 1fr;
-        grid-gap: 0.5em;
       }
 
       a[role="button"] {
+        @include content-item;
+
         width: 100%;
-        cursor: pointer;
-        box-sizing: border-box;
 
         display: grid;
         grid-gap: 0.5em;
@@ -565,6 +554,7 @@
 
       .icon {
         user-select: none;
+        min-width: 1.75em;
       }
 
       .name {
@@ -603,12 +593,16 @@
     }
 
     section.resume {
-      & > div {
+      .content {
+        @include content;
+
         display: flex;
         flex-direction: row;
       }
 
       a[role="button"] {
+        @include content-item;
+
         --color: var(--blue-rgb);
         width: 100%;
         align-self: center;
@@ -623,8 +617,7 @@
 
       .links {
         display: flex;
-        flex-direction: row;
-        gap: 0.5em;
+        flex-direction: column;
 
         @media (max-width: 400px) {
           flex-wrap: wrap;
@@ -633,32 +626,38 @@
 
       :global(svg) {
         vertical-align: top;
+        margin-right: 0.5em;
+        min-width: 1.75em;
       }
     }
 
     section.work {
       .work-list {
+        @include content;
+
         list-style: none;
         padding: 0;
+        margin: 0;
       }
 
       .work-item {
-        margin: 1em 0;
+        @include content-item;
 
         h4 {
+          margin: 0;
+
           display: grid;
           grid-template-columns: 1fr auto;
           grid-template-rows: auto auto;
 
-          margin-bottom: 0.5em;
-
           & > *:nth-child(-n + 2) {
-            font-size: 1.1em;
             font-weight: bold;
           }
 
           & > *:nth-last-child(-n + 2) {
             font-weight: normal;
+            opacity: 0.75;
+            font-size: 0.9em;
           }
 
           @media (max-width: 400px) {
@@ -668,22 +667,37 @@
       }
 
       .highlights-list {
-        padding-left: 1.5em;
+        padding-left: 1em;
         padding-right: 0.5em;
         list-style: disc;
       }
 
       .highlight-item {
-        margin: 0.25em 0;
+        margin: var(--adw-menu-margin) 0;
         padding-left: 0.25em;
-        font-size: 0.95em;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
       }
     }
 
     section.projects {
       .projects-list {
+        @include content;
+
         list-style: none;
         padding: 0;
+        margin: 0;
+      }
+
+      .project-item {
+        @include content-item;
+
+        p {
+          margin: 0;
+          margin-top: var(--adw-menu-margin);
+        }
       }
 
       .header {
@@ -696,14 +710,13 @@
 
         .name {
           grid-area: name;
-          font-size: 1.1em;
         }
 
         .keywords {
           grid-area: keywords;
 
           &:not(:empty) {
-            opacity: 0.65;
+            opacity: 0.75;
             border-left: 1px solid rgba(255, 255, 255, 0.35);
             padding-left: 0.5em;
           }
@@ -715,7 +728,7 @@
 
         .url,
         .keywords {
-          font-size: 0.95em;
+          font-size: 0.9em;
         }
 
         @media (max-width: 500px) {
@@ -739,6 +752,16 @@
       }
     }
 
+    section.webring {
+      .content {
+        @include content;
+      }
+
+      :global(webring-element) {
+        @include content-item;
+      }
+    }
+
     .loading {
       opacity: 0.5;
       font-size: 0.9em;
@@ -747,6 +770,7 @@
 
     .badges {
       margin: 0 0.5em;
+      margin-top: 1em;
       padding: 1em;
       border-top: 1px solid #fff3;
     }

@@ -30,7 +30,12 @@
   const updateTimer = setInterval(() => updateTime(), 5000);
   svelte.onDestroy(() => clearInterval(updateTimer));
 
-  const fonts = ["Inconsolata", "Lato", "Nunito", "Source Code Pro"];
+  const fonts = [
+    "Inconsolata", //
+    "Lato",
+    "Nunito",
+    "Source Code Pro",
+  ];
 
   let navbarWidth = 0;
   let navbarHeight = 0;
@@ -56,11 +61,7 @@
   <meta name="author" content="diamondburned" />
 </svelte:head>
 
-<div
-  class="screen"
-  bind:clientWidth={screenWidth}
-  bind:clientHeight={screenHeight}
->
+<div class="screen" bind:clientWidth={screenWidth} bind:clientHeight={screenHeight}>
   <div class="backdrop" />
 
   {#if $onekoCursor}
@@ -86,27 +87,17 @@
     <Portfolio />
   </div>
 
-  <nav
-    id="navbar"
-    bind:clientWidth={navbarWidth}
-    bind:clientHeight={navbarHeight}
-  >
+  <nav id="navbar" bind:clientWidth={navbarWidth} bind:clientHeight={navbarHeight}>
     <div class="left">
       <button class="start" on:click={() => alert("hii!!")}>
         <img src={favicon} alt="diamondburned's eye" />
       </button>
       <div class="window-list">
-        <button
-          class:active={$focusedView == "portfolio"}
-          on:click={() => toggleView("portfolio")}
-        >
+        <button class:active={$focusedView == "portfolio"} on:click={() => toggleView("portfolio")}>
           <img src="/_assets/papirus/system-users.svg" alt="Portfolio icon" />
           About
         </button>
-        <button
-          class:active={$focusedView == "terminal"}
-          on:click={() => toggleView("terminal")}
-        >
+        <button class:active={$focusedView == "terminal"} on:click={() => toggleView("terminal")}>
           <img src="/_assets/papirus/terminal.svg" alt="Terminal icon" />
           xterm.js
         </button>
@@ -135,19 +126,6 @@
 </div>
 
 <style global lang="scss">
-  :root {
-    --blue: rgba(85, 205, 252, 1);
-    --pink: rgba(247, 168, 184, 1);
-
-    --blue-rgb: 85, 205, 252;
-    --pink-rgb: 247, 168, 184;
-
-    --glow-radius: 0.35em;
-    --glow-alpha: 0.65;
-    --pink-glow: 0 0 var(--glow-radius) rgba(var(--pink-rgb), var(--glow-alpha));
-    --blue-glow: 0 0 var(--glow-radius) rgba(var(--blue-rgb), var(--glow-alpha));
-  }
-
   .text-pink {
     color: var(--pink);
   }
@@ -172,8 +150,8 @@
   }
 
   body {
-    font-family: "Lato", "Source Sans Pro", "Noto Sans", "Helvetica", "Segoe UI",
-      sans-serif;
+    font-family: "Lato", "Source Sans Pro", "Noto Sans", "Helvetica", "Segoe UI", sans-serif;
+    font-size: clamp(0.95rem, 0.8429rem + 0.3429vw, 1.1rem);
   }
 
   .monospace {
@@ -214,11 +192,7 @@
 
   #navbar {
     background-color: rgba(0, 0, 0, 0.5);
-    background-image: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.25),
-      rgba(0, 0, 0, 0.65)
-    );
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.65));
 
     display: flex;
     justify-content: space-between;
@@ -350,9 +324,7 @@
         fill: rgb(var(--color));
         width: 1.5em;
         height: 1.5em;
-        filter: drop-shadow(
-          0 0 var(--glow-radius) rgba(var(--color), var(--glow-alpha))
-        );
+        filter: drop-shadow(0 0 var(--glow-radius) rgba(var(--color), var(--glow-alpha)));
         opacity: 0.75;
       }
 
