@@ -1,0 +1,159 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "zvava": "https://zvava.org/schema#",
+    "libdb": "https://0xd14.id#"
+  },
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://0xd14.id",
+      "additionalType": [
+        "Bot",
+        "zvava:Bot"
+      ],
+      "identifier": "d14",
+      "name": "Diamond",
+      "url": [
+        "https://0xd14.id",
+        "https://libdb.so",
+        "https://diamondx.pet"
+      ],
+      "email": [
+        "mailto:diamond@libdb.so"
+      ],
+      "sameAs": [
+        "https://tech.lgbt/@diamond",
+        "https://girlcock.club/@diamond",
+        "https://github.com/diamondburned"
+      ],
+      "height": "169 cm",
+      "gender": [
+        "girlthing",
+        "bot",
+        "female",
+        "transgender"
+      ],
+      "birthDate": "2002-02-27",
+      "knowsLanguage": [
+        "en",
+        "vi"
+      ],
+      "description": "Hi, I'm Diamond! I'm a 4th-year Computer Science major 👩🎓 and past Software Engineer Intern 👩‍💻 🖥️.",
+      "zvava:bot": true,
+      "zvava:pronouns": [
+        "it/its",
+        "she/her"
+      ],
+      "libdb:webring": [
+        {
+          "@context": {
+            "@vocab": "https://0xd14.id#Webring/"
+          },
+          "@type": "libdb:Webring",
+          "version": 1,
+          "name": "robot girls",
+          "ring": [
+            {
+              "name": "diamond",
+              "link": "https://0xd14.id"
+            },
+            {
+              "name": "SZOFIÁ",
+              "link": "https://737a6f6669e1.id"
+            }
+          ]
+        },
+        {
+          "@context": {
+            "@vocab": "https://0xd14.id#Webring/"
+          },
+          "@type": "libdb:Webring",
+          "version": 1,
+          "name": "acmFriends",
+          "root": "https://libdb.so/acmfriends-webring",
+          "ring": [
+            {
+              "name": "charlie",
+              "link": "charliet.dev"
+            },
+            {
+              "name": "diamond",
+              "link": "libdb.so"
+            },
+            {
+              "name": "alieb",
+              "link": "aaron.lieber.men"
+            },
+            {
+              "name": "jstitt",
+              "link": "jstitt.dev"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@id": "libdb:Resume",
+      "@type": "rdfs:Class",
+      "rdfs:comment": "A resume in JSON Resume format.",
+      "rdfs:label": "Resume"
+    },
+    {
+      "@id": "libdb:webring",
+      "@type": "rdf:Property",
+      "rdfs:comment": "The webring(s) that the thing is part of.",
+      "rdfs:label": "webring",
+      "rangeIncludes": "libdb:Webring"
+    },
+    {
+      "@id": "libdb:Webring",
+      "@type": "rdfs:Class",
+      "rdfs:comment": "A webring of websites, follows libdb.so/libwebring.",
+      "rdfs:label": "Webring"
+    },
+    {
+      "@id": "libdb:Webring/name",
+      "@type": "rdf:Property",
+      "rdfs:comment": "The name of the webring.",
+      "rdfs:label": "name",
+      "rangeIncludes": "Text"
+    },
+    {
+      "@id": "libdb:Webring/version",
+      "@type": "rdf:Property",
+      "rdfs:comment": "The version of the webring.",
+      "rdfs:label": "version",
+      "rangeIncludes": "Number"
+    },
+    {
+      "@id": "libdb:Webring/ring",
+      "@type": "rdf:Property",
+      "rdfs:comment": "The ring of the webring.",
+      "rdfs:label": "ring",
+      "rangeIncludes": "libdb:Webring/Ring"
+    },
+    {
+      "@id": "libdb:Webring/Ring",
+      "@type": "rdfs:Class",
+      "rdfs:comment": "A ring in a webring.",
+      "rdfs:label": "Ring"
+    },
+    {
+      "@id": "libdb:Webring/Ring/link",
+      "@type": "rdf:Property",
+      "rdfs:comment": "The link to the ring.",
+      "rdfs:label": "link",
+      "rangeIncludes": "URL"
+    },
+    {
+      "@id": "libdb:Webring/Ring/name",
+      "@type": "rdf:Property",
+      "rdfs:comment": "The name of the ring.",
+      "rdfs:label": "name",
+      "rangeIncludes": "Text"
+    }
+  ]
+}

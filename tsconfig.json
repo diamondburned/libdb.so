@@ -8,15 +8,12 @@
     "strict": true,
     "module": "esnext",
     "target": "esnext",
-    "moduleResolution": "nodenext",
+    "moduleResolution": "node",
     "esModuleInterop": true,
-    "types": [
-      "vite/client"
-    ],
+    "resolveJsonModule": true,
+    "types": ["vite/client"],
     "paths": {
-      "#/libdb.so/*": [
-        "./*"
-      ]
+      "#/libdb.so/*": ["./*"]
     }
   }
 }

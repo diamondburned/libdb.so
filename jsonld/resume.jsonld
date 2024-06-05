@@ -1,0 +1,8 @@
+[
+  {
+    "@id": "libdb:Resume",
+    "@type": "rdfs:Class",
+    "rdfs:comment": "A resume in JSON Resume format.",
+    "rdfs:label": "Resume"
+  }
+]

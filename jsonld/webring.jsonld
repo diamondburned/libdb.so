@@ -1,0 +1,56 @@
+[
+  {
+    "@id": "libdb:webring",
+    "@type": "rdf:Property",
+    "rdfs:comment": "The webring(s) that the thing is part of.",
+    "rdfs:label": "webring",
+    "rangeIncludes": "libdb:Webring"
+  },
+  {
+    "@id": "libdb:Webring",
+    "@type": "rdfs:Class",
+    "rdfs:comment": "A webring of websites, follows libdb.so/libwebring.",
+    "rdfs:label": "Webring"
+  },
+  {
+    "@id": "libdb:Webring/name",
+    "@type": "rdf:Property",
+    "rdfs:comment": "The name of the webring.",
+    "rdfs:label": "name",
+    "rangeIncludes": "Text"
+  },
+  {
+    "@id": "libdb:Webring/version",
+    "@type": "rdf:Property",
+    "rdfs:comment": "The version of the webring.",
+    "rdfs:label": "version",
+    "rangeIncludes": "Number"
+  },
+  {
+    "@id": "libdb:Webring/ring",
+    "@type": "rdf:Property",
+    "rdfs:comment": "The ring of the webring.",
+    "rdfs:label": "ring",
+    "rangeIncludes": "libdb:Webring/Ring"
+  },
+  {
+    "@id": "libdb:Webring/Ring",
+    "@type": "rdfs:Class",
+    "rdfs:comment": "A ring in a webring.",
+    "rdfs:label": "Ring"
+  },
+  {
+    "@id": "libdb:Webring/Ring/link",
+    "@type": "rdf:Property",
+    "rdfs:comment": "The link to the ring.",
+    "rdfs:label": "link",
+    "rangeIncludes": "URL"
+  },
+  {
+    "@id": "libdb:Webring/Ring/name",
+    "@type": "rdf:Property",
+    "rdfs:comment": "The name of the ring.",
+    "rdfs:label": "name",
+    "rangeIncludes": "Text"
+  }
+]

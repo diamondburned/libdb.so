@@ -1,34 +1,51 @@
-.PHONY: all clean dev
-
+ROOT    = $(shell pwd)
 SITE    = $(shell find site -type f) node_modules vite.config.ts package*.json
 PUBLIC  = $(shell find public/_fs -type f 2> /dev/null)
 GOFILES = $(shell find vm -type f) go.mod go.sum
 
 # phony
 
+.PHONY: all
 all: build/dist
 
+.PHONY: dev
 dev: dist-deps
 	vite dev
 
-dist-deps: $(SITE) site/components/Terminal/color-schemes.json public/_fs.json build/vm.wasm
+.PHONY: dist-deps
+dist-deps: \
+	$(SITE) \
+	site/components/Terminal/color-schemes.json \
+	build/public \
+	build/vm.wasm
 
+.PHONY: clean
 clean:
 	rm -r build
 
+.PHONY: jsonld
+jsonld: $(shell find jsonld -type f)
+	tsx jsonld/_render.ts > public/_fs/0xd14.jsonld
+
 # real
+
+site/components/Terminal/color-schemes.json: ./scripts/xtermjs-colors
+	./scripts/xtermjs-colors > $@
 
 node_modules: package-lock.json package.json
 	npm install
 
-public/_fs.json: $(PUBLIC) ./scripts/jsonfs
-	cd public && if [[ -d _fs ]]; then bash ../scripts/jsonfs _fs > _fs.json; fi
+build/public/_fs: $(PUBLIC)
+	mkdir -p $@
+	cp -r public/_fs/* $@
+
+build/public/_fs.json: $(PUBLIC) build/public/_fs scripts/jsonfs
+	cd $(dir $@) && bash $(ROOT)/scripts/jsonfs _fs > _fs.json
+
+build/public: build/public/_fs build/public/_fs.json
 
 build/dist: dist-deps
 	vite build
-
-site/components/Terminal/color-schemes.json: ./scripts/xtermjs-colors
-	./scripts/xtermjs-colors > $@
 
 build/vm.wasm: $(GOFILES)
 	mkdir -p build
