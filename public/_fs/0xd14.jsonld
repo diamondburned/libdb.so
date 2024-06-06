@@ -8,22 +8,19 @@
   },
   "@graph": [
     {
+      "@id": "https://0xd14.id/",
       "@type": "Person",
-      "@id": "https://0xd14.id",
-      "additionalType": [
-        "Bot",
-        "zvava:Bot"
+      "name": [
+        "Diamond",
+        "d14"
       ],
-      "identifier": "d14",
-      "name": "Diamond",
+      "identifier": "0xd14",
       "url": [
         "https://0xd14.id",
         "https://libdb.so",
         "https://diamondx.pet"
       ],
-      "email": [
-        "mailto:diamond@libdb.so"
-      ],
+      "email": "mailto:diamond@libdb.so",
       "sameAs": [
         "https://tech.lgbt/@diamond",
         "https://girlcock.club/@diamond",
@@ -42,6 +39,10 @@
         "vi"
       ],
       "description": "Hi, I'm Diamond! I'm a 4th-year Computer Science major 👩🎓 and past Software Engineer Intern 👩‍💻 🖥️.",
+      "additionalType": [
+        "Bot",
+        "zvava:Bot"
+      ],
       "zvava:bot": true,
       "zvava:pronouns": [
         "it/its",
@@ -49,107 +50,109 @@
       ],
       "libdb:webring": [
         {
-          "@context": {
-            "@vocab": "https://0xd14.id#Webring/"
-          },
+          "@id": "https://0xd14.id/#webring/robot%20girls",
           "@type": "libdb:Webring",
-          "version": 1,
-          "name": "robot girls",
-          "ring": [
+          "libdb:Webring/name": "robot girls",
+          "libdb:Webring/ring": [
             {
-              "name": "diamond",
-              "link": "https://0xd14.id"
+              "@id": "https://0xd14.id/#webring/robot%20girls/diamond",
+              "libdb:Webring/link": "https://0xd14.id",
+              "libdb:Webring/name": "diamond"
             },
             {
-              "name": "SZOFIÁ",
-              "link": "https://737a6f6669e1.id"
+              "@id": "https://0xd14.id/#webring/robot%20girls/SZOFI%C3%81",
+              "libdb:Webring/link": "https://737a6f6669e1.id",
+              "libdb:Webring/name": "SZOFIÁ"
             }
-          ]
+          ],
+          "libdb:Webring/version": 1
         },
         {
-          "@context": {
-            "@vocab": "https://0xd14.id#Webring/"
-          },
+          "@id": "https://0xd14.id/#webring/acmfriends",
           "@type": "libdb:Webring",
-          "version": 1,
-          "name": "acmFriends",
-          "root": "https://libdb.so/acmfriends-webring",
-          "ring": [
+          "libdb:Webring/name": "acmFriends",
+          "libdb:Webring/ring": [
             {
-              "name": "charlie",
-              "link": "charliet.dev"
+              "@id": "https://0xd14.id/#webring/acmfriends/charlie",
+              "libdb:Webring/link": "https://charliet.dev",
+              "libdb:Webring/name": "charlie"
             },
             {
-              "name": "diamond",
-              "link": "libdb.so"
+              "@id": "https://0xd14.id/#webring/acmfriends/diamond",
+              "libdb:Webring/link": "https://libdb.so",
+              "libdb:Webring/name": "diamond"
             },
             {
-              "name": "alieb",
-              "link": "aaron.lieber.men"
+              "@id": "https://0xd14.id/#webring/acmfriends/alieb",
+              "libdb:Webring/link": "https://aaron.lieber.men",
+              "libdb:Webring/name": "alieb"
             },
             {
-              "name": "jstitt",
-              "link": "jstitt.dev"
+              "@id": "https://0xd14.id/#webring/acmfriends/jstitt",
+              "libdb:Webring/link": "https://jstitt.dev",
+              "libdb:Webring/name": "jstitt"
             }
-          ]
+          ],
+          "libdb:Webring/root": "https://libdb.so/acmfriends-webring",
+          "libdb:Webring/version": 1
         }
       ]
     },
     {
-      "@id": "libdb:Resume",
+      "@id": "https://0xd14.id/#Resume",
       "@type": "rdfs:Class",
       "rdfs:comment": "A resume in JSON Resume format.",
       "rdfs:label": "Resume"
     },
     {
-      "@id": "libdb:webring",
+      "@id": "https://0xd14.id/#webring",
       "@type": "rdf:Property",
       "rdfs:comment": "The webring(s) that the thing is part of.",
       "rdfs:label": "webring",
       "rangeIncludes": "libdb:Webring"
     },
     {
-      "@id": "libdb:Webring",
+      "@id": "https://0xd14.id/#Webring",
       "@type": "rdfs:Class",
       "rdfs:comment": "A webring of websites, follows libdb.so/libwebring.",
       "rdfs:label": "Webring"
     },
     {
-      "@id": "libdb:Webring/name",
+      "@id": "https://0xd14.id/#Webring/name",
       "@type": "rdf:Property",
       "rdfs:comment": "The name of the webring.",
       "rdfs:label": "name",
       "rangeIncludes": "Text"
     },
     {
-      "@id": "libdb:Webring/version",
+      "@id": "https://0xd14.id/#Webring/version",
       "@type": "rdf:Property",
       "rdfs:comment": "The version of the webring.",
       "rdfs:label": "version",
       "rangeIncludes": "Number"
     },
     {
-      "@id": "libdb:Webring/ring",
+      "@id": "https://0xd14.id/#Webring/ring",
       "@type": "rdf:Property",
       "rdfs:comment": "The ring of the webring.",
       "rdfs:label": "ring",
       "rangeIncludes": "libdb:Webring/Ring"
     },
     {
-      "@id": "libdb:Webring/Ring",
+      "@id": "https://0xd14.id/#Webring/Ring",
       "@type": "rdfs:Class",
       "rdfs:comment": "A ring in a webring.",
       "rdfs:label": "Ring"
     },
     {
-      "@id": "libdb:Webring/Ring/link",
+      "@id": "https://0xd14.id/#Webring/Ring/link",
       "@type": "rdf:Property",
       "rdfs:comment": "The link to the ring.",
       "rdfs:label": "link",
       "rangeIncludes": "URL"
     },
     {
-      "@id": "libdb:Webring/Ring/name",
+      "@id": "https://0xd14.id/#Webring/Ring/name",
       "@type": "rdf:Property",
       "rdfs:comment": "The name of the ring.",
       "rdfs:label": "name",
