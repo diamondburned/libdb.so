@@ -1,6 +1,6 @@
 ROOT    = $(shell pwd)
 SITE    = $(shell find site -type f) node_modules vite.config.ts package*.json
-PUBLIC  = $(shell find public/_fs -type f 2> /dev/null)
+PUBLIC  = $(shell find public/_fs -type f) $(shell find public/_assets -type f)
 GOFILES = $(shell find vm -type f) go.mod go.sum
 
 # phony
@@ -43,6 +43,7 @@ build/public/_fs.json: $(PUBLIC) build/public/_fs scripts/jsonfs
 	cd $(dir $@) && bash $(ROOT)/scripts/jsonfs _fs > _fs.json
 
 build/public: build/public/_fs build/public/_fs.json
+	cp -r ./public/_assets $@
 
 build/dist: dist-deps
 	vite build
