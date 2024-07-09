@@ -12,5 +12,39 @@
         "@id": "schema:URL"
       }
     ]
+  },
+  {
+    "@id": "libdb:other88x31",
+    "@type": "rdf:Property",
+    "rdfs:comment": "Other 88x31 pixel logo(s) not belonging to the Thing.",
+    "rdfs:label": "other88x31",
+    "rangeIncludes": "libdb:Other88x31"
+  },
+  {
+    "@id": "libdb:Other88x31",
+    "@type": "rdfs:Class",
+    "rdfs:comment": "A 88x31 pixel logo not belonging to the Thing.",
+    "rdfs:label": "Other88x31"
+  },
+  {
+    "@id": "libdb:Other88x31/image",
+    "@type": "rdf:Property",
+    "rdfs:comment": "The URL of the 88x31 pixel image/logo.",
+    "rdfs:label": "image",
+    "rangeIncludes": [
+      {
+        "@id": "schema:ImageObject"
+      },
+      {
+        "@id": "schema:URL"
+      }
+    ]
+  },
+  {
+    "@id": "libdb:Other88x31/link",
+    "@type": "rdf:Property",
+    "rdfs:comment": "The URL the 88x31 pixel image/logo links to.",
+    "rdfs:label": "link",
+    "rangeIncludes": "schema:URL"
   }
 ]

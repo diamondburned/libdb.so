@@ -2,10 +2,11 @@ import { fetchDocument, fetchJSON, gitFile, dedent } from "./lib/jsonld.js";
 import { type WebringData } from "libwebring/lib/webring.js";
 import context from "./_context.json";
 
+const _88x31 = (name: string) => "https://libdb.so/_fs/88x31/" + name;
 const _88x31s = [
-  "https://0xd14.id/_fs/88x31/d14.gif",
-  "https://0xd14.id/_fs/88x31/d14-barcode.png",
-  "https://0xd14.id/_fs/88x31/d14-dollcode.png",
+  _88x31("libdb.so.gif"), //
+  _88x31("d14-barcode.png"),
+  _88x31("d14-dollcode.png"),
 ];
 
 const graph = [
@@ -44,6 +45,28 @@ const graph = [
     "zvava:bot": true,
     "zvava:pronouns": ["it/its", "she/her"],
     "libdb:88x31": _88x31s,
+    "libdb:other88x31": [
+      {
+        link: "https://zvava.org",
+        image: _88x31("zvava.org.png"),
+      },
+      {
+        link: "https://ezri.pet",
+        image: _88x31("ezri.pet.png"),
+      },
+      {
+        link: "https://voidgoddess.org/emptyspaces/notaperson/",
+        image: _88x31("nap.png"),
+      },
+      {
+        link: "https://www.mozilla.org",
+        image: _88x31("www.mozilla.org.png"),
+      },
+      {
+        link: "https://hrt.coffee",
+        image: _88x31("hrt.coffee.gif"),
+      },
+    ],
     "libdb:webring": [
       {
         "@context": { "@vocab": `${context.libdb}Webring/` },
