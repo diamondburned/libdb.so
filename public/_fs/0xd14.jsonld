@@ -77,60 +77,6 @@
       ],
       "libdb:webring": [
         {
-          "@id": "https://0xd14.id/#webring/robot%20girls",
-          "@type": "libdb:Webring",
-          "libdb:Webring/name": "robot girls",
-          "libdb:Webring/ring": [
-            {
-              "@id": "https://0xd14.id/#webring/robot%20girls/diamond",
-              "libdb:Webring/88x31": [
-                "https://libdb.so/_fs/88x31/libdb.so.gif",
-                "https://libdb.so/_fs/88x31/d14-barcode.png",
-                "https://libdb.so/_fs/88x31/d14-dollcode.png"
-              ],
-              "libdb:Webring/link": "https://0xd14.id",
-              "libdb:Webring/name": "diamond"
-            },
-            {
-              "@id": "https://0xd14.id/#webring/robot%20girls/SZOFI%C3%81",
-              "libdb:Webring/88x31": "https://zvava.org/images/buttons/zvava.org.png",
-              "libdb:Webring/link": "https://737a6f6669e1.id",
-              "libdb:Webring/name": "SZOFIÁ"
-            }
-          ],
-          "libdb:Webring/version": 1
-        },
-        {
-          "@id": "https://0xd14.id/#webring/acmfriends",
-          "@type": "libdb:Webring",
-          "libdb:Webring/link": "https://github.com/diamondburned/acmfriends-webring",
-          "libdb:Webring/name": "acmFriends",
-          "libdb:Webring/ring": [
-            {
-              "@id": "https://0xd14.id/#webring/acmfriends/charlie",
-              "libdb:Webring/link": "https://charliet.dev",
-              "libdb:Webring/name": "charlie"
-            },
-            {
-              "@id": "https://0xd14.id/#webring/acmfriends/diamond",
-              "libdb:Webring/link": "https://libdb.so",
-              "libdb:Webring/name": "diamond"
-            },
-            {
-              "@id": "https://0xd14.id/#webring/acmfriends/alieb",
-              "libdb:Webring/link": "https://aaron.lieber.men",
-              "libdb:Webring/name": "alieb"
-            },
-            {
-              "@id": "https://0xd14.id/#webring/acmfriends/jstitt",
-              "libdb:Webring/link": "https://jstitt.dev",
-              "libdb:Webring/name": "jstitt"
-            }
-          ],
-          "libdb:Webring/root": "https://libdb.so/acmfriends-webring",
-          "libdb:Webring/version": 1
-        },
-        {
           "@id": "https://0xd14.id/#webring/roboring",
           "@type": "libdb:Webring",
           "libdb:Webring/link": "https://stellophiliac.github.io/roboring",
@@ -193,6 +139,36 @@
             }
           ],
           "libdb:Webring/self": "diamond #0xd14",
+          "libdb:Webring/version": 1
+        },
+        {
+          "@id": "https://0xd14.id/#webring/acmfriends",
+          "@type": "libdb:Webring",
+          "libdb:Webring/link": "https://github.com/diamondburned/acmfriends-webring",
+          "libdb:Webring/name": "acmFriends",
+          "libdb:Webring/ring": [
+            {
+              "@id": "https://0xd14.id/#webring/acmfriends/charlie",
+              "libdb:Webring/link": "https://charliet.dev",
+              "libdb:Webring/name": "charlie"
+            },
+            {
+              "@id": "https://0xd14.id/#webring/acmfriends/diamond",
+              "libdb:Webring/link": "https://libdb.so",
+              "libdb:Webring/name": "diamond"
+            },
+            {
+              "@id": "https://0xd14.id/#webring/acmfriends/alieb",
+              "libdb:Webring/link": "https://aaron.lieber.men",
+              "libdb:Webring/name": "alieb"
+            },
+            {
+              "@id": "https://0xd14.id/#webring/acmfriends/jstitt",
+              "libdb:Webring/link": "https://jstitt.dev",
+              "libdb:Webring/name": "jstitt"
+            }
+          ],
+          "libdb:Webring/root": "https://libdb.so/acmfriends-webring",
           "libdb:Webring/version": 1
         }
       ]

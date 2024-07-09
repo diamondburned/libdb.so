@@ -68,44 +68,6 @@ const graph = [
       },
     ],
     "libdb:webring": [
-      {
-        "@context": { "@vocab": `${context.libdb}Webring/` },
-        "@id": "libdb:webring/robot girls",
-        "@type": "libdb:Webring",
-        version: 1,
-        name: "robot girls",
-        ring: [
-          {
-            "@id": "libdb:webring/robot girls/diamond",
-            name: "diamond",
-            link: "https://0xd14.id",
-            "88x31": _88x31s,
-          },
-          {
-            "@id": "libdb:webring/robot girls/SZOFIÁ",
-            name: "SZOFIÁ",
-            link: "https://737a6f6669e1.id",
-            "88x31": "https://zvava.org/images/buttons/zvava.org.png",
-          },
-        ],
-      },
-      await (async () => {
-        const webring = await fetchDocument<WebringData>(
-          gitFile("github:diamondburned/acmfriends-webring/webring.json?ref=<3-spring-2023"),
-          {
-            "@context": { "@vocab": `${context.libdb}Webring/` },
-            "@id": "libdb:webring/acmfriends",
-            "@type": "libdb:Webring",
-            link: "https://github.com/diamondburned/acmfriends-webring",
-          }
-        );
-        webring.ring = webring.ring.map((site) => ({
-          "@id": "libdb:webring/acmfriends/" + site.name,
-          name: site.name,
-          link: site.link.includes("://") ? site.link : `https://${site.link}`,
-        }));
-        return webring;
-      })(),
       await (async () => {
         const webring = await fetchJSON<Record<string, string>[]>(
           gitFile("github:diamondburned/roboring/websites.json")
@@ -131,6 +93,23 @@ const graph = [
             };
           }),
         };
+      })(),
+      await (async () => {
+        const webring = await fetchDocument<WebringData>(
+          gitFile("github:diamondburned/acmfriends-webring/webring.json?ref=<3-spring-2023"),
+          {
+            "@context": { "@vocab": `${context.libdb}Webring/` },
+            "@id": "libdb:webring/acmfriends",
+            "@type": "libdb:Webring",
+            link: "https://github.com/diamondburned/acmfriends-webring",
+          }
+        );
+        webring.ring = webring.ring.map((site) => ({
+          "@id": "libdb:webring/acmfriends/" + site.name,
+          name: site.name,
+          link: site.link.includes("://") ? site.link : `https://${site.link}`,
+        }));
+        return webring;
       })(),
     ],
     // resume: await fetchDocument(
