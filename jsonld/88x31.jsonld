@@ -1,0 +1,16 @@
+[
+  {
+    "@id": "libdb:88x31",
+    "@type": "rdf:Property",
+    "rdfs:comment": "The 88x31 pixel logo(s) of the Thing.",
+    "rdfs:label": "88x31",
+    "rangeIncludes": [
+      {
+        "@id": "schema:ImageObject"
+      },
+      {
+        "@id": "schema:URL"
+      }
+    ]
+  }
+]

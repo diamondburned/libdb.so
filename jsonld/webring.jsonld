@@ -20,6 +20,20 @@
     "rangeIncludes": "Text"
   },
   {
+    "@id": "libdb:Webring/link",
+    "@type": "rdf:Property",
+    "rdfs:comment": "The URL link of the webring, if any.",
+    "rdfs:label": "link",
+    "rangeIncludes": "URL"
+  },
+  {
+    "@id": "libdb:Webring/self",
+    "@type": "rdf:Property",
+    "rdfs:comment": "The name of the current Thing that matches the name of a link",
+    "rdfs:label": "self",
+    "rangeIncludes": "Text"
+  },
+  {
     "@id": "libdb:Webring/version",
     "@type": "rdf:Property",
     "rdfs:comment": "The version of the webring.",
@@ -36,21 +50,35 @@
   {
     "@id": "libdb:Webring/Ring",
     "@type": "rdfs:Class",
-    "rdfs:comment": "A ring in a webring.",
+    "rdfs:comment": "A link in a webring.",
     "rdfs:label": "Ring"
   },
   {
     "@id": "libdb:Webring/Ring/link",
     "@type": "rdf:Property",
-    "rdfs:comment": "The link to the ring.",
+    "rdfs:comment": "The URL link of the webring link.",
     "rdfs:label": "link",
     "rangeIncludes": "URL"
   },
   {
     "@id": "libdb:Webring/Ring/name",
     "@type": "rdf:Property",
-    "rdfs:comment": "The name of the ring.",
+    "rdfs:comment": "The name of the webring link.",
     "rdfs:label": "name",
     "rangeIncludes": "Text"
+  },
+  {
+    "@id": "libdb:Webring/Ring/88x31",
+    "@type": "rdf:Property",
+    "rdfs:comment": "The 88x31 pixel logo(s) of the webring link.",
+    "rdfs:label": "88x31",
+    "rangeIncludes": [
+      {
+        "@id": "schema:ImageObject"
+      },
+      {
+        "@id": "schema:URL"
+      }
+    ]
   }
 ]

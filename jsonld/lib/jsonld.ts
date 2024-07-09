@@ -4,12 +4,7 @@ export async function fetchDocument<
   T extends object = Record<string, unknown>,
   ExtrasT extends object = JsonLdDocument
 >(url: string, extras?: ExtrasT): Promise<T & ExtrasT> {
-  const resp = await fetch(url);
-  if (!resp.ok) {
-    throw new Error(`Failed to fetch document: ${resp.statusText}`);
-  }
-
-  let doc = (await resp.json()) as T;
+  let doc = await fetchJSON<T>(url);
   if (typeof doc !== "object") {
     throw new Error(`Expected document to be an object, got ${typeof doc}`);
   }
@@ -23,6 +18,16 @@ export async function fetchDocument<
     ...entries.filter(([key]) => !key.startsWith("@")),
   ];
   return Object.fromEntries(entries) as T & ExtrasT;
+}
+
+export async function fetchJSON<T = any>(url: string): Promise<T> {
+  const resp = await fetch(url);
+  if (!resp.ok) {
+    throw new Error(`Failed to fetch document: ${resp.statusText}`);
+  }
+
+  let doc = (await resp.json()) as T;
+  return doc;
 }
 
 export function dedent(str: TemplateStringsArray): string {

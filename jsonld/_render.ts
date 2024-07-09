@@ -4,10 +4,10 @@ import { assert } from "./lib/jsonld.js";
 import context from "./_context.json";
 import jsonld, { ContextDefinition } from "jsonld";
 
-async function main() {
-  const sourceFile = new URL(import.meta.url).pathname;
-  const baseDir = path.dirname(sourceFile);
+export const sourceFile = new URL(import.meta.url).pathname;
+export const baseDir = path.dirname(sourceFile);
 
+async function main() {
   const files = await fs.readdir(baseDir);
   const allNodes: jsonld.NodeObject[] = [];
 
@@ -85,8 +85,14 @@ function expandIDsRecursively<T extends jsonld.NodeObject | jsonld.NodeObject[]>
     }
   }
 
-  const url = new URL(id);
-  id = url.href;
+  try {
+    const url = new URL(id);
+    id = url.href;
+  } catch (err) {
+    throw new Error(`Failed to parse ID as URL "${id}" in object ${JSON.stringify(obj)}`, {
+      cause: err,
+    });
+  }
 
   obj["@id"] = id;
 

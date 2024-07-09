@@ -8,6 +8,20 @@
   },
   "@graph": [
     {
+      "@id": "https://0xd14.id/#88x31",
+      "@type": "rdf:Property",
+      "rdfs:comment": "The 88x31 pixel logo(s) of the Thing.",
+      "rdfs:label": "88x31",
+      "rangeIncludes": [
+        {
+          "@id": "schema:ImageObject"
+        },
+        {
+          "@id": "schema:URL"
+        }
+      ]
+    },
+    {
       "@id": "https://0xd14.id/",
       "@type": "Person",
       "name": [
@@ -48,6 +62,11 @@
         "it/its",
         "she/her"
       ],
+      "libdb:88x31": [
+        "https://0xd14.id/_fs/88x31/d14.gif",
+        "https://0xd14.id/_fs/88x31/d14-barcode.png",
+        "https://0xd14.id/_fs/88x31/d14-dollcode.png"
+      ],
       "libdb:webring": [
         {
           "@id": "https://0xd14.id/#webring/robot%20girls",
@@ -56,11 +75,17 @@
           "libdb:Webring/ring": [
             {
               "@id": "https://0xd14.id/#webring/robot%20girls/diamond",
+              "libdb:Webring/88x31": [
+                "https://0xd14.id/_fs/88x31/d14.gif",
+                "https://0xd14.id/_fs/88x31/d14-barcode.png",
+                "https://0xd14.id/_fs/88x31/d14-dollcode.png"
+              ],
               "libdb:Webring/link": "https://0xd14.id",
               "libdb:Webring/name": "diamond"
             },
             {
               "@id": "https://0xd14.id/#webring/robot%20girls/SZOFI%C3%81",
+              "libdb:Webring/88x31": "https://zvava.org/images/buttons/zvava.org.png",
               "libdb:Webring/link": "https://737a6f6669e1.id",
               "libdb:Webring/name": "SZOFIÁ"
             }
@@ -70,6 +95,7 @@
         {
           "@id": "https://0xd14.id/#webring/acmfriends",
           "@type": "libdb:Webring",
+          "libdb:Webring/link": "https://github.com/diamondburned/acmfriends-webring",
           "libdb:Webring/name": "acmFriends",
           "libdb:Webring/ring": [
             {
@@ -94,6 +120,71 @@
             }
           ],
           "libdb:Webring/root": "https://libdb.so/acmfriends-webring",
+          "libdb:Webring/version": 1
+        },
+        {
+          "@id": "https://0xd14.id/#webring/roboring",
+          "@type": "libdb:Webring",
+          "libdb:Webring/link": "https://stellophiliac.github.io/roboring",
+          "libdb:Webring/name": "roboring",
+          "libdb:Webring/ring": [
+            {
+              "@id": "https://stellophiliac.github.io/roboring#roboring",
+              "libdb:Webring/link": "https://stellophiliac.github.io/roboring/0xd14/previous",
+              "libdb:Webring/name": "roboring"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#stel",
+              "libdb:Webring/link": "https://moondvsted.neocities.org",
+              "libdb:Webring/name": "moondvsted"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#sneexy",
+              "libdb:Webring/link": "https://sneexy.pages.gay",
+              "libdb:Webring/name": "sneexy dot pages dot gay"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#unnick",
+              "libdb:Webring/link": "https://unnick.mice.tel",
+              "libdb:Webring/name": "unnick"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#tulpenkiste",
+              "libdb:Webring/link": "https://tulpenkiste.codeberg.page",
+              "libdb:Webring/name": "Tulpenkiste"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#noelle",
+              "libdb:Webring/link": "https://noelle.dev",
+              "libdb:Webring/name": "Noelle.dev"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#zvava",
+              "libdb:Webring/link": "https://zvava.org",
+              "libdb:Webring/name": "sophia"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#44203",
+              "libdb:Webring/link": "https://query.44203.online/",
+              "libdb:Webring/name": "Query Δ-44203 Online"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#2740-35672",
+              "libdb:Webring/link": "https://genosse.eu",
+              "libdb:Webring/name": "flora <❀-35672>"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#440729",
+              "libdb:Webring/link": "https://stellophiliac.github.io/roboring/0xd14/next",
+              "libdb:Webring/name": "⛧-440729 \"sophie\""
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#0xd14",
+              "libdb:Webring/link": "https://libdb.so",
+              "libdb:Webring/name": "diamond #0xd14"
+            }
+          ],
+          "libdb:Webring/self": "diamond #0xd14",
           "libdb:Webring/version": 1
         }
       ]
@@ -125,6 +216,20 @@
       "rangeIncludes": "Text"
     },
     {
+      "@id": "https://0xd14.id/#Webring/link",
+      "@type": "rdf:Property",
+      "rdfs:comment": "The URL link of the webring, if any.",
+      "rdfs:label": "link",
+      "rangeIncludes": "URL"
+    },
+    {
+      "@id": "https://0xd14.id/#Webring/self",
+      "@type": "rdf:Property",
+      "rdfs:comment": "The name of the current Thing that matches the name of a link",
+      "rdfs:label": "self",
+      "rangeIncludes": "Text"
+    },
+    {
       "@id": "https://0xd14.id/#Webring/version",
       "@type": "rdf:Property",
       "rdfs:comment": "The version of the webring.",
@@ -141,22 +246,36 @@
     {
       "@id": "https://0xd14.id/#Webring/Ring",
       "@type": "rdfs:Class",
-      "rdfs:comment": "A ring in a webring.",
+      "rdfs:comment": "A link in a webring.",
       "rdfs:label": "Ring"
     },
     {
       "@id": "https://0xd14.id/#Webring/Ring/link",
       "@type": "rdf:Property",
-      "rdfs:comment": "The link to the ring.",
+      "rdfs:comment": "The URL link of the webring link.",
       "rdfs:label": "link",
       "rangeIncludes": "URL"
     },
     {
       "@id": "https://0xd14.id/#Webring/Ring/name",
       "@type": "rdf:Property",
-      "rdfs:comment": "The name of the ring.",
+      "rdfs:comment": "The name of the webring link.",
       "rdfs:label": "name",
       "rangeIncludes": "Text"
+    },
+    {
+      "@id": "https://0xd14.id/#Webring/Ring/88x31",
+      "@type": "rdf:Property",
+      "rdfs:comment": "The 88x31 pixel logo(s) of the webring link.",
+      "rdfs:label": "88x31",
+      "rangeIncludes": [
+        {
+          "@id": "schema:ImageObject"
+        },
+        {
+          "@id": "schema:URL"
+        }
+      ]
     }
   ]
 }
