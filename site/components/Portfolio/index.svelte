@@ -1,4 +1,7 @@
 <script lang="ts">
+  import jsonld from "jsonld";
+  import type { NodeObject } from "jsonld";
+
   import { nsfw } from "#/libdb.so/site/lib/prefs.js";
   import { ToastStore } from "#/libdb.so/site/lib/toasts.js";
 
@@ -17,8 +20,7 @@
 
   const toasts = new ToastStore();
 
-  const resumeURL =
-    "https://raw.githubusercontent.com/diamondburned/resume/main/resume.json";
+  const resumeURL = "https://raw.githubusercontent.com/diamondburned/resume/main/resume.json";
   const resume = fetch(resumeURL)
     .then((r) => r.json())
     .catch((err) => {
@@ -26,13 +28,37 @@
       throw err;
     });
 
+  type JSONLDDocument = {
+    "@context": Record<string, string>;
+    "@graph": NodeObject[];
+  };
+
   const jsonldURL = "https://0xd14.id";
-  const jsonld = fetch(jsonldURL)
-    .then((r) => r.json())
+  const jsonldDoc = fetch(jsonldURL)
+    .then((r) => r.json() as Promise<JSONLDDocument>)
+    .then((r) => ({
+      root: r,
+      self: r["@graph"][0] as NodeObject & {
+        // TypeScript. Shut up.
+        [key: string]: any;
+      },
+    }))
     .catch((err) => {
       console.error("Failed to fetch self JSON-LD:", err);
       throw err;
     });
+
+  async function usingContext(doc: Awaited<typeof jsonldDoc>, object: any, vocab: string) {
+    return await jsonld.compact(
+      {
+        "@context": doc.root["@context"],
+        ...object,
+      },
+      {
+        "@vocab": vocab,
+      }
+    );
+  }
 
   type Link = {
     url?: string; // copy name to clipboard if not present
@@ -121,12 +147,7 @@
   ] as Link[];
 </script>
 
-<Window
-  view="portfolio"
-  maxWidth="max(50vw, 700px)"
-  maxHeight="max(90vh, 1000px)"
-  scrollable
->
+<Window view="portfolio" maxWidth="max(50vw, 700px)" maxHeight="max(90vh, 1000px)" scrollable>
   <h3 slot="title">About</h3>
 
   <div slot="overlay">
@@ -137,18 +158,12 @@
 
   <div class="portfolio-content">
     <section class="banner" class:nsfw={$nsfw}>
-      <img
-        src={$nsfw ? "/_fs/.nsfw/banner.webp" : "/_assets/banner.webp"}
-        alt="Banner"
-      />
+      <img src={$nsfw ? "/_fs/.nsfw/banner.webp" : "/_assets/banner.webp"} alt="Banner" />
     </section>
 
     <section class="about">
       <div class="intro">
-        <img
-          src={$nsfw ? "/_fs/.nsfw/avatar.jpg" : "/_assets/avatar.webp"}
-          alt="Diamond"
-        />
+        <img src={$nsfw ? "/_fs/.nsfw/avatar.jpg" : "/_assets/avatar.webp"} alt="Diamond" />
         <div>
           <span>Hi, I'm</span>
           <h1>Diamond!</h1>
@@ -170,16 +185,14 @@
       </ul>
       <p>
         I consider myself the world's biggest "open source
-        {#if $nsfw}<span class="text-pink-glow">slut</span
-          >{:else}cheerleader{/if}"! I'm passionate about making the world a
-        better place through technology and open source.
+        {#if $nsfw}<span class="text-pink-glow">slut</span>{:else}cheerleader{/if}"! I'm passionate
+        about making the world a better place through technology and open source.
       </p>
     </section>
 
     <section class="annoyance">
       <p>
-        <b>Hey!!</b> You should totally check out the <b><u>xterm.js</u></b> window
-        underneath!
+        <b>Hey!!</b> You should totally check out the <b><u>xterm.js</u></b> window underneath!
       </p>
     </section>
 
@@ -283,9 +296,7 @@
                 {#if project.url}
                   <a
                     class="url"
-                    href={project.url.includes("://")
-                      ? project.url
-                      : `https://${project.url}`}
+                    href={project.url.includes("://") ? project.url : `https://${project.url}`}
                     target="_blank"
                   >
                     {project.url ?? ""}
@@ -305,17 +316,15 @@
       </span>
     {/await}
 
-    {#await jsonld}
+    {#await jsonldDoc}
       <span class="loading">Give me a bit, I'm loading the rest!</span>
-    {:then jsonld}
-      <!-- Render dynamic webrings -->
-      {#each jsonld.webring as webring}
-        <section class="webring">
-          <Webring
-            src={webring["@id"]}
-            data={webring["@id"] ? null : webring}
-          />
-        </section>
+    {:then doc}
+      {#each doc.self["libdb:webring"] as webring}
+        {#await usingContext(doc, webring, "https://0xd14.id#Webring/") then webring}
+          <section class="webring">
+            <Webring data={webring} />
+          </section>
+        {/await}
       {/each}
     {:catch}
       <span class="loading">

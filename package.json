@@ -14,6 +14,12 @@
         "options": {
           "parser": "json"
         }
+      },
+      {
+        "files": "*.svelte",
+        "options": {
+          "printWidth": 100
+        }
       }
     ]
   },

@@ -1,28 +1,35 @@
 <script lang="ts">
   import "libwebring/dist/webring.css";
-  import "libwebring/dist/webring-element.js";
+  import { WebringElement } from "libwebring/dist/webring-element.js";
+  import { WebringData } from "libwebring/lib/webring";
 
-  export let src: string | null = null;
-  export let data: Record<string, unknown> | null = null;
-  export let name = "diamond";
+  export let data: any;
+  $: typedData = data as WebringData & {
+    link: string;
+    self: string;
+  };
 
-  $: src_ = src ?? undefined;
-  $: data_ = data ? JSON.stringify(data) : undefined;
-  $: console.log({ src_, data_ });
+  let element: WebringElement;
+  $: {
+    if (element) {
+      element.removeAttribute("src");
+      element.removeAttribute("statusSrc");
+      element.setAttribute("data", data ? JSON.stringify(data) : undefined);
+      console.log(element.getAttribute("data"));
+    }
+  }
 </script>
 
-{#if src_ || data_}
-  <webring-element {name} src={src_} data={data_}>
-    <section class="webring">
-      <span class="ring" />
-      <div>
-        <a class="left" target="_blank" href={"#"}>_</a>
-        <span class="middle" />
-        <a class="right" target="_blank" href={"#"}>_</a>
-      </div>
-    </section>
-  </webring-element>
-{/if}
+<webring-element name={typedData.self ?? "diamond"} bind:this={element}>
+  <section class="webring">
+    <a href={typedData.link ?? ""} class="ring">...</a>
+    <div>
+      <a class="left" target="_blank" href={"#"}>_</a>
+      <span class="middle" />
+      <a class="right" target="_blank" href={"#"}>_</a>
+    </div>
+  </section>
+</webring-element>
 
 <style global lang="scss">
   webring-element {
@@ -80,6 +87,9 @@
 
       .ring {
         opacity: 0.75;
+        color: inherit;
+        text-decoration: underline dashed;
+        text-decoration-color: #fff5;
       }
     }
   }
