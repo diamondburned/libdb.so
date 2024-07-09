@@ -49,32 +49,43 @@
         "she/her"
       ],
       "libdb:88x31": [
-        "https://libdb.so/_fs/88x31/libdb.so.gif",
-        "https://libdb.so/_fs/88x31/d14-barcode.png",
-        "https://libdb.so/_fs/88x31/d14-dollcode.png"
+        {
+          "libdb:Other88x31/image": "https://libdb.so/_fs/88x31/d14.gif",
+          "libdb:Other88x31/link": "#"
+        },
+        {
+          "libdb:Other88x31/image": "https://libdb.so/_fs/88x31/d14-dollcode.png",
+          "libdb:Other88x31/link": "https://noe.sh/dollcode/"
+        }
       ],
       "libdb:other88x31": [
         {
-          "image": "https://libdb.so/_fs/88x31/zvava.org.png",
-          "link": "https://zvava.org"
+          "libdb:Other88x31/alt": "zvava.org",
+          "libdb:Other88x31/image": "https://libdb.so/_fs/88x31/zvava.org.png",
+          "libdb:Other88x31/link": "https://zvava.org"
         },
         {
-          "image": "https://libdb.so/_fs/88x31/ezri.pet.png",
-          "link": "https://ezri.pet"
+          "libdb:Other88x31/alt": "ezri.pet",
+          "libdb:Other88x31/image": "https://libdb.so/_fs/88x31/ezri.pet.png",
+          "libdb:Other88x31/link": "https://ezri.pet"
         },
         {
-          "image": "https://libdb.so/_fs/88x31/nap.png",
-          "link": "https://voidgoddess.org/emptyspaces/notaperson/"
+          "libdb:Other88x31/alt": "Not A Person",
+          "libdb:Other88x31/image": "https://libdb.so/_fs/88x31/nap.png",
+          "libdb:Other88x31/link": "https://voidgoddess.org/emptyspaces/notaperson/"
         },
         {
-          "image": "https://libdb.so/_fs/88x31/www.mozilla.org.png",
-          "link": "https://www.mozilla.org"
+          "libdb:Other88x31/alt": "Mozilla",
+          "libdb:Other88x31/image": "https://libdb.so/_fs/88x31/www.mozilla.org.png",
+          "libdb:Other88x31/link": "https://www.mozilla.org"
         },
         {
-          "image": "https://libdb.so/_fs/88x31/hrt.coffee.gif",
-          "link": "https://hrt.coffee"
+          "libdb:Other88x31/alt": "hrt.coffee",
+          "libdb:Other88x31/image": "https://libdb.so/_fs/88x31/hrt.coffee.gif",
+          "libdb:Other88x31/link": "https://hrt.coffee"
         }
       ],
+      "libdb:dollcode": "▖▖▖▖▌▘▘",
       "libdb:webring": [
         {
           "@id": "https://0xd14.id/#webring/roboring",
@@ -184,6 +195,9 @@
         },
         {
           "@id": "schema:URL"
+        },
+        {
+          "@id": "https://0xd14.id/#Other88x31"
         }
       ]
     },
@@ -220,6 +234,13 @@
       "rdfs:comment": "The URL the 88x31 pixel image/logo links to.",
       "rdfs:label": "link",
       "rangeIncludes": "schema:URL"
+    },
+    {
+      "@id": "https://0xd14.id/#Other88x31/alt",
+      "@type": "rdf:Property",
+      "rdfs:comment": "The alt text of the 88x31 pixel image/logo.",
+      "rdfs:label": "alt",
+      "rangeIncludes": "schema:Text"
     },
     {
       "@id": "https://0xd14.id/#webring",

@@ -5,6 +5,7 @@
   import { nsfw } from "#/libdb.so/site/lib/prefs.js";
   import { ToastStore } from "#/libdb.so/site/lib/toasts.js";
 
+  import Badges from "./Badges.svelte";
   import Toasts from "#/libdb.so/site/components/Toasts.svelte";
   import Window from "#/libdb.so/site/components/Window.svelte";
   import Webring from "#/libdb.so/site/components/Webring.svelte";
@@ -33,7 +34,7 @@
     "@graph": NodeObject[];
   };
 
-  const jsonldURL = "https://0xd14.id";
+  const jsonldURL = "/_fs/0xd14.jsonld";
   const jsonldDoc = fetch(jsonldURL)
     .then((r) => r.json() as Promise<JSONLDDocument>)
     .then((r) => ({
@@ -58,6 +59,22 @@
         "@vocab": vocab,
       }
     );
+  }
+
+  async function combined88x31s(doc: Awaited<typeof jsonldDoc>) {
+    const others: {
+      alt: string;
+      link: string;
+      image: string;
+    }[] = await Promise.all(
+      doc.self["libdb:other88x31"].map(async (o: NodeObject) => {
+        return await usingContext(doc, o, "https://0xd14.id#Other88x31/");
+      })
+    );
+    return [
+      ...doc.self["libdb:88x31"].map((link: string) => ({ image: link })), //
+      ...others,
+    ];
   }
 
   type Link = {
@@ -326,6 +343,12 @@
           </section>
         {/await}
       {/each}
+
+      {#await combined88x31s(doc) then badges}
+        <div class="badges">
+          <Badges {badges} />
+        </div>
+      {/await}
     {:catch}
       <span class="loading">
         I couldn't load my JSON-LD information either {":("}
@@ -720,6 +743,12 @@
       opacity: 0.5;
       font-size: 0.9em;
       text-align: center;
+    }
+
+    .badges {
+      margin: 0 0.5em;
+      padding: 1em;
+      border-top: 1px solid #fff3;
     }
 
     footer {

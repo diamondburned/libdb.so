@@ -3,11 +3,7 @@ import { type WebringData } from "libwebring/lib/webring.js";
 import context from "./_context.json";
 
 const _88x31 = (name: string) => "https://libdb.so/_fs/88x31/" + name;
-const _88x31s = [
-  _88x31("libdb.so.gif"), //
-  _88x31("d14-barcode.png"),
-  _88x31("d14-dollcode.png"),
-];
+const _88x31s = [];
 
 const graph = [
   {
@@ -44,29 +40,44 @@ const graph = [
     additionalType: ["Bot", "zvava:Bot"],
     "zvava:bot": true,
     "zvava:pronouns": ["it/its", "she/her"],
-    "libdb:88x31": _88x31s,
-    "libdb:other88x31": [
+    "libdb:88x31": [
       {
-        link: "https://zvava.org",
-        image: _88x31("zvava.org.png"),
+        "libdb:Other88x31/link": "#",
+        "libdb:Other88x31/image": _88x31("d14.gif"),
       },
       {
-        link: "https://ezri.pet",
-        image: _88x31("ezri.pet.png"),
-      },
-      {
-        link: "https://voidgoddess.org/emptyspaces/notaperson/",
-        image: _88x31("nap.png"),
-      },
-      {
-        link: "https://www.mozilla.org",
-        image: _88x31("www.mozilla.org.png"),
-      },
-      {
-        link: "https://hrt.coffee",
-        image: _88x31("hrt.coffee.gif"),
+        "libdb:Other88x31/link": "https://noe.sh/dollcode/",
+        "libdb:Other88x31/image": _88x31("d14-dollcode.png"),
       },
     ],
+    "libdb:other88x31": [
+      {
+        "libdb:Other88x31/alt": "zvava.org",
+        "libdb:Other88x31/link": "https://zvava.org",
+        "libdb:Other88x31/image": _88x31("zvava.org.png"),
+      },
+      {
+        "libdb:Other88x31/alt": "ezri.pet",
+        "libdb:Other88x31/link": "https://ezri.pet",
+        "libdb:Other88x31/image": _88x31("ezri.pet.png"),
+      },
+      {
+        "libdb:Other88x31/alt": "Not A Person",
+        "libdb:Other88x31/link": "https://voidgoddess.org/emptyspaces/notaperson/",
+        "libdb:Other88x31/image": _88x31("nap.png"),
+      },
+      {
+        "libdb:Other88x31/alt": "Mozilla",
+        "libdb:Other88x31/link": "https://www.mozilla.org",
+        "libdb:Other88x31/image": _88x31("www.mozilla.org.png"),
+      },
+      {
+        "libdb:Other88x31/alt": "hrt.coffee",
+        "libdb:Other88x31/link": "https://hrt.coffee",
+        "libdb:Other88x31/image": _88x31("hrt.coffee.gif"),
+      },
+    ],
+    "libdb:dollcode": "▖▖▖▖▌▘▘",
     "libdb:webring": [
       await (async () => {
         const webring = await fetchJSON<Record<string, string>[]>(

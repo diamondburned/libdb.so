@@ -10,6 +10,9 @@
       },
       {
         "@id": "schema:URL"
+      },
+      {
+        "@id": "libdb:Other88x31"
       }
     ]
   },
@@ -46,5 +49,12 @@
     "rdfs:comment": "The URL the 88x31 pixel image/logo links to.",
     "rdfs:label": "link",
     "rangeIncludes": "schema:URL"
+  },
+  {
+    "@id": "libdb:Other88x31/alt",
+    "@type": "rdf:Property",
+    "rdfs:comment": "The alt text of the 88x31 pixel image/logo.",
+    "rdfs:label": "alt",
+    "rangeIncludes": "schema:Text"
   }
 ]
