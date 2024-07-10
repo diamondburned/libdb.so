@@ -59,11 +59,12 @@ main() {
 	
 	shopt -s dotglob
 	tree=$(scanDir "$dir")
+	baseURL="${BASE_URL:-}${dir}"
 
 	jq --null-input \
-		--arg base "$dir" \
+		--arg base_url "$dir" \
 		--argjson tree "$tree" \
-		'{ $base, $tree }'
+		'{ $base_url, $tree }'
 }
 
 main "$@"
