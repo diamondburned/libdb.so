@@ -49,8 +49,12 @@
       throw err;
     });
 
-  async function usingContext(doc: Awaited<typeof jsonldDoc>, object: any, vocab: string) {
-    return await jsonld.compact(
+  async function usingContext<T = object>(
+    doc: Awaited<typeof jsonldDoc>,
+    object: any,
+    vocab: string
+  ): Promise<T> {
+    return (await jsonld.compact(
       {
         "@context": doc.root["@context"],
         ...object,
@@ -58,23 +62,22 @@
       {
         "@vocab": vocab,
       }
-    );
+    )) as T;
   }
 
   async function combined88x31s(doc: Awaited<typeof jsonldDoc>) {
-    const others: {
-      alt: string;
-      link: string;
-      image: string;
-    }[] = await Promise.all(
-      doc.self["libdb:other88x31"].map(async (o: NodeObject) => {
-        return await usingContext(doc, o, "https://0xd14.id#Other88x31/");
-      })
+    return await Promise.all(
+      [
+        ...doc.self["libdb:88x31"], //
+        ...doc.self["libdb:other88x31"],
+      ].map((o) =>
+        usingContext<{
+          alt?: string;
+          link?: string;
+          image: string;
+        }>(doc, o, "https://0xd14.id#Other88x31/")
+      )
     );
-    return [
-      ...doc.self["libdb:88x31"].map((link: string) => ({ image: link })), //
-      ...others,
-    ];
   }
 
   type Link = {
