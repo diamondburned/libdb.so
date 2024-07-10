@@ -269,6 +269,7 @@
     {#await resume}
       <span class="loading">Give me a bit, I'm loading the rest!</span>
     {:then resume}
+      <!--
       <section class="work">
         <h2>Experience</h2>
         <ol class="content work-list">
@@ -295,6 +296,7 @@
           {/each}
         </ol>
       </section>
+	  -->
 
       <section class="projects">
         <h2>Projects</h2>
