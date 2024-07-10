@@ -21,7 +21,7 @@
 
 <webring-element name={typedData.self ?? "diamond"} bind:this={element}>
   <a href={typedData.link ?? ""} class="ring">...</a>
-  <div>
+  <div class="links">
     <a class="left" target="_blank" href={"#"}>_</a>
     <span class="middle" />
     <a class="right" target="_blank" href={"#"}>_</a>
@@ -38,22 +38,13 @@
       margin: 0;
     }
 
-    & > :nth-child(1) {
+    .ring {
       align-self: center;
     }
 
-    & > :nth-child(2) {
+    .links {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-
-      a {
-        color: var(--blue);
-        text-decoration: none;
-
-        &:hover {
-          text-decoration: underline;
-        }
-      }
     }
 
     .left,
@@ -79,13 +70,6 @@
       &::after {
         content: " ›";
       }
-    }
-
-    .ring {
-      opacity: 0.75;
-      color: inherit;
-      text-decoration: underline dashed;
-      text-decoration-color: #fff5;
     }
   }
 </style>

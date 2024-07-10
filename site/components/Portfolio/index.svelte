@@ -9,7 +9,7 @@
   import Badges from "./Badges.svelte";
   import Toasts from "#/libdb.so/site/components/Toasts.svelte";
   import Window from "#/libdb.so/site/components/Window.svelte";
-  import Webring from "#/libdb.so/site/components/Webring.svelte";
+  import Webring from "#/libdb.so/site/components/Portfolio/Webring.svelte";
   import OpenInNew from "#/libdb.so/site/components/MaterialIcons/open_in_new.svelte";
 
   import GitHubIcon from "super-tiny-icons/images/svg/github.svg";
