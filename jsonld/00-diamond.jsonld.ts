@@ -62,14 +62,19 @@ const graph = [
         "libdb:88x31Badge/image": _88x31("github.png"),
       },
       {
-        "libdb:88x31Badge/alt": "zvava.org",
+        "libdb:88x31Badge/alt": "sophie's brain out on a table",
         "libdb:88x31Badge/link": "https://zvava.org",
         "libdb:88x31Badge/image": _88x31("zvava.org.png"),
       },
       {
-        "libdb:88x31Badge/alt": "ezri.pet",
+        "libdb:88x31Badge/alt": 'unit ⎈-657a7269, "ezri"',
         "libdb:88x31Badge/link": "https://ezri.pet",
         "libdb:88x31Badge/image": _88x31("ezri.pet.png"),
+      },
+      {
+        "libdb:88x31Badge/alt": "joel's website",
+        "libdb:88x31Badge/link": "https://jdr.sh",
+        "libdb:88x31Badge/image": _88x31("jdr.sh.png"),
       },
       {
         "libdb:88x31Badge/alt": "Not A Person",
