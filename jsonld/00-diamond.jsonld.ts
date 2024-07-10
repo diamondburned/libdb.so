@@ -52,6 +52,16 @@ const graph = [
     ],
     "libdb:other88x31": [
       {
+        "libdb:88x31Badge/alt": "My Mastodon",
+        "libdb:88x31Badge/link:": "https://tech.lgbt/@diamond",
+        "libdb:88x31Badge/image": _88x31("mastodon_button_3.gif"),
+      },
+      {
+        "libdb:88x31Badge/alt": "My GitHub",
+        "libdb:88x31Badge/link": "https://github.com/diamondburned",
+        "libdb:88x31Badge/image": _88x31("github.png"),
+      },
+      {
         "libdb:88x31Badge/alt": "zvava.org",
         "libdb:88x31Badge/link": "https://zvava.org",
         "libdb:88x31Badge/image": _88x31("zvava.org.png"),
@@ -75,6 +85,35 @@ const graph = [
         "libdb:88x31Badge/alt": "hrt.coffee",
         "libdb:88x31Badge/link": "https://hrt.coffee",
         "libdb:88x31Badge/image": _88x31("hrt.coffee.gif"),
+      },
+      {
+        "libdb:88x31Badge/alt": "Xenia Trans Pride",
+        "libdb:88x31Badge/link": "https://www.kernel.org",
+        "libdb:88x31Badge/image": _88x31("xeniatrans_now.gif"),
+      },
+      {
+        "libdb:88x31Badge/alt": "Trans your gender, NOW!",
+        "libdb:88x31Badge/image": _88x31("trans-your-gender.gif"),
+      },
+      {
+        "libdb:88x31Badge/alt": "Powered by NixOS",
+        "libdb:88x31Badge/link": "https://nixos.org/",
+        "libdb:88x31Badge/image": _88x31("powered_by_nixos.gif"),
+      },
+      {
+        "libdb:88x31Badge/alt": "Built with Nix",
+        "libdb:88x31Badge/link": "https://nixos.org/",
+        "libdb:88x31Badge/image": _88x31("built_with_nix.gif"),
+      },
+      {
+        "libdb:88x31Badge/alt": "Let's all love Lain",
+        "libdb:88x31Badge/link": "https://fauux.neocities.org/lovelain",
+        "libdb:88x31Badge/image": _88x31("lain.png"),
+      },
+      {
+        "libdb:88x31Badge/alt": "Join Mastodon!",
+        "libdb:88x31Badge/link": "https://joinmastodon.org",
+        "libdb:88x31Badge/image": _88x31("mastodon-flat.png"),
       },
     ],
     "libdb:dollcode": "▖▖▖▖▌▘▘",
