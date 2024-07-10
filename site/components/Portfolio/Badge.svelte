@@ -9,21 +9,39 @@
 <script lang="ts">
   import { fly } from "svelte/transition";
 
+  import Popover from "../Popover.svelte";
+
   export let badge: Badge;
   let hover = false;
+
+  function hostname(url: string): string | null {
+    try {
+      const u = new URL(url);
+      return u.host || null;
+    } catch (_) {
+      return null;
+    }
+  }
 </script>
 
-<a
-  class="link"
-  href={badge.link}
-  on:mouseenter={() => (hover = true)}
-  on:mouseleave={() => (hover = false)}
->
-  <img class="badge" src={badge.image} alt={badge.alt} />
-  {#if badge.alt && hover}
-    <div class="popover tooltip" transition:fly={{ y: 20, duration: 250 }}>{badge.alt}</div>
-  {/if}
-</a>
+<div class="link">
+  <a href={badge.link} on:mouseenter={() => (hover = true)} on:mouseleave={() => (hover = false)}>
+    <img class="badge" src={badge.image} alt={badge.alt} />
+  </a>
+  <div class="tooltip">
+    <Popover open={hover} arrowX={0.15}>
+      <b>88x31</b>
+      {#if badge.alt}
+        <br />
+        <span class="alt">{badge.alt}</span>
+      {/if}
+      {#if badge.link && hostname(badge.link) && hostname(badge.link) != badge.alt}
+        <br />
+        <span class="host">{hostname(badge.link)}</span>
+      {/if}
+    </Popover>
+  </div>
+</div>
 
 <style lang="scss">
   .badge {
@@ -34,21 +52,20 @@
   .link {
     position: relative;
 
-    & .tooltip {
+    .tooltip {
       position: absolute;
       z-index: 10;
-      top: -2.5em;
-      width: 100%;
-      padding: 0.35em;
+      bottom: 42px;
 
       font-size: 0.85em;
-      background: var(--adw-popover-bg-color);
-      border: 1px solid var(--adw-popover-shade-color);
-      color: #fff;
+      line-height: 1.35;
 
       box-sizing: border-box;
-      text-align: center;
       pointer-events: none;
+
+      span {
+        opacity: 0.75;
+      }
     }
   }
 </style>
