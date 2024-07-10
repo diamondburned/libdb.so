@@ -46,7 +46,7 @@ const graph = [
         "libdb:88x31Badge/image": _88x31("d14.gif"),
       },
       {
-        "libdb:88x31Badge/link": "https://noe.sh/dollcode/",
+        "libdb:88x31Badge/link": "https://0xd14.id",
         "libdb:88x31Badge/image": _88x31("d14-dollcode.png"),
       },
     ],
