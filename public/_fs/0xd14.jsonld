@@ -105,8 +105,9 @@
           "libdb:88x31Badge/link": "https://www.kernel.org"
         },
         {
-          "libdb:88x31Badge/alt": "Trans your gender, NOW!",
-          "libdb:88x31Badge/image": "https://libdb.so/_fs/88x31/trans-your-gender.gif"
+          "libdb:88x31Badge/alt": "Transfem Science",
+          "libdb:88x31Badge/image": "https://libdb.so/_fs/88x31/trans-your-gender.gif",
+          "libdb:88x31Badge/link": "https://transfemscience.org"
         },
         {
           "libdb:88x31Badge/alt": "Powered by NixOS",
@@ -120,7 +121,7 @@
         },
         {
           "libdb:88x31Badge/alt": "Let's all love Lain",
-          "libdb:88x31Badge/image": "https://libdb.so/_fs/88x31/lain.png",
+          "libdb:88x31Badge/image": "https://libdb.so/_fs/88x31/lain.gif",
           "libdb:88x31Badge/link": "https://fauux.neocities.org/lovelain"
         },
         {

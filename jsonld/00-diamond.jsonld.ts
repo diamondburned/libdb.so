@@ -97,7 +97,8 @@ const graph = [
         "libdb:88x31Badge/image": _88x31("xeniatrans_now.gif"),
       },
       {
-        "libdb:88x31Badge/alt": "Trans your gender, NOW!",
+        "libdb:88x31Badge/alt": "Transfem Science",
+        "libdb:88x31Badge/link": "https://transfemscience.org",
         "libdb:88x31Badge/image": _88x31("trans-your-gender.gif"),
       },
       {
@@ -113,7 +114,7 @@ const graph = [
       {
         "libdb:88x31Badge/alt": "Let's all love Lain",
         "libdb:88x31Badge/link": "https://fauux.neocities.org/lovelain",
-        "libdb:88x31Badge/image": _88x31("lain.png"),
+        "libdb:88x31Badge/image": _88x31("lain.gif"),
       },
       {
         "libdb:88x31Badge/alt": "Join Mastodon!",
