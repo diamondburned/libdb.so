@@ -2,6 +2,7 @@
   import jsonld from "jsonld";
   import type { NodeObject } from "jsonld";
 
+  import type { Badge } from "./Badges.svelte";
   import { nsfw } from "#/libdb.so/site/lib/prefs.js";
   import { ToastStore } from "#/libdb.so/site/lib/toasts.js";
 
@@ -66,18 +67,14 @@
   }
 
   async function combined88x31s(doc: Awaited<typeof jsonldDoc>) {
-    return await Promise.all(
+    const x = await Promise.all(
       [
         ...doc.self["libdb:88x31"], //
         ...doc.self["libdb:other88x31"],
-      ].map((o) =>
-        usingContext<{
-          alt?: string;
-          link?: string;
-          image: string;
-        }>(doc, o, "https://0xd14.id#88x31Badge/")
-      )
+      ].map((o) => usingContext<Badge>(doc, o, "https://0xd14.id#88x31Badge/"))
     );
+    console.log(x);
+    return x;
   }
 
   type Link = {

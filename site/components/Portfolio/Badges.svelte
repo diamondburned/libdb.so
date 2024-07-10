@@ -1,16 +1,16 @@
+<script lang="ts" context="module">
+  import type { Badge as BadgeType } from "./Badge.svelte";
+  export type { BadgeType as Badge };
+</script>
+
 <script lang="ts">
-  export let badges: {
-    image: string;
-    link?: string;
-    alt?: string;
-  }[];
+  import Badge from "./Badge.svelte";
+  export let badges: BadgeType[];
 </script>
 
 <div class="badges">
   {#each badges as badge}
-    <a class="link" href={badge.link}>
-      <img class="badge" src={badge.image} alt={badge.alt} />
-    </a>
+    <Badge {badge} />
   {/each}
 </div>
 
@@ -20,10 +20,6 @@
     grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
     gap: 0.25em;
     justify-content: center;
-  }
-
-  .badge {
-    aspect-ratio: 88 / 31;
-    image-rendering: pixelated;
+    justify-items: center;
   }
 </style>

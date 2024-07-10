@@ -15,7 +15,6 @@
       element.removeAttribute("src");
       element.removeAttribute("statusSrc");
       element.setAttribute("data", data ? JSON.stringify(data) : undefined);
-      console.log(element.getAttribute("data"));
     }
   }
 </script>
