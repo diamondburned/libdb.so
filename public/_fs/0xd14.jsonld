@@ -50,39 +50,39 @@
       ],
       "libdb:88x31": [
         {
-          "libdb:Other88x31/image": "https://libdb.so/_fs/88x31/d14.gif",
-          "libdb:Other88x31/link": "#"
+          "libdb:88x31Badge/image": "https://libdb.so/_fs/88x31/d14.gif",
+          "libdb:88x31Badge/link": "#"
         },
         {
-          "libdb:Other88x31/image": "https://libdb.so/_fs/88x31/d14-dollcode.png",
-          "libdb:Other88x31/link": "https://noe.sh/dollcode/"
+          "libdb:88x31Badge/image": "https://libdb.so/_fs/88x31/d14-dollcode.png",
+          "libdb:88x31Badge/link": "https://noe.sh/dollcode/"
         }
       ],
       "libdb:other88x31": [
         {
-          "libdb:Other88x31/alt": "zvava.org",
-          "libdb:Other88x31/image": "https://libdb.so/_fs/88x31/zvava.org.png",
-          "libdb:Other88x31/link": "https://zvava.org"
+          "libdb:88x31Badge/alt": "zvava.org",
+          "libdb:88x31Badge/image": "https://libdb.so/_fs/88x31/zvava.org.png",
+          "libdb:88x31Badge/link": "https://zvava.org"
         },
         {
-          "libdb:Other88x31/alt": "ezri.pet",
-          "libdb:Other88x31/image": "https://libdb.so/_fs/88x31/ezri.pet.png",
-          "libdb:Other88x31/link": "https://ezri.pet"
+          "libdb:88x31Badge/alt": "ezri.pet",
+          "libdb:88x31Badge/image": "https://libdb.so/_fs/88x31/ezri.pet.png",
+          "libdb:88x31Badge/link": "https://ezri.pet"
         },
         {
-          "libdb:Other88x31/alt": "Not A Person",
-          "libdb:Other88x31/image": "https://libdb.so/_fs/88x31/nap.png",
-          "libdb:Other88x31/link": "https://voidgoddess.org/emptyspaces/notaperson/"
+          "libdb:88x31Badge/alt": "Not A Person",
+          "libdb:88x31Badge/image": "https://libdb.so/_fs/88x31/nap.png",
+          "libdb:88x31Badge/link": "https://voidgoddess.org/emptyspaces/notaperson/"
         },
         {
-          "libdb:Other88x31/alt": "Mozilla",
-          "libdb:Other88x31/image": "https://libdb.so/_fs/88x31/www.mozilla.org.png",
-          "libdb:Other88x31/link": "https://www.mozilla.org"
+          "libdb:88x31Badge/alt": "Mozilla",
+          "libdb:88x31Badge/image": "https://libdb.so/_fs/88x31/www.mozilla.org.png",
+          "libdb:88x31Badge/link": "https://www.mozilla.org"
         },
         {
-          "libdb:Other88x31/alt": "hrt.coffee",
-          "libdb:Other88x31/image": "https://libdb.so/_fs/88x31/hrt.coffee.gif",
-          "libdb:Other88x31/link": "https://hrt.coffee"
+          "libdb:88x31Badge/alt": "hrt.coffee",
+          "libdb:88x31Badge/image": "https://libdb.so/_fs/88x31/hrt.coffee.gif",
+          "libdb:88x31Badge/link": "https://hrt.coffee"
         }
       ],
       "libdb:dollcode": "▖▖▖▖▌▘▘",
@@ -197,7 +197,7 @@
           "@id": "schema:URL"
         },
         {
-          "@id": "https://0xd14.id/#Other88x31"
+          "@id": "https://0xd14.id/#88x31Badge"
         }
       ]
     },
@@ -206,16 +206,26 @@
       "@type": "rdf:Property",
       "rdfs:comment": "Other 88x31 pixel logo(s) not belonging to the Thing.",
       "rdfs:label": "other88x31",
-      "rangeIncludes": "libdb:Other88x31"
+      "rangeIncludes": [
+        {
+          "@id": "schema:ImageObject"
+        },
+        {
+          "@id": "schema:URL"
+        },
+        {
+          "@id": "https://0xd14.id/#88x31Badge"
+        }
+      ]
     },
     {
-      "@id": "https://0xd14.id/#Other88x31",
+      "@id": "https://0xd14.id/#88x31Badge",
       "@type": "rdfs:Class",
-      "rdfs:comment": "A 88x31 pixel logo not belonging to the Thing.",
-      "rdfs:label": "Other88x31"
+      "rdfs:comment": "A 88x31 pixels badge.",
+      "rdfs:label": "88x31Badge"
     },
     {
-      "@id": "https://0xd14.id/#Other88x31/image",
+      "@id": "https://0xd14.id/#88x31Badge/image",
       "@type": "rdf:Property",
       "rdfs:comment": "The URL of the 88x31 pixel image/logo.",
       "rdfs:label": "image",
@@ -229,14 +239,14 @@
       ]
     },
     {
-      "@id": "https://0xd14.id/#Other88x31/link",
+      "@id": "https://0xd14.id/#88x31Badge/link",
       "@type": "rdf:Property",
       "rdfs:comment": "The URL the 88x31 pixel image/logo links to.",
       "rdfs:label": "link",
       "rangeIncludes": "schema:URL"
     },
     {
-      "@id": "https://0xd14.id/#Other88x31/alt",
+      "@id": "https://0xd14.id/#88x31Badge/alt",
       "@type": "rdf:Property",
       "rdfs:comment": "The alt text of the 88x31 pixel image/logo.",
       "rdfs:label": "alt",

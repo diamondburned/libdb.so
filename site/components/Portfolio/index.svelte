@@ -75,7 +75,7 @@
           alt?: string;
           link?: string;
           image: string;
-        }>(doc, o, "https://0xd14.id#Other88x31/")
+        }>(doc, o, "https://0xd14.id#88x31Badge/")
       )
     );
   }
