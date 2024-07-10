@@ -1,4 +1,4 @@
-a {
+a:not([role="button"]) {
   color: var(--adw-link-color);
   text-decoration: none;
 

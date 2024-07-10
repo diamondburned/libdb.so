@@ -3,16 +3,8 @@
   --adw-button-hover-color: color-mix(in srgb, currentColor 15%, transparent);
   --adw-button-active-color: color-mix(in srgb, currentColor 30%, transparent);
   --adw-button-checked-color: color-mix(in srgb, currentColor 30%, transparent);
-  --adw-button-checked-hover-color: color-mix(
-    in srgb,
-    currentColor 35%,
-    transparent
-  );
-  --adw-button-checked-active-color: color-mix(
-    in srgb,
-    currentColor 40%,
-    transparent
-  );
+  --adw-button-checked-hover-color: color-mix(in srgb, currentColor 35%, transparent);
+  --adw-button-checked-active-color: color-mix(in srgb, currentColor 40%, transparent);
 
   --adw-opaque-button-default-bg: color-mix(
     in srgb,
@@ -20,36 +12,12 @@
     var(--window-fg-color)
   );
 
-  --adw-destructive-button-color: color-mix(
-    in srgb,
-    currentColor 15%,
-    transparent
-  );
-  --adw-destructive-button-hover-color: color-mix(
-    in srgb,
-    currentColor 20%,
-    transparent
-  );
-  --adw-destructive-button-active-color: color-mix(
-    in srgb,
-    currentColor 35%,
-    transparent
-  );
-  --adw-destructive-button-checked-color: color-mix(
-    in srgb,
-    currentColor 35%,
-    transparent
-  );
-  --adw-destructive-button-checked-hover-color: color-mix(
-    in srgb,
-    currentColor 40%,
-    transparent
-  );
-  --adw-destructive-button-checked-active-color: color-mix(
-    in srgb,
-    currentColor 45%,
-    transparent
-  );
+  --adw-destructive-button-color: color-mix(in srgb, currentColor 15%, transparent);
+  --adw-destructive-button-hover-color: color-mix(in srgb, currentColor 20%, transparent);
+  --adw-destructive-button-active-color: color-mix(in srgb, currentColor 35%, transparent);
+  --adw-destructive-button-checked-color: color-mix(in srgb, currentColor 35%, transparent);
+  --adw-destructive-button-checked-hover-color: color-mix(in srgb, currentColor 40%, transparent);
+  --adw-destructive-button-checked-active-color: color-mix(in srgb, currentColor 45%, transparent);
 }
 
 button,
@@ -64,6 +32,13 @@ a[role="button"] {
 
   &:hover {
     background-color: var(--adw-hover-color);
+    text-decoration: none;
+  }
+}
+
+a[role="button"] {
+  &,
+  &:hover {
     text-decoration: none;
   }
 }
