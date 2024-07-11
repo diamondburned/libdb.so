@@ -1,26 +1,30 @@
 <script lang="ts">
   import "libwebring/dist/webring.css";
-  import { WebringElement } from "libwebring/dist/webring-element.js";
+  import "libwebring/dist/webring-element.js";
   import { WebringData } from "libwebring/lib/webring";
 
   export let data: any;
   $: typedData = data as WebringData & {
-    link: string;
-    self: string;
+    self?: string;
   };
 
-  let element: WebringElement;
+  let element: HTMLElement;
   $: {
     if (element) {
       element.removeAttribute("src");
       element.removeAttribute("statusSrc");
-      element.setAttribute("data", data ? JSON.stringify(data) : undefined);
+      if (data) {
+        element.setAttribute("data", JSON.stringify(data));
+        console.log(JSON.stringify(data));
+      } else {
+        element.removeAttribute("data");
+      }
     }
   }
 </script>
 
 <webring-element name={typedData.self ?? "diamond"} bind:this={element}>
-  <a href={typedData.link ?? ""} class="ring">...</a>
+  <a href={"#"} class="ring">...</a>
   <div class="links">
     <a class="left" target="_blank" href={"#"}>_</a>
     <span class="middle" />

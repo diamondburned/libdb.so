@@ -122,11 +122,11 @@ const graph = [
         "libdb:88x31Badge/image": _88x31("mastodon-flat.png"),
       },
     ],
-    "libdb:dollcode": "▖▖▖▖▌▘▘",
+    "libdb:dollcode": "▖▖▖▖▌▘▘▌",
     "libdb:webring": [
       await (async () => {
         const webring = await fetchJSON<Record<string, string>[]>(
-          gitFile("github:diamondburned/roboring/websites.json")
+          gitFile("github:stellophiliac/roboring/websites.json")
         );
         return {
           "@context": { "@vocab": `${context.libdb}Webring/` },
@@ -134,18 +134,13 @@ const graph = [
           "@type": "libdb:Webring",
           version: 1,
           name: "roboring",
-          link: "https://stellophiliac.github.io/roboring",
+          root: "https://stellophiliac.github.io/roboring",
           self: "diamond #0xd14",
-          ring: webring.map((site, i) => {
-            const isNext = webring[(i + 1) % webring.length]?.slug == "0xd14";
-            const isPrev = webring[(webring.length - i - 1) % webring.length]?.slug == "0xd14";
+          ring: webring.map((site) => {
             return {
               "@id": `https://stellophiliac.github.io/roboring#${site.slug}`,
               name: site.name,
-              link:
-                isNext || isPrev
-                  ? `https://stellophiliac.github.io/roboring/0xd14/${isPrev ? "previous" : "next"}`
-                  : site.url,
+              link: site.url,
             };
           }),
         };

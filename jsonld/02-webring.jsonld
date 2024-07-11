@@ -20,10 +20,10 @@
     "rangeIncludes": "Text"
   },
   {
-    "@id": "libdb:Webring/link",
+    "@id": "libdb:Webring/root",
     "@type": "rdf:Property",
     "rdfs:comment": "The URL link of the webring, if any.",
-    "rdfs:label": "link",
+    "rdfs:label": "root",
     "rangeIncludes": "URL"
   },
   {

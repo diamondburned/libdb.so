@@ -130,17 +130,16 @@
           "libdb:88x31Badge/link": "https://joinmastodon.org"
         }
       ],
-      "libdb:dollcode": "▖▖▖▖▌▘▘",
+      "libdb:dollcode": "▖▖▖▖▌▘▘▌",
       "libdb:webring": [
         {
           "@id": "https://0xd14.id/#webring/roboring",
           "@type": "libdb:Webring",
-          "libdb:Webring/link": "https://stellophiliac.github.io/roboring",
           "libdb:Webring/name": "roboring",
           "libdb:Webring/ring": [
             {
               "@id": "https://stellophiliac.github.io/roboring#roboring",
-              "libdb:Webring/link": "https://stellophiliac.github.io/roboring/0xd14/previous",
+              "libdb:Webring/link": "https://stellophiliac.github.io/roboring",
               "libdb:Webring/name": "roboring"
             },
             {
@@ -185,15 +184,21 @@
             },
             {
               "@id": "https://stellophiliac.github.io/roboring#440729",
-              "libdb:Webring/link": "https://stellophiliac.github.io/roboring/0xd14/next",
+              "libdb:Webring/link": "https://999eagle.moe",
               "libdb:Webring/name": "⛧-440729 \"sophie\""
             },
             {
               "@id": "https://stellophiliac.github.io/roboring#0xd14",
               "libdb:Webring/link": "https://libdb.so",
               "libdb:Webring/name": "diamond #0xd14"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#0x657a7269",
+              "libdb:Webring/link": "https://ezri.pet",
+              "libdb:Webring/name": "⎈-657a7269 ezri"
             }
           ],
+          "libdb:Webring/root": "https://stellophiliac.github.io/roboring",
           "libdb:Webring/self": "diamond #0xd14",
           "libdb:Webring/version": 1
         },
@@ -318,10 +323,10 @@
       "rangeIncludes": "Text"
     },
     {
-      "@id": "https://0xd14.id/#Webring/link",
+      "@id": "https://0xd14.id/#Webring/root",
       "@type": "rdf:Property",
       "rdfs:comment": "The URL link of the webring, if any.",
-      "rdfs:label": "link",
+      "rdfs:label": "root",
       "rangeIncludes": "URL"
     },
     {
