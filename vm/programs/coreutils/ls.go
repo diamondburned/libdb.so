@@ -6,6 +6,8 @@ import (
 	"io/fs"
 	"log"
 	"path"
+	"path/filepath"
+	"slices"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -85,6 +87,17 @@ func ls_(c *cli.Context, arg string, multiple bool) error {
 		}
 	}
 
+	// Put directories first, then files, sorted by name.
+	slices.SortFunc(ents, func(a, b fs.DirEntry) int {
+		if a.IsDir() && !b.IsDir() {
+			return -1
+		}
+		if !a.IsDir() && b.IsDir() {
+			return 1
+		}
+		return strings.Compare(a.Name(), b.Name())
+	})
+
 	if multiple {
 		fmt.Fprintln(env.Terminal.Stdout, arg+":")
 	}
@@ -134,7 +147,7 @@ func ls_(c *cli.Context, arg string, multiple bool) error {
 
 			fmt.Fprintf(w,
 				"%s\t%d\t%s\t%s\n",
-				printPerm(mode), size, printTime(modTime), printName(env, ent),
+				printPerm(mode), size, printTime(modTime), printName(env, path, ent),
 			)
 		}
 
@@ -142,22 +155,23 @@ func ls_(c *cli.Context, arg string, multiple bool) error {
 	}
 
 	for _, ent := range ents {
-		fmt.Fprintln(c.App.Writer, printName(env, ent))
+		fmt.Fprintln(c.App.Writer, printName(env, path, ent))
 	}
 
 	return nil
 }
 
-func printName(env vm.Environment, dirEntry fs.DirEntry) string {
+func printName(env vm.Environment, base string, dirEntry fs.DirEntry) string {
 	name := dirEntry.Name()
+	path := filepath.Join(base, name)
 	if env.HasTerminal {
 		// TODO: skip either cd or cat if there is already input in the command
 		// prompt. This would require exposing *prompter in vm.Environment.
 		var cmd string
 		if dirEntry.IsDir() {
-			cmd = "cd " + name
+			cmd = "cd " + path
 		} else {
-			cmd = "cat " + name
+			cmd = "cat " + path
 		}
 		name = ansi.Link(name, vmutil.MakeTerminalWriteURI(cmd))
 		if dirEntry.IsDir() {
