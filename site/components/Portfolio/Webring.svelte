@@ -24,7 +24,7 @@
 </script>
 
 <webring-element name={typedData.self ?? "diamond"} bind:this={element}>
-  <a href={"#"} class="ring">...</a>
+  <a href={"#"} target="_blank" class="ring">...</a>
   <div class="links">
     <a class="left" target="_blank" href={"#"}>_</a>
     <span class="middle" />

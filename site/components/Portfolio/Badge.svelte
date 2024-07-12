@@ -7,12 +7,13 @@
 </script>
 
 <script lang="ts">
-  import { fly } from "svelte/transition";
-
-  import Popover from "../Popover.svelte";
+  import PopoverButton from "../PopoverButton.svelte";
+  import OpenInNew from "#/libdb.so/site/components/MaterialIcons/open_in_new.svelte";
 
   export let badge: Badge;
+
   let hover = false;
+  let popoverAnchor: HTMLElement;
 
   function hostname(url: string): string | null {
     try {
@@ -24,47 +25,73 @@
   }
 </script>
 
-<div class="link">
-  <a href={badge.link} on:mouseenter={() => (hover = true)} on:mouseleave={() => (hover = false)}>
-    <img class="badge" src={badge.image} alt={badge.alt} />
-  </a>
-  <div class="tooltip">
-    <Popover open={hover} arrowX={0.15}>
-      <b>88x31</b>
-      {#if badge.alt}
+<div
+  class="link"
+  on:mouseenter={() => {
+    hover = true;
+  }}
+  on:mouseleave={() => {
+    hover = false;
+  }}
+>
+  <PopoverButton open={hover} fly={{ y: 2 }}>
+    <a href={badge.link} slot="button" role="button" class="badge popover-button">
+      <img class="badge-image" bind:this={popoverAnchor} src={badge.image} alt={badge.alt} />
+    </a>
+    <div slot="popover">
+      <span class="alt">{badge.alt ?? "88x31 badge"}</span>
+      {#if badge.link && hostname(badge.link)}
         <br />
-        <span class="alt">{badge.alt}</span>
+        <span class="host">{hostname(badge.link)} <OpenInNew /></span>
       {/if}
-      {#if badge.link && hostname(badge.link) && hostname(badge.link) != badge.alt}
-        <br />
-        <span class="host">{hostname(badge.link)}</span>
-      {/if}
-    </Popover>
-  </div>
+    </div>
+  </PopoverButton>
 </div>
 
 <style lang="scss">
-  .badge {
-    aspect-ratio: 88 / 31;
-    image-rendering: pixelated;
-  }
-
   .link {
     position: relative;
 
-    .tooltip {
-      position: absolute;
-      z-index: 10;
-      bottom: 42px;
+    :global(.badge-image) {
+      aspect-ratio: 88 / 31;
+      image-rendering: pixelated;
+    }
+
+    :global(.badge) {
+      background: none;
+
+      &:hover {
+        background: none;
+
+        filter: brightness(1.2) contrast(0.8);
+        transform: translateY(-2px);
+      }
+    }
+
+    :global(.popover) {
+      // position: absolute;
+      // bottom: 44px;
+
+      width: max-content;
+      min-width: 100px;
+
+      padding: 0.5em 0.75em;
+      translate: 0 -2px;
 
       font-size: 0.85em;
       line-height: 1.35;
 
       box-sizing: border-box;
       pointer-events: none;
+    }
 
-      span {
-        opacity: 0.75;
+    .host {
+      opacity: 0.55;
+
+      :global(svg) {
+        width: 0.85em;
+        height: 0.85em;
+        vertical-align: -0.15em;
       }
     }
   }

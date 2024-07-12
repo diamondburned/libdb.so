@@ -1,7 +1,12 @@
-<script lang="ts">
-  import * as svelte from "svelte";
-  import * as store from "svelte/store";
+<script lang="ts" context="module">
+  // boundingWindow returns the bounding window element.
+  // If the element is not in a window, then the body is returned.
+  export function boundingWindow(e: HTMLElement): HTMLElement {
+    return e.closest(".window-container > .window") ?? document.body;
+  }
+</script>
 
+<script lang="ts">
   import {
     View,
     DragState,
@@ -129,11 +134,7 @@
   }
 </script>
 
-<svelte:body
-  on:mouseenter={checkMouseEnter}
-  on:mouseup={dragEnd}
-  on:mousemove={drag}
-/>
+<svelte:body on:mouseenter={checkMouseEnter} on:mouseup={dragEnd} on:mousemove={drag} />
 
 <div
   bind:clientWidth={containerWidth}
@@ -151,6 +152,7 @@
     class="window"
     class:maximized
     class:dragging={dragState !== null}
+    class:scrolled={contentScrolled}
     style="
       --max-width: {maxWidth};
       --max-height: {maxHeight};
@@ -160,10 +162,10 @@
   >
     <header
       class="titlebar {headerClass}"
-      class:scrolled={contentScrolled}
       on:dblclick={onMaximize}
       on:mousedown={(ev) => dragBegin(ev)}
     >
+      <div class="actions" />
       <div class="title">
         <slot name="title" />
       </div>
@@ -342,6 +344,15 @@
       }
     }
 
+    &.scrolled .overlays {
+      background-image: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.65) -8px,
+        transparent 4px,
+        transparent 100%
+      );
+    }
+
     .content {
       height: 100%;
       overflow: hidden;
@@ -353,18 +364,22 @@
     }
 
     header.titlebar {
+      border-bottom: 1px solid transparent;
+
       color: var(--adw-headerbar-fg-color);
-      background-color: var(--adw-headerbar-bg-color);
+      position: relative;
 
-      text-align: center;
+      display: grid;
+      align-items: center;
+      grid-template-columns: 1fr auto 1fr;
 
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-
+      min-height: 42px;
       user-select: none;
 
-      &.scrolled {
+      &.scrolled .overflow-shadow {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
         box-shadow: 0 -4px 6px 6px rgba(0, 0, 0, 0.47);
       }
 
@@ -380,11 +395,17 @@
         }
       }
 
+      .actions {
+        justify-self: start;
+      }
+
       .title {
         flex: 1;
       }
 
       .controls {
+        justify-self: end;
+
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -395,6 +416,10 @@
           margin: 0 0.45rem;
         }
       }
+    }
+
+    &.scrolled header.titlebar {
+      border-bottom: 1px solid var(--adw-thin-border-color);
     }
   }
 </style>

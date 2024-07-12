@@ -366,11 +366,12 @@
   }
 
   .portfolio-content {
-    padding: 1em 0;
+    padding-top: 2px;
+    padding-bottom: 1em;
     margin: 0 auto;
 
     width: 100%;
-    max-width: clamp(400px, 80vw, 650px);
+    max-width: clamp(450px, 90vw, 650px);
     line-height: 1.5;
 
     position: relative;

@@ -303,7 +303,7 @@
     .preferences {
       display: flex;
       flex-direction: column;
-      padding: 1em 0;
+      padding: 0.5em;
       gap: 0.5em;
 
       h4 {
