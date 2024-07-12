@@ -59,7 +59,7 @@ main() {
 	
 	shopt -s dotglob
 	tree=$(scanDir "$dir")
-	baseURL="${BASE_URL:-/}${dir}"
+	baseURL="${BASE_URL:-}${dir}"
 
 	jq --null-input \
 		--arg base_url "$baseURL" \
