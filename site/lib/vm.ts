@@ -14,6 +14,8 @@ declare global {
   }): void;
   function vm_start(): void;
   function vm_set_public_fs(json: string, basePath: string): void;
+  function vm_add_public_fs(json: string, basePath: string): void;
+  function vm_add_public_fs_url(url: string): void;
   var console_write: null | ((fd: number, bytes: Uint8Array) => void);
 }
 
@@ -85,24 +87,17 @@ class TerminalProxy {
   }
 }
 
-type FileTreeKey =
-  | `${string}/` // directory
-  | `${string}`; // file
-
-interface FileTree {
-  [key: FileTreeKey]: FileTree | { size: number };
-}
-
-type FilesystemJSON = {
-  base: string;
-  tree: FileTree;
-};
-
 export async function start(
   terminal: libterminal.Terminal,
-  publicFSURL: string
+  opts: {
+    // A list of additional public FS URLs to be added.
+    publicFSURLs?: string[];
+  } = {}
 ) {
-  if (running) return;
+  if (running) {
+    console.warn("Tried to start VM while it was already running (unsupported)");
+    return;
+  }
 
   // @ts-ignore
   const go = new globalThis.Go();
@@ -120,9 +115,17 @@ export async function start(
       console.error("error running wasm blob", err);
     });
 
-    console.log("initialize public httpfs");
-    const publicFS = await fetch(publicFSURL).then((r) => r.json());
-    globalThis.vm_set_public_fs(JSON.stringify(publicFS.tree), publicFS.base);
+    // Block until vm_start is present.
+    while (!globalThis.vm_start) {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
+
+    if (opts.publicFSURLs) {
+      console.log("initialize public httpfs");
+      for (const publicFSURL of opts.publicFSURLs) {
+        globalThis.vm_add_public_fs_url(publicFSURL);
+      }
+    }
 
     console.log("starting console...");
     proxy.updateQuery();

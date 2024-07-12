@@ -4,12 +4,13 @@
   import * as svelte from "svelte";
   import colorScheme from "./color-schemes.json";
   import type * as xterm from "xterm";
+  import type * as libterminal from "#/libdb.so/site/lib/terminal.js";
 
   import Window from "#/libdb.so/site/components/Window.svelte";
 
   let terminalElement: HTMLElement;
 
-  export let done: (_: xterm.Terminal) => void;
+  export let onload: (_: libterminal.Terminal) => void;
   export let colors: Record<string, string> = {};
 
   let title = "";
@@ -43,7 +44,7 @@
     const resizer = new ResizeObserver(() => terminal.fit());
     resizer.observe(terminalElement);
 
-    done(terminal);
+    onload(terminal);
 
     return () => {
       resizer.disconnect();
@@ -89,8 +90,7 @@
     text-decoration-thickness: 0.05em !important;
   }
 
-  div.terminal-box
-    :global(.xterm-underline-5[style="text-decoration: underline;"]) {
+  div.terminal-box :global(.xterm-underline-5[style="text-decoration: underline;"]) {
     text-decoration: underline !important;
     text-decoration-thickness: 0.05em !important;
   }

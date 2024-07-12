@@ -9,14 +9,14 @@ import (
 )
 
 type httpClient struct {
-	client   http.Client
+	client   *http.Client
 	basePath string
 }
 
 // Timeout is the default timeout for http requests.
 const Timeout = 8 * time.Second
 
-func (c *httpClient) get(filepath string, info FileInfo) (io.ReadCloser, error) {
+func (c *httpClient) get(filepath string, _ FileInfo) (io.ReadCloser, error) {
 	filepath = path.Join(c.basePath, filepath)
 
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout)

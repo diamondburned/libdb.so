@@ -10,6 +10,7 @@
     toggleShowDesktop,
   } from "#/libdb.so/site/lib/views.js";
   import { onekoCursor, dragWindows, nsfw } from "#/libdb.so/site/lib/prefs.js";
+  import type * as libterminal from "#/libdb.so/site/lib/terminal.js";
 
   import Oneko from "#/libdb.so/site/components/Oneko/oneko.svelte";
   import Switch from "#/libdb.so/site/components/Switch.svelte";
@@ -44,6 +45,20 @@
   let screenHeight = 0;
 
   $: activeWindow = $viewWindows[$focusedView!] || null;
+
+  async function loadVM(terminal: libterminal.Terminal) {
+    const url = new URL(location.href);
+    const localhost = url.hostname == "localhost" || !url.hostname;
+    try {
+      await vm.start(terminal, {
+        publicFSURLs: localhost ? ["/_fs.json"] : [],
+      });
+    } catch (err) {
+      console.error("CANNOT START VM", err);
+      terminal.writeln("Cannot start VM :(");
+      terminal.writeln("Maybe check the DevTools Console? Sorry....");
+    }
+  }
 </script>
 
 <svelte:head>
@@ -79,11 +94,7 @@
   {/if}
 
   <div class="content">
-    <Terminal
-      done={(terminal) => {
-        vm.start(terminal, "/_fs.json").catch((err) => console.error(err));
-      }}
-    />
+    <Terminal onload={loadVM} />
     <Portfolio />
   </div>
 

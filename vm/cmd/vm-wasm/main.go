@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"runtime"
-	"slices"
 	"syscall/js"
 	"unsafe"
 
@@ -34,7 +33,7 @@ func init() {
 var input io.Writer // js writes to this
 var startCh = make(chan struct{}, 1)
 var terminal vm.Terminal
-var publicFSes []fs.FS
+var extraFSes []fs.FS
 
 func main() {
 	wr, ww := io.Pipe()
@@ -52,9 +51,10 @@ func main() {
 		global := js.Global()
 		global.Set("vm_write_stdin", js.FuncOf(write_stdin))
 		global.Set("vm_update_terminal", js.FuncOf(update_terminal))
-		global.Set("vm_start", js.FuncOf(start))
 		global.Set("vm_set_public_fs", js.FuncOf(set_public_fs))
 		global.Set("vm_add_public_fs", js.FuncOf(add_public_fs))
+		global.Set("vm_add_public_fs_url", js.FuncOf(add_public_fs_url))
+		global.Set("vm_start", js.FuncOf(start))
 	}
 
 	<-startCh
@@ -65,7 +65,7 @@ func main() {
 		Programs: programs.All(),
 		Filesystem: rwfs.OverlayFS(
 			kvfs.New(kvfs.LocalStorage()),
-			slices.Concat([]fs.FS{global.RootFS}, publicFSes)...,
+			global.RootFS(extraFSes...)...,
 		),
 		Cwd:     global.InitialCwd,
 		Environ: global.InitialEnv,
@@ -128,10 +128,23 @@ func add_public_fs(this js.Value, args []js.Value) any { // (string, string) => 
 	}
 
 	var fs fs.FS
-	fs = httpfs.New(*http.DefaultClient, httpfs.FileTreeRoot{Tree: tree}, basePath)
+	fs = httpfs.New(http.DefaultClient, httpfs.FileTreeRoot{Tree: tree}, basePath)
 	fs = nsfw.WrapFS(fs)
 
-	publicFSes = append(publicFSes, fs)
+	extraFSes = append(extraFSes, fs)
+	return nil
+}
+
+// add_public_fs_url adds the given URL pointing to an fs.json to the public
+// file system. It is added on top as a FS overlay.
+func add_public_fs_url(this js.Value, args []js.Value) any {
+	url := args[0].String()
+
+	var fs fs.FS
+	fs = httpfs.NewFromURL(http.DefaultClient, url)
+	fs = nsfw.WrapFS(fs)
+
+	extraFSes = append(extraFSes, fs)
 	return nil
 }
 

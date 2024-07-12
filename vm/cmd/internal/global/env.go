@@ -2,6 +2,8 @@ package global
 
 import (
 	"fmt"
+	"io/fs"
+	"net/http"
 	"strings"
 
 	_ "embed"
@@ -9,6 +11,7 @@ import (
 	"github.com/lucasb-eyer/go-colorful"
 	"gitlab.com/diamondburned/dotfiles/Scripts/lineprompt/lineprompt"
 	"libdb.so/vm"
+	"libdb.so/vm/rwfs/httpfs"
 	"libdb.so/vm/rwfs/kvfs"
 
 	_ "libdb.so/vm/programs/coreutils"
@@ -30,11 +33,24 @@ var shellrc []byte
 
 // RootFS is the filesystem that contains default read-only files, such as the
 // shellrc file.
-var RootFS = kvfs.New(kvfs.MemoryStorageFromExisting(
+func RootFS(extraFSes ...fs.FS) []fs.FS {
+	fses := make([]fs.FS, 0, 3+len(extraFSes))
+	fses = append(fses, coreFS)
+	fses = append(fses, extraFSes...)
+	fses = append(fses, onlineFSes...)
+	return fses
+}
+
+var coreFS = kvfs.New(kvfs.MemoryStorageFromExisting(
 	map[string]kvfs.StoredValue{
 		"/.shellrc": kvfs.StoredFile{Data: shellrc},
 	},
 ))
+
+var onlineFSes = []fs.FS{
+	httpfs.NewFromURL(http.DefaultClient, "https://libdb.so/_fs.json"),
+	httpfs.NewFromURL(http.DefaultClient, "https://docs.0xd14.id/_docsfs.json"),
+}
 
 var InitialEnv = vm.EnvironFromMap(map[string]string{
 	"TERM":  "xterm-256color",

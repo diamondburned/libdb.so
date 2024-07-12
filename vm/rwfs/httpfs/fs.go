@@ -1,9 +1,13 @@
 package httpfs
 
 import (
+	"encoding/json"
+	"fmt"
 	"io/fs"
+	"log"
 	"net/http"
 	"path"
+	"sync"
 
 	"github.com/pkg/errors"
 	"libdb.so/vm/rwfs"
@@ -19,7 +23,7 @@ var _ fs.FS = (*FS)(nil)
 
 // New returns a new FS that obeys the given file tree. A cache may optionally
 // be provided to cache file contents.
-func New(client http.Client, root FileTreeRoot, basePath string) *FS {
+func New(client *http.Client, root FileTreeRoot, basePath string) fs.FS {
 	return &FS{
 		root: root,
 		client: httpClient{
@@ -75,4 +79,58 @@ func (h *FS) Open(path string) (fs.File, error) {
 	}
 
 	return nil, fs.ErrNotExist
+}
+
+type unfetchedFS struct {
+	getRoot func() *FS
+	client  *http.Client
+}
+
+// NewFromURL returns a new FS that fetches the file tree from the given URL.
+// The FS is silently fetched in the background.
+func NewFromURL(client *http.Client, fsURL string) fs.FS {
+	getRoot2 := func() (*FS, error) {
+		resp, err := client.Get(fsURL)
+		if err != nil {
+			return nil, fmt.Errorf("fetching file tree: %w", err)
+		}
+		defer resp.Body.Close()
+
+		var root FileTreeRoot
+		if err := json.NewDecoder(resp.Body).Decode(&root); err != nil {
+			return nil, fmt.Errorf("unmarshaling JSON file tree: %w", err)
+		}
+
+		return &FS{
+			root: root,
+			client: httpClient{
+				client:   client,
+				basePath: root.BaseURL,
+			},
+		}, nil
+	}
+
+	getRoot := func() *FS {
+		fs, err := getRoot2()
+		if err != nil {
+			log.Println("fs warning:", err)
+		}
+		return fs
+	}
+
+	getRoot = sync.OnceValue(getRoot)
+	go getRoot()
+
+	return &unfetchedFS{
+		client:  client,
+		getRoot: getRoot,
+	}
+}
+
+func (u *unfetchedFS) Open(path string) (fs.File, error) {
+	f := u.getRoot()
+	if f == nil {
+		return nil, fs.ErrNotExist
+	}
+	return f.Open(path)
 }
