@@ -10,7 +10,7 @@ import (
 	"sort"
 	"strings"
 
-	"libdb.so/vm/rwfs"
+	"libdb.so/vm/fs/rwfs"
 	"mvdan.cc/sh/v3/expand"
 )
 

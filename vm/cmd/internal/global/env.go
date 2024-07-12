@@ -11,8 +11,8 @@ import (
 	"github.com/lucasb-eyer/go-colorful"
 	"gitlab.com/diamondburned/dotfiles/Scripts/lineprompt/lineprompt"
 	"libdb.so/vm"
-	"libdb.so/vm/rwfs/httpfs"
-	"libdb.so/vm/rwfs/kvfs"
+	"libdb.so/vm/fs/httpfs"
+	"libdb.so/vm/fs/kvfs"
 
 	_ "libdb.so/vm/programs/coreutils"
 	_ "libdb.so/vm/programs/hewwo"

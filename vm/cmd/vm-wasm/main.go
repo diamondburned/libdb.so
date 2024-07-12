@@ -14,12 +14,12 @@ import (
 
 	"libdb.so/vm"
 	"libdb.so/vm/cmd/internal/global"
+	"libdb.so/vm/fs/httpfs"
+	"libdb.so/vm/fs/kvfs"
+	"libdb.so/vm/fs/rwfs"
 	"libdb.so/vm/internal/nsfw"
 	"libdb.so/vm/programs"
 	"libdb.so/vm/programs/neofetch"
-	"libdb.so/vm/rwfs"
-	"libdb.so/vm/rwfs/httpfs"
-	"libdb.so/vm/rwfs/kvfs"
 )
 
 var gitrev string

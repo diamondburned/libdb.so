@@ -10,7 +10,7 @@ import (
 	"sync"
 
 	"github.com/pkg/errors"
-	"libdb.so/vm/rwfs"
+	"libdb.so/vm/fs/rwfs"
 )
 
 // FS is a file system that reads from an HTTP server.

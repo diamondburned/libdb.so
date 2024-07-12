@@ -52,8 +52,11 @@ func (t *FileTree) UnmarshalJSON(b []byte) error {
 
 // FileTreeRoot is a root file tree.
 type FileTreeRoot struct {
-	BaseURL string   `json:"base_url"`
-	Tree    FileTree `json:"tree"`
+	// BaseURL is the base URL of the file tree. Iti is prepended to the file
+	// paths when fetching files.
+	BaseURL string `json:"base_url"`
+	// Tree is the file tree.
+	Tree FileTree `json:"tree"`
 }
 
 func (t *FileTreeRoot) UnmarshalJSON(b []byte) error {

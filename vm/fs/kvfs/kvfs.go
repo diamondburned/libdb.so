@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"libdb.so/vm/rwfs"
+	"libdb.so/vm/fs/rwfs"
 )
 
 const root = "/"

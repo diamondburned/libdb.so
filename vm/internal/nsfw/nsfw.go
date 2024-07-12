@@ -7,7 +7,7 @@ import (
 	"io/fs"
 
 	"libdb.so/vm/internal/vars"
-	"libdb.so/vm/rwfs"
+	"libdb.so/vm/fs/rwfs"
 )
 
 var Variable = vars.
