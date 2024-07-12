@@ -13,10 +13,10 @@ import (
 	"unsafe"
 
 	"libdb.so/vm"
-	"libdb.so/vm/cmd/internal/global"
 	"libdb.so/vm/fs/httpfs"
 	"libdb.so/vm/fs/kvfs"
 	"libdb.so/vm/fs/rwfs"
+	"libdb.so/vm/global"
 	"libdb.so/vm/internal/nsfw"
 	"libdb.so/vm/programs"
 	"libdb.so/vm/programs/neofetch"
