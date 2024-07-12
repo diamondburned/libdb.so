@@ -36,7 +36,7 @@ node_modules: package-lock.json package.json
 	npm install
 
 build/public/_fs: $(PUBLIC)
-	mkdir -p $@
+	rm -rf $@ && mkdir -p $@
 	cp -r public/_fs/* $@
 
 build/public/_fs.json: $(PUBLIC) build/public/_fs scripts/jsonfs

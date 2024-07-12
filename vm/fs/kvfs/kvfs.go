@@ -135,6 +135,13 @@ func New(store Store) *FS {
 func (kvfs *FS) Open(fullpath string) (fs.File, error) {
 	fullpath = clean(fullpath)
 
+	if fullpath == root {
+		return &fsDir{
+			parent: kvfs,
+			info:   dirInfo(kvfs.store, root, StoredDirectory{CreateTime: 0}),
+		}, nil
+	}
+
 	kvfs.lock.RLock()
 	defer kvfs.lock.RUnlock()
 

@@ -13,6 +13,7 @@ import (
 	"libdb.so/vm"
 	"libdb.so/vm/fs/httpfs"
 	"libdb.so/vm/fs/kvfs"
+	"libdb.so/vm/fs/utilfs"
 
 	_ "libdb.so/vm/programs/coreutils"
 	_ "libdb.so/vm/programs/hewwo"
@@ -47,9 +48,14 @@ var coreFS = kvfs.New(kvfs.MemoryStorageFromExisting(
 	},
 ))
 
+var httpClient = http.DefaultClient
+
 var onlineFSes = []fs.FS{
-	httpfs.NewFromURL(http.DefaultClient, "https://libdb.so/_fs.json"),
-	httpfs.NewFromURL(http.DefaultClient, "https://docs.0xd14.id/_docsfs.json"),
+	httpfs.NewFromURL(httpClient, "https://libdb.so/_fs.json"),
+	utilfs.Apply(
+		httpfs.NewFromURL(httpClient, "https://docs.0xd14.id/_docsfs.json"),
+		utilfs.RelocateFS("docs"),
+	),
 }
 
 var InitialEnv = vm.EnvironFromMap(map[string]string{
