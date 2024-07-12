@@ -2,7 +2,7 @@ import { fetchDocument, fetchJSON, gitFile, dedent } from "./lib/jsonld.js";
 import { type WebringData } from "libwebring/lib/webring.js";
 import context from "./_context.json";
 
-const _88x31 = (name: string) => "https://libdb.so/_fs/88x31/" + name;
+const _88x31 = (name: string) => "https://libdb.so/_fs/pics/88x31/" + name;
 const _88x31s = [];
 
 const graph = [
