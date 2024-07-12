@@ -6,7 +6,9 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"net/url"
 	"path"
+	"strings"
 	"sync"
 
 	"github.com/pkg/errors"
@@ -24,11 +26,16 @@ var _ fs.FS = (*FS)(nil)
 // New returns a new FS that obeys the given file tree. A cache may optionally
 // be provided to cache file contents.
 func New(client *http.Client, root FileTreeRoot, basePath string) fs.FS {
+	u, err := url.Parse(basePath)
+	if err != nil {
+		panic(fmt.Errorf("httpfs: invalid base path: %w", err))
+	}
+
 	return &FS{
 		root: root,
 		client: httpClient{
-			client:   client,
-			basePath: path.Join(root.BaseURL, basePath),
+			client: client,
+			url:    u,
 		},
 	}
 }
@@ -90,7 +97,12 @@ type unfetchedFS struct {
 // The FS is silently fetched in the background.
 func NewFromURL(client *http.Client, fsURL string) fs.FS {
 	getRoot2 := func() (*FS, error) {
-		resp, err := client.Get(fsURL)
+		fsURL, err := url.Parse(fsURL)
+		if err != nil {
+			return nil, fmt.Errorf("parsing fs URL: %w", err)
+		}
+
+		resp, err := client.Get(fsURL.String())
 		if err != nil {
 			return nil, fmt.Errorf("fetching file tree: %w", err)
 		}
@@ -101,11 +113,16 @@ func NewFromURL(client *http.Client, fsURL string) fs.FS {
 			return nil, fmt.Errorf("unmarshaling JSON file tree: %w", err)
 		}
 
+		u, err := url.Parse(root.BaseURL)
+		if err != nil {
+			return nil, fmt.Errorf("parsing base URL: %w", err)
+		}
+
 		return &FS{
 			root: root,
 			client: httpClient{
-				client:   client,
-				basePath: root.BaseURL,
+				client: client,
+				url:    reconcileURL(*u, *fsURL),
 			},
 		}, nil
 	}
@@ -125,6 +142,21 @@ func NewFromURL(client *http.Client, fsURL string) fs.FS {
 		client:  client,
 		getRoot: getRoot,
 	}
+}
+
+func reconcileURL(base, fs url.URL) *url.URL {
+	if base.Host == "" {
+		base.Scheme = fs.Scheme
+		base.Host = fs.Host
+	}
+
+	if !strings.HasPrefix(base.Path, "/") {
+		// base does not contain absolute path, so append it to fsDir.
+		fsDir := path.Dir(fs.Path)
+		base.Path = path.Join(fsDir, base.Path)
+	}
+
+	return &base
 }
 
 func (u *unfetchedFS) Open(path string) (fs.File, error) {
