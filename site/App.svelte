@@ -175,7 +175,7 @@
 
     /* https://www.joshwcomeau.com/gradient-generator?colors=f690dc|4e98fa&angle=55&colorMode=hcl&precision=20&easingCurve=0.25|0.75|0.75|0.25 */
     background-color: dimgray;
-    background-image: url("/_fs/Pictures/background.jpg");
+    background-image: url("/_fs/pics/background.jpg");
     background-size: cover;
 
     display: flex;
