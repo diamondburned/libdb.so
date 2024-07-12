@@ -64,7 +64,7 @@ main() {
 	jq --null-input \
 		--arg base_url "$dir" \
 		--argjson tree "$tree" \
-		'{ $base_url, $tree }'
+		'{ "$version": 2, $base_url, $tree }'
 }
 
 main "$@"
