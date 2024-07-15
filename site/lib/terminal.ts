@@ -1,6 +1,8 @@
-import * as xterm from "xterm";
-import { ImageAddon, IImageAddonOptions } from "xterm-addon-image";
-import { FitAddon } from "xterm-addon-fit";
+import * as xterm from "@xterm/xterm";
+import { CanvasAddon } from "@xterm/addon-canvas";
+// import { WebglAddon } from "@xterm/addon-webgl";
+import { ImageAddon } from "@xterm/addon-image";
+import { FitAddon } from "@xterm/addon-fit";
 
 if (document?.fonts) {
   await document.fonts.ready;
@@ -31,6 +33,7 @@ export class Terminal extends xterm.Terminal {
     sixelPaletteLimit: 4096,
     showPlaceholder: true,
   });
+  private canvasAddon = new CanvasAddon();
 
   private onResize_ = () => this.fitAddon.fit();
 
@@ -73,6 +76,7 @@ export class Terminal extends xterm.Terminal {
 
     this.loadAddon(this.fitAddon);
     this.loadAddon(this.imageAddon);
+    this.loadAddon(this.canvasAddon);
   }
 
   open(e: HTMLElement) {
@@ -93,6 +97,7 @@ export class Terminal extends xterm.Terminal {
     super.dispose();
     this.fitAddon.dispose();
     this.imageAddon.dispose();
+    this.canvasAddon.dispose();
 
     if (window) {
       window.removeEventListener("resize", this.onResize_);

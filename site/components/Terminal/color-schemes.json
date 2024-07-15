@@ -17,7 +17,7 @@
     "brightCyan": "#55CDFC",
     "brightWhite": "#52494C",
     "background": "#fcfcfc",
-    "foreground": "#0f0f0f",
+    "foreground": "#1D1D1D",
     "cursor": "#0f0f0f"
   },
   "dark": {
@@ -37,7 +37,7 @@
     "brightMagenta": "#F7A8B8",
     "brightCyan": "#55CDFC",
     "brightWhite": "#EEEEEC",
-    "background": "#0f0f0f",
+    "background": "#1D1D1D",
     "foreground": "#fcfcfc",
     "cursor": "#fcfcfc"
   }

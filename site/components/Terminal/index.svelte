@@ -1,5 +1,5 @@
 <script lang="ts">
-  import "xterm/css/xterm.css";
+  import "@xterm/xterm/css/xterm.css";
 
   import * as svelte from "svelte";
   import colorScheme from "./color-schemes.json";
@@ -16,36 +16,50 @@
   let terminal: libterminal.Terminal;
   $: theme = colorScheme[$isDark ? "dark" : "light"];
 
-  svelte.onMount(async () => {
-    const libterminal = await import("#/libdb.so/site/lib/terminal.js");
-
-    terminal = new libterminal.Terminal({
-      fontFamily: `"Inconsolata", "Noto Mono", "Source Code Pro", monospace`,
-      fontWeight: "500",
-      fontWeightBold: "700",
-      lineHeight: 1.1,
-      theme,
-      drawBoldTextInBrightColors: false,
-    });
-
-    terminal.open(terminalElement);
-    terminal.write("Starting VM...\r\n");
-
-    const onTitleChange = terminal.onTitleChange((t) => {
-      title = t;
-    });
-
-    const resizer = new ResizeObserver(() => terminal.fit());
-    resizer.observe(terminalElement);
-
-    onload(terminal);
-
-    return () => {
-      resizer.disconnect();
-      terminal.dispose();
-      onTitleChange.dispose();
-    };
+  let destroy: () => void | undefined;
+  let destroyed = false;
+  svelte.onDestroy(() => {
+    destroy && destroy();
+    destroyed = true;
   });
+
+  async function initTerminal() {
+    try {
+      const libterminal = await import("#/libdb.so/site/lib/terminal.js");
+
+      terminal = new libterminal.Terminal({
+        fontFamily: `"Inconsolata", "Noto Mono", "Source Code Pro", monospace`,
+        fontWeight: "500",
+        fontWeightBold: "700",
+        lineHeight: 1.1,
+        theme,
+        drawBoldTextInBrightColors: false,
+      });
+
+      terminal.open(terminalElement);
+      terminal.write("Starting VM...\r\n");
+
+      const onTitleChange = terminal.onTitleChange((t) => (title = t));
+
+      const resizer = new ResizeObserver(() => terminal.fit());
+      resizer.observe(terminalElement);
+
+      destroy = () => {
+        resizer.disconnect();
+        terminal.dispose();
+        onTitleChange.dispose();
+      };
+
+      onload(terminal);
+    } catch (err) {
+      console.error("Failed to initialize terminal:", err);
+      throw err;
+    } finally {
+      if (destroyed) {
+        destroy();
+      }
+    }
+  }
 
   // Watch for dark/light theme toggling.
   $: if (terminal && theme) terminal.options.theme = { ...theme };
@@ -54,41 +68,59 @@
 <Window view="terminal">
   <h3 slot="title">{title ? `${title} – xterm.js` : "xterm.js"}</h3>
   <div
-    class="terminal-box monospace"
+    class="terminal-box"
     style="
       --background: {theme.background};
       --foreground: {theme.foreground};
     "
   >
-    <div class="terminal-box-content" bind:this={terminalElement} />
+    {#await initTerminal()}
+      <p class="status loading">Initializing terminal...</p>
+    {:catch}
+      <p class="status error">Failed to initialize terminal. Please check DevTools.</p>
+    {/await}
+    <div class="monospace terminal-box-content" bind:this={terminalElement} />
   </div>
 </Window>
 
-<style>
+<style lang="scss">
+  p.status {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.error {
+      color: var(--adw-destructive-color);
+    }
+  }
+
   div.terminal-box {
     height: 100%;
     padding: clamp(4px, 1.5vh, 8px) clamp(0px, 0.5vw, 4px);
     box-sizing: border-box;
     background-color: var(--background);
-  }
 
-  div.terminal-box div.terminal-box-content,
-  div.terminal-box :global(div.terminal),
-  div.terminal-box :global(div.xterm-viewport) {
-    height: 100%;
-  }
+    div.terminal-box-content,
+    :global(div.terminal),
+    :global(div.xterm-viewport) {
+      height: 100%;
+    }
 
-  div.terminal-box :global(.xterm-screen) {
-    margin: auto;
-  }
+    :global(.xterm-screen) {
+      margin: auto;
+    }
 
-  div.terminal-box :global(.xterm-underline-5) {
-    text-decoration: dotted underline !important;
-    text-decoration-thickness: 0.05em !important;
-  }
+    :global(.xterm-underline-5) {
+      text-decoration: dotted underline !important;
+      text-decoration-thickness: 0.05em !important;
+    }
 
-  div.terminal-box :global(.xterm-underline-5[style="text-decoration: underline;"]) {
-    text-decoration: underline !important;
-    text-decoration-thickness: 0.05em !important;
+    :global(.xterm-underline-5[style="text-decoration: underline;"]) {
+      text-decoration: underline !important;
+      text-decoration-thickness: 0.05em !important;
+    }
   }
 </style>
