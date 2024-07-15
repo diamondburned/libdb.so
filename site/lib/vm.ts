@@ -12,13 +12,12 @@ declare global {
     sixel: boolean;
   }): void;
   function vm_start(): void;
+  function vm_stop(): void;
   function vm_set_public_fs(json: string, basePath: string): void;
   function vm_add_public_fs(json: string, basePath: string): void;
   function vm_add_public_fs_url(url: string): void;
   var console_write: null | ((fd: number, bytes: Uint8Array) => void);
 }
-
-let running: Promise<void> | null = null;
 
 class TerminalProxy {
   private onDataDisposer: xterm.IDisposable;
@@ -86,6 +85,9 @@ class TerminalProxy {
   }
 }
 
+let spawned = false;
+let wasmInstance: Promise<void> | null = null;
+
 export async function start(
   terminal: xterm.Terminal,
   opts: {
@@ -93,16 +95,18 @@ export async function start(
     publicFSURLs?: string[];
   } = {},
 ) {
-  if (running) {
+  if (spawned) {
     console.warn("Tried to start VM while it was already running (unsupported)");
     return;
   }
 
-  // @ts-ignore
-  const go = new globalThis.Go();
-  const proxy = new TerminalProxy(terminal);
-
   try {
+    spawned = true;
+
+    // @ts-ignore
+    const go = new globalThis.Go();
+    const proxy = new TerminalProxy(terminal);
+
     const resp = await fetch(consoleBlob);
     const module = await WebAssembly.compileStreaming(resp);
     const instance = await WebAssembly.instantiate(module, go.importObject);
@@ -110,7 +114,7 @@ export async function start(
     console.log("loaded wasm blob from", consoleBlob);
 
     console.log("starting wasm...");
-    running = go.run(instance).catch((err: any) => {
+    wasmInstance = go.run(instance).catch((err: any) => {
       console.error("error running wasm blob", err);
     });
 
@@ -134,5 +138,16 @@ export async function start(
   } catch (err) {
     console.error("error starting vm", err);
     terminal.write(`Error starting VM: ${err}\r\n`);
+
+    spawned = false;
   }
+}
+
+export async function stop() {
+  if (!spawned) {
+    return;
+  }
+
+  globalThis.vm_stop();
+  await wasmInstance;
 }

@@ -30,10 +30,15 @@ func init() {
 	}
 }
 
-var input io.Writer // js writes to this
-var startCh = make(chan struct{}, 1)
-var terminal vm.Terminal
-var extraFSes []fs.FS
+var (
+	startCh = make(chan struct{}, 1)
+	stopCh  = make(chan struct{})
+
+	input     io.Writer // js writes to this
+	cancel    context.CancelFunc
+	terminal  vm.Terminal
+	extraFSes []fs.FS
+)
 
 func main() {
 	wr, ww := io.Pipe()
@@ -47,19 +52,15 @@ func main() {
 
 	terminal = vm.NewTerminal(vmIO, vm.TerminalQuery{})
 
-	{
-		global := js.Global()
-		global.Set("vm_write_stdin", js.FuncOf(write_stdin))
-		global.Set("vm_update_terminal", js.FuncOf(update_terminal))
-		global.Set("vm_set_public_fs", js.FuncOf(set_public_fs))
-		global.Set("vm_add_public_fs", js.FuncOf(add_public_fs))
-		global.Set("vm_add_public_fs_url", js.FuncOf(add_public_fs_url))
-		global.Set("vm_start", js.FuncOf(start))
-	}
+	var ctx context.Context
+	ctx, cancel = context.WithCancel(context.Background())
+	defer cancel()
+
+	jsExport()
 
 	<-startCh
+	defer close(stopCh)
 
-	ctx := context.Background()
 	env := vm.Environment{
 		Terminal: terminal,
 		Programs: programs.All(),
@@ -87,10 +88,39 @@ func main() {
 	log.Println("interpreter exited. Bye!")
 }
 
+func jsExport() {
+	global := js.Global()
+	global.Set("vm_write_stdin", js.FuncOf(write_stdin))
+	global.Set("vm_update_terminal", js.FuncOf(update_terminal))
+	global.Set("vm_set_public_fs", js.FuncOf(set_public_fs))
+	global.Set("vm_add_public_fs", js.FuncOf(add_public_fs))
+	global.Set("vm_add_public_fs_url", js.FuncOf(add_public_fs_url))
+	global.Set("vm_stop", js.FuncOf(stop))
+	global.Set("vm_start", js.FuncOf(start))
+}
+
+func jsUnexport() {
+	global := js.Global()
+	global.Set("vm_write_stdin", js.Undefined())
+	global.Set("vm_update_terminal", js.Undefined())
+	global.Set("vm_set_public_fs", js.Undefined())
+	global.Set("vm_add_public_fs", js.Undefined())
+	global.Set("vm_add_public_fs_url", js.Undefined())
+	global.Set("vm_start", js.Undefined())
+	global.Set("vm_stop", js.Undefined())
+}
+
 // start unblocks main and starts the interpreter loop. The JS side must have
 // called update_terminal before calling this function.
 func start(this js.Value, args []js.Value) any {
 	startCh <- struct{}{}
+	return nil
+}
+
+// stop stops the interpreter loop.
+func stop(this js.Value, args []js.Value) any {
+	cancel()
+	<-stopCh
 	return nil
 }
 

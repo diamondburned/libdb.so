@@ -1,7 +1,6 @@
 <script lang="ts">
   import * as svelte from "svelte";
-  import * as vm from "#/libdb.so/site/lib/vm.js";
-  import favicon from "#/libdb.so/public/favicon.ico?url";
+  import favicon from "#/libdb.so/site/assets/favicon.ico?url";
   import normalizeCSS from "normalize.css/normalize.css?url";
   import {
     toggleView,
@@ -10,7 +9,6 @@
     toggleShowDesktop,
   } from "#/libdb.so/site/lib/views.js";
   import { onekoCursor, dragWindows, nsfw, theme, prefersDark } from "#/libdb.so/site/lib/prefs.js";
-  import type * as libterminal from "#/libdb.so/site/lib/terminal.js";
 
   import Oneko from "#/libdb.so/site/components/Oneko/oneko.svelte";
   import Switch from "#/libdb.so/site/components/Switch.svelte";
@@ -48,7 +46,6 @@
 </script>
 
 <svelte:head>
-  <link rel="icon" href={favicon} />
   <link rel="stylesheet" href={normalizeCSS} />
   {#each fonts as font}
     <link
@@ -97,11 +94,11 @@
       </button>
       <div class="window-list">
         <button class:active={$focusedView == "portfolio"} on:click={() => toggleView("portfolio")}>
-          <img src="/_assets/papirus/system-users.svg" alt="Portfolio icon" />
+          <img src="./assets/papirus/system-users.svg" alt="Portfolio icon" />
           About
         </button>
         <button class:active={$focusedView == "terminal"} on:click={() => toggleView("terminal")}>
-          <img src="/_assets/papirus/terminal.svg" alt="Terminal icon" />
+          <img src="./assets/papirus/terminal.svg" alt="Terminal icon" />
           xterm.js
         </button>
       </div>
