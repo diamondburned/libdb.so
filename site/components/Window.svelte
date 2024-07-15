@@ -284,12 +284,9 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    z-index: 1;
 
-    box-shadow: 0 2px 16px -6px rgba(0, 0, 0, 0.77);
     border-radius: var(--adw-window-radius);
-
-    outline: 1px solid var(--adw-thin-border-color);
-    outline-offset: -1px;
 
     width: min(calc(100% - clamp(6px, 5vw, 3rem)), var(--max-width));
     height: min(calc(100% - clamp(6px, 7vw, 5rem)), var(--max-height));
@@ -322,6 +319,20 @@
       cursor: move;
     }
 
+    &:after {
+      content: "";
+
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+
+      box-shadow:
+        0 2px 16px -6px rgba(0, 0, 0, 0.77),
+        0 0 0 1px var(--adw-thin-border-color) inset;
+      border-radius: var(--adw-window-radius);
+    }
+
     .content-wrapper {
       flex: 1;
       overflow: hidden;
@@ -348,8 +359,8 @@
     }
 
     &.scrolled .overlays {
-      box-shadow: 0 1px rgba(black, 0.025) inset;
-      background-image: linear-gradient(to bottom, rgba(black, 0.0525), transparent 4px);
+      box-shadow: 0 1px var(--adw-sidebar-shade-color) inset;
+      background-image: linear-gradient(to bottom, var(--adw-sidebar-shade-color), transparent 4px);
     }
 
     .content {
