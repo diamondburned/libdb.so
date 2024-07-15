@@ -89,7 +89,7 @@
           x: popover.offsetLeft,
           y: popover.offsetTop,
         };
-        const parent = popover.parentElement;
+        const parent = dummyElement.parentElement;
         const parentWidth = parent?.clientWidth ?? 0;
         arrowX = -popoverOffset.x + parentWidth / 2 - arrowSize / 4;
       } else {
@@ -112,20 +112,24 @@
   }}
 />
 
-<div class="popover-dummy" bind:this={dummyElement} />
-
-{#if open}
-  <div
-    role="tooltip"
-    class="popover"
-    bind:this={popover}
-    bind:offsetWidth={popoverSize.width}
-    bind:offsetHeight={popoverSize.height}
-    class:popover-top={direction === "top"}
-    class:popover-bottom={direction === "bottom"}
-    class:arrow-relative={arrowX == undefined}
-    class:arrow-absolute={arrowX != undefined}
-    style="
+<div
+  role="presentation"
+  class="popover-dummy"
+  bind:this={dummyElement}
+  on:mousedown|stopPropagation
+>
+  {#if open}
+    <div
+      role="tooltip"
+      class="popover"
+      bind:this={popover}
+      bind:offsetWidth={popoverSize.width}
+      bind:offsetHeight={popoverSize.height}
+      class:popover-top={direction === "top"}
+      class:popover-bottom={direction === "bottom"}
+      class:arrow-relative={arrowX == undefined}
+      class:arrow-absolute={arrowX != undefined}
+      style="
       --arrow-x: {arrowX}px;
       --arrow-size: {arrowSize}px;
       --width: {popoverSize.width}px;
@@ -133,18 +137,14 @@
       --overflow-x: {overflowOffset.x}px;
       --overflow-y: {overflowOffset.y}px;
     "
-    transition:fly={flyProps}
-    on:mousedown|stopPropagation
-  >
-    <slot />
-  </div>
-{/if}
+      transition:fly={flyProps}
+    >
+      <slot />
+    </div>
+  {/if}
+</div>
 
 <style lang="scss">
-  .popover-dummy {
-    display: none;
-  }
-
   .popover {
     position: absolute;
     left: calc(50% - var(--width) / 2 - var(--overflow-x, 0px));
@@ -165,7 +165,9 @@
 
     background: var(--adw-popover-bg-color);
     border: 1px solid rgba(0 0 0 / 14%);
-    box-shadow: 0 1px 5px 1px rgba(0 0 0 / 9%), 0 2px 14px 3px rgba(0 0 0 / 5%);
+    box-shadow:
+      0 1px 5px 1px rgba(0 0 0 / 9%),
+      0 2px 14px 3px rgba(0 0 0 / 5%);
     box-sizing: border-box;
     padding: 8px;
     margin: 0 var(--margin-x);

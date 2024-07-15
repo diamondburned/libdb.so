@@ -26,7 +26,9 @@
 </script>
 
 <div
+  role="link"
   class="link"
+  tabindex="0"
   on:mouseenter={() => {
     hover = true;
   }}
@@ -35,7 +37,7 @@
   }}
 >
   <PopoverButton open={hover} fly={{ y: 2 }}>
-    <a href={badge.link} slot="button" role="button" class="badge popover-button">
+    <a href={badge.link} slot="button" role="button" target="_blank" class="badge popover-button">
       <img class="badge-image" bind:this={popoverAnchor} src={badge.image} alt={badge.alt} />
     </a>
     <div slot="popover">

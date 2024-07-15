@@ -15,6 +15,11 @@ export default defineConfig({
     }),
     svelte({
       preprocess: sveltePreprocess(),
+      onwarn: (warning, handler) => {
+        const ignoredCodes = ["css-unused-selector", "a11y/no-noninteractive-element-interactions"];
+        if (ignoredCodes.find((code) => code == warning.code)) return;
+        if (handler) handler(warning);
+      },
     }),
   ],
   root: path.join(root, "site"),

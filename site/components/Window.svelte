@@ -146,6 +146,7 @@
 >
   <main
     id={view}
+    role="presentation"
     bind:clientWidth={windowWidth}
     bind:clientHeight={windowHeight}
     on:mousedown={() => bringToFocus(view)}
@@ -161,6 +162,7 @@
     "
   >
     <header
+      role="presentation"
       class="titlebar {headerClass}"
       on:dblclick={onMaximize}
       on:mousedown={(ev) => dragBegin(ev)}
