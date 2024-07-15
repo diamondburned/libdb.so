@@ -443,7 +443,7 @@
       background-color: var(--adw-card-bg-color);
 
       &:hover {
-        background-color: var(--adw-hover-color);
+        background-color: var(--adw-button-hover-color);
       }
     }
   }
