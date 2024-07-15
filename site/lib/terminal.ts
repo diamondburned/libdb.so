@@ -1,8 +1,10 @@
 import * as xterm from "@xterm/xterm";
+import FontFaceObserver from "fontfaceobserver";
 import { CanvasAddon } from "@xterm/addon-canvas";
 // import { WebglAddon } from "@xterm/addon-webgl";
 import { ImageAddon } from "@xterm/addon-image";
 import { FitAddon } from "@xterm/addon-fit";
+import { writable } from "svelte/store";
 
 if (document?.fonts) {
   await document.fonts.ready;
@@ -10,20 +12,23 @@ if (document?.fonts) {
 
 export type InitOptions = Omit<
   xterm.ITerminalOptions & xterm.ITerminalInitOnlyOptions,
-  "linkHandler"
+  "linkHandler" | "fontFamily" | "fontWeight" | "fontWeightBold"
 >;
 
 export type LinkHandlers = {
   [scheme: string]: (uri: string) => void;
 };
 
-export class Terminal extends xterm.Terminal {
+export class Terminal {
   linkHandlers: LinkHandlers = {
     https: (uri: string) => window.open(uri, "_blank"),
     http: (uri: string) => window.open(uri, "_blank"),
     mailto: (uri: string) => window.open(uri, "_blank"),
     terminal: this.handleTerminalLink.bind(this),
   };
+
+  title = writable("");
+  xterm?: xterm.Terminal;
 
   private fitAddon = new FitAddon();
   private imageAddon = new ImageAddon({
@@ -35,11 +40,25 @@ export class Terminal extends xterm.Terminal {
   });
   private canvasAddon = new CanvasAddon();
 
-  private onResize_ = () => this.fitAddon.fit();
+  private onResize_ = () => this.fit();
+  private resizeObserver = new ResizeObserver(() => this.fit());
 
-  constructor(options: InitOptions) {
-    super({
-      ...options,
+  constructor(private options: InitOptions) {}
+
+  async open(e: HTMLElement) {
+    // Wait for the fonts to load before creating the terminal.
+    await Promise.all([
+      new FontFaceObserver("Inconsolata").load(),
+      new FontFaceObserver("Inconsolata", { weight: "500" }).load(),
+      new FontFaceObserver("Inconsolata", { weight: "700" }).load(),
+    ]);
+
+    this.xterm = new xterm.Terminal({
+      ...this.options,
+      fontFamily: `"Inconsolata", monospace`,
+      fontWeight: "500",
+      fontWeightBold: "700",
+      lineHeight: 1.1,
       linkHandler: {
         activate: (_: MouseEvent, uri: string) => {
           const parsed = new URL(uri);
@@ -51,15 +70,22 @@ export class Terminal extends xterm.Terminal {
         allowNonHttpProtocols: true,
       },
       allowTransparency: true,
+      customGlyphs: true,
       convertEol: true,
     });
 
-    this.attachCustomKeyEventHandler((e) => {
+    this.xterm.onTitleChange((t) => this.title.set(t));
+
+    this.xterm.attachCustomKeyEventHandler((e) => {
+      if (!this.xterm) {
+        return true;
+      }
+
       // Bind Ctrl + C to copy if there is a selection.
       if (e.ctrlKey && e.key == "c") {
-        if (this.hasSelection()) {
+        if (this.xterm.hasSelection()) {
           console.log("copying");
-          navigator.clipboard.writeText(this.getSelection());
+          navigator.clipboard.writeText(this.xterm.getSelection());
           return false;
         }
       }
@@ -74,14 +100,13 @@ export class Terminal extends xterm.Terminal {
       return true;
     });
 
-    this.loadAddon(this.fitAddon);
-    this.loadAddon(this.imageAddon);
-    this.loadAddon(this.canvasAddon);
-  }
+    this.xterm.loadAddon(this.fitAddon);
+    this.xterm.loadAddon(this.imageAddon);
+    this.xterm.loadAddon(this.canvasAddon);
 
-  open(e: HTMLElement) {
-    super.open(e);
-    this.fitAddon.fit();
+    this.xterm.open(e);
+    this.resizeObserver.observe(e);
+    this.fit();
 
     if (window) {
       window.addEventListener("resize", this.onResize_);
@@ -93,24 +118,37 @@ export class Terminal extends xterm.Terminal {
     console.log("fitting");
   }
 
+  setTheme(theme: xterm.ITheme) {
+    this.options.theme = theme;
+    if (this.xterm) this.xterm.options.theme = { ...theme };
+  }
+
   dispose() {
-    super.dispose();
-    this.fitAddon.dispose();
-    this.imageAddon.dispose();
-    this.canvasAddon.dispose();
+    this.resizeObserver.disconnect();
 
     if (window) {
       window.removeEventListener("resize", this.onResize_);
     }
+
+    if (this.xterm) {
+      this.xterm.dispose();
+      this.fitAddon.dispose();
+      this.imageAddon.dispose();
+      this.canvasAddon.dispose();
+    }
   }
 
   private handleTerminalLink(uri: string) {
+    if (!this.xterm) {
+      return;
+    }
+
     const parsed = new URL(uri);
     // JS is incapable of competently parsing for the opaque part, so it gets
     // put into the pathname instead.
     switch (parsed.pathname) {
       case "write": {
-        this.paste(parsed.searchParams.get("data") ?? "");
+        this.xterm.paste(parsed.searchParams.get("data") ?? "");
         break;
       }
       default: {

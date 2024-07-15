@@ -3,17 +3,17 @@
 
   import * as svelte from "svelte";
   import colorScheme from "./color-schemes.json";
+  import { fade } from "svelte/transition";
   import { isDark } from "#/libdb.so/site/lib/prefs.js";
   import type * as libterminal from "#/libdb.so/site/lib/terminal.js";
 
   import Window from "#/libdb.so/site/components/Window.svelte";
+  import { readable } from "svelte/store";
 
   let terminalElement: HTMLElement;
 
-  export let onload: (_: libterminal.Terminal) => void;
-
-  let title = "";
   let terminal: libterminal.Terminal;
+  $: title = terminal?.title || readable("");
   $: theme = colorScheme[$isDark ? "dark" : "light"];
 
   let destroy: () => void | undefined;
@@ -25,48 +25,40 @@
 
   async function initTerminal() {
     try {
-      const libterminal = await import("#/libdb.so/site/lib/terminal.js");
+      const [libterminal, vm] = await Promise.all([
+        import("#/libdb.so/site/lib/terminal.js"),
+        import("#/libdb.so/site/lib/vm.js"),
+      ]);
 
       terminal = new libterminal.Terminal({
-        fontFamily: `"Inconsolata", "Noto Mono", "Source Code Pro", monospace`,
-        fontWeight: "500",
-        fontWeightBold: "700",
-        lineHeight: 1.1,
         theme,
         drawBoldTextInBrightColors: false,
       });
 
-      terminal.open(terminalElement);
-      terminal.write("Starting VM...\r\n");
+      await terminal.open(terminalElement);
+      destroy = () => terminal.dispose();
 
-      const onTitleChange = terminal.onTitleChange((t) => (title = t));
+      const url = new URL(location.href);
+      const localhost = url.hostname == "localhost" || !url.hostname;
 
-      const resizer = new ResizeObserver(() => terminal.fit());
-      resizer.observe(terminalElement);
-
-      destroy = () => {
-        resizer.disconnect();
-        terminal.dispose();
-        onTitleChange.dispose();
-      };
-
-      onload(terminal);
+      await vm.start(terminal.xterm!, {
+        publicFSURLs: localhost ? ["/_fs.json"] : [],
+      });
     } catch (err) {
       console.error("Failed to initialize terminal:", err);
       throw err;
     } finally {
-      if (destroyed) {
-        destroy();
-      }
+      // In case the component is destroyed before initialization:
+      if (destroyed) destroy();
     }
   }
 
   // Watch for dark/light theme toggling.
-  $: if (terminal && theme) terminal.options.theme = { ...theme };
+  $: if (terminal && theme) terminal.setTheme(theme);
 </script>
 
 <Window view="terminal">
-  <h3 slot="title">{title ? `${title} – xterm.js` : "xterm.js"}</h3>
+  <h3 slot="title">{$title ? `${$title} – xterm.js` : "xterm.js"}</h3>
   <div
     class="terminal-box"
     style="
@@ -75,35 +67,45 @@
     "
   >
     {#await initTerminal()}
-      <p class="status loading">Initializing terminal...</p>
+      <p class="status loading" out:fade={{ duration: 150 }}>Initializing terminal...</p>
     {:catch}
-      <p class="status error">Failed to initialize terminal. Please check DevTools.</p>
+      <p class="status error" transition:fade={{ duration: 150 }}>
+        Failed to initialize terminal. Please check DevTools.
+      </p>
     {/await}
     <div class="monospace terminal-box-content" bind:this={terminalElement} />
   </div>
 </Window>
 
 <style lang="scss">
-  p.status {
-    width: 100%;
-    height: 100%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &.error {
-      color: var(--adw-destructive-color);
-    }
-  }
-
   div.terminal-box {
     height: 100%;
-    padding: clamp(4px, 1.5vh, 8px) clamp(0px, 0.5vw, 4px);
     box-sizing: border-box;
     background-color: var(--background);
 
-    div.terminal-box-content,
+    position: relative;
+
+    p.status {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+
+      background-color: var(--background);
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &.error {
+        color: var(--adw-destructive-color);
+      }
+    }
+
+    .terminal-box-content {
+      padding: clamp(4px, 1.5vh, 8px) clamp(0px, 0.5vw, 4px);
+    }
+
+    .terminal-box-content,
     :global(div.terminal),
     :global(div.xterm-viewport) {
       height: 100%;

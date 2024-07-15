@@ -212,6 +212,9 @@
 
     --ease-function: var(--adw-ease-out-quad);
     --ease-duration: 0.15s;
+    @media (prefers-reduced-motion: reduce) {
+      --ease-duration: 0s;
+    }
 
     @keyframes minimize-animation {
       /*
@@ -268,15 +271,26 @@
 
       main.window {
         pointer-events: auto;
+        box-shadow:
+          0 1px 3px 3px #{transparentize(black, 0.91)},
+          0 2px 14px 5px #{transparentize(black, 0.95)},
+          0 4px 28px 12px #{transparentize(black, 0.97)},
+          0 6px 32px 16px transparent,
+          0 0 0 1px #{transparentize(black, 0.98)};
       }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      --ease-duration: 0s;
     }
 
     &.focused {
       z-index: 10;
+
+      main.window {
+        box-shadow:
+          0 1px 3px 3px transparent,
+          0 2px 8px 2px #{transparentize(black, 0.87)},
+          0 3px 20px 10px #{transparentize(black, 0.91)},
+          0 6px 32px 16px #{transparentize(black, 0.96)},
+          0 0 0 1px #{transparentize(black, 0.95)};
+      }
     }
   }
 
@@ -294,6 +308,7 @@
     color: var(--adw-window-fg-color);
     background-color: var(--adw-window-bg-color);
     transition: var(--adw-backdrop-transition);
+    transition-property: color, background-color, box-shadow;
 
     position: absolute;
     top: 0;

@@ -45,20 +45,6 @@
   let screenHeight = 0;
 
   $: activeWindow = $viewWindows[$focusedView!] || null;
-
-  async function loadVM(terminal: libterminal.Terminal) {
-    const url = new URL(location.href);
-    const localhost = url.hostname == "localhost" || !url.hostname;
-    try {
-      await vm.start(terminal, {
-        publicFSURLs: localhost ? ["/_fs.json"] : [],
-      });
-    } catch (err) {
-      console.error("CANNOT START VM", err);
-      terminal.writeln("Cannot start VM :(");
-      terminal.writeln("Maybe check the DevTools Console? Sorry....");
-    }
-  }
 </script>
 
 <svelte:head>
@@ -100,7 +86,7 @@
   {/if}
 
   <div class="content">
-    <Terminal onload={loadVM} />
+    <Terminal />
     <Portfolio />
   </div>
 
@@ -169,10 +155,6 @@
   body {
     font-family: "Lato", "Source Sans Pro", "Noto Sans", "Helvetica", "Segoe UI", sans-serif;
     font-size: clamp(0.95rem, 0.8429rem + 0.3429vw, 1.1rem);
-  }
-
-  .monospace {
-    font-family: "Inconsolata", "Noto Mono", "Source Code Pro", monospace;
   }
 
   div.screen {

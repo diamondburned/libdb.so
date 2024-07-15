@@ -1,7 +1,6 @@
 import "./wasm_exec.js";
 import consoleBlob from "#/libdb.so/build/vm.wasm?url";
-import type * as xterm from "xterm";
-import type * as libterminal from "#/libdb.so/site/lib/terminal.js";
+import type * as xterm from "@xterm/xterm";
 
 declare global {
   function vm_write_stdin(data: string): void;
@@ -25,7 +24,7 @@ class TerminalProxy {
   private onDataDisposer: xterm.IDisposable;
   private onResizeDisposer: xterm.IDisposable;
 
-  constructor(public readonly terminal: libterminal.Terminal) {
+  constructor(public readonly terminal: xterm.Terminal) {
     const lineBuffer: number[] = [];
 
     globalThis.console_write = (fd: number, bytes: Uint8Array) => {
@@ -88,11 +87,11 @@ class TerminalProxy {
 }
 
 export async function start(
-  terminal: libterminal.Terminal,
+  terminal: xterm.Terminal,
   opts: {
     // A list of additional public FS URLs to be added.
     publicFSURLs?: string[];
-  } = {}
+  } = {},
 ) {
   if (running) {
     console.warn("Tried to start VM while it was already running (unsupported)");
