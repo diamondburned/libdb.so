@@ -62,7 +62,7 @@
         {
           "libdb:88x31Badge/alt": "My Mastodon",
           "libdb:88x31Badge/image": "https://libdb.so/_fs/pics/88x31/mastodon_button_3.gif",
-          "libdb:88x31Badge/link:": "https://tech.lgbt/@diamond"
+          "libdb:88x31Badge/link": "https://tech.lgbt/@diamond"
         },
         {
           "libdb:88x31Badge/alt": "My GitHub",
@@ -196,6 +196,11 @@
               "@id": "https://stellophiliac.github.io/roboring#0x657a7269",
               "libdb:Webring/link": "https://ezri.pet",
               "libdb:Webring/name": "⎈-657a7269 ezri"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#0x5fbe",
+              "libdb:Webring/link": "https://melody.codes",
+              "libdb:Webring/name": "ꙮ-5fbe (melody)"
             }
           ],
           "libdb:Webring/root": "https://stellophiliac.github.io/roboring",

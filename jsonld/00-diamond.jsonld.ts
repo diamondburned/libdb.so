@@ -53,7 +53,7 @@ const graph = [
     "libdb:other88x31": [
       {
         "libdb:88x31Badge/alt": "My Mastodon",
-        "libdb:88x31Badge/link:": "https://tech.lgbt/@diamond",
+        "libdb:88x31Badge/link": "https://tech.lgbt/@diamond",
         "libdb:88x31Badge/image": _88x31("mastodon_button_3.gif"),
       },
       {
@@ -126,7 +126,7 @@ const graph = [
     "libdb:webring": [
       await (async () => {
         const webring = await fetchJSON<Record<string, string>[]>(
-          gitFile("github:stellophiliac/roboring/websites.json")
+          gitFile("github:stellophiliac/roboring/websites.json"),
         );
         return {
           "@context": { "@vocab": `${context.libdb}Webring/` },
@@ -153,7 +153,7 @@ const graph = [
             "@id": "libdb:webring/acmfriends",
             "@type": "libdb:Webring",
             link: "https://github.com/diamondburned/acmfriends-webring",
-          }
+          },
         );
         webring.ring = webring.ring.map((site) => ({
           "@id": "libdb:webring/acmfriends/" + site.name,
