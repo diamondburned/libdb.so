@@ -1,6 +1,5 @@
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
-import type * as vite from "vite";
 import * as path from "path";
 import viteCompression from "vite-plugin-compression";
 import sveltePreprocess from "svelte-preprocess";

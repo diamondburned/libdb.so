@@ -6,6 +6,9 @@
   import { nsfw } from "#/libdb.so/site/lib/prefs.js";
   import { ToastStore } from "#/libdb.so/site/lib/toasts.js";
 
+  import Avatar from "#/libdb.so/site/assets/avatar.webp?url";
+  import Banner from "#/libdb.so/site/assets/banner.webp?url";
+
   import Badges from "./Badges.svelte";
   import Toasts from "#/libdb.so/site/components/Toasts.svelte";
   import Window from "#/libdb.so/site/components/Window.svelte";
@@ -53,7 +56,7 @@
   async function usingContext<T = object>(
     doc: Awaited<typeof jsonldDoc>,
     object: any,
-    vocab: string
+    vocab: string,
   ): Promise<T> {
     return (await jsonld.compact(
       {
@@ -62,7 +65,7 @@
       },
       {
         "@vocab": vocab,
-      }
+      },
     )) as T;
   }
 
@@ -71,7 +74,7 @@
       [
         ...doc.self["libdb:88x31"], //
         ...doc.self["libdb:other88x31"],
-      ].map((o) => usingContext<Badge>(doc, o, "https://0xd14.id#88x31Badge/"))
+      ].map((o) => usingContext<Badge>(doc, o, "https://0xd14.id#88x31Badge/")),
     );
     console.log(x);
     return x;
@@ -175,12 +178,12 @@
 
   <div class="portfolio-content">
     <section class="banner" class:nsfw={$nsfw}>
-      <img src={$nsfw ? "/_fs/.nsfw/banner.webp" : "/_assets/banner.webp"} alt="Banner" />
+      <img src={$nsfw ? "/_fs/.nsfw/banner.webp" : Banner} alt="Banner" />
     </section>
 
     <section class="about card">
       <div class="intro">
-        <img src={$nsfw ? "/_fs/.nsfw/avatar.jpg" : "/_assets/avatar.webp"} alt="Diamond" />
+        <img src={$nsfw ? "/_fs/.nsfw/avatar.jpg" : Avatar} alt="Diamond" />
         <div>
           <span>Hi, I'm</span>
           <h1>Diamond!</h1>
