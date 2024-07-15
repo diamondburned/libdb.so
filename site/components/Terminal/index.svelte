@@ -3,7 +3,7 @@
 
   import * as svelte from "svelte";
   import colorScheme from "./color-schemes.json";
-  import type * as xterm from "xterm";
+  import { isDark } from "#/libdb.so/site/lib/prefs.js";
   import type * as libterminal from "#/libdb.so/site/lib/terminal.js";
 
   import Window from "#/libdb.so/site/components/Window.svelte";
@@ -11,11 +11,10 @@
   let terminalElement: HTMLElement;
 
   export let onload: (_: libterminal.Terminal) => void;
-  export let colors: Record<string, string> = {};
 
   let title = "";
-  let terminal: xterm.Terminal;
-  $: combinedColors = { ...colorScheme, ...colors };
+  let terminal: libterminal.Terminal;
+  $: theme = colorScheme[$isDark ? "dark" : "light"];
 
   svelte.onMount(async () => {
     const libterminal = await import("#/libdb.so/site/lib/terminal.js");
@@ -25,13 +24,8 @@
       fontWeight: "500",
       fontWeightBold: "700",
       lineHeight: 1.1,
-      theme: combinedColors,
+      theme,
       drawBoldTextInBrightColors: false,
-      linkHandler: {
-        activate: (event: MouseEvent, uri: string) => {
-          window.open(uri, "_blank");
-        },
-      },
     });
 
     terminal.open(terminalElement);
@@ -52,6 +46,9 @@
       onTitleChange.dispose();
     };
   });
+
+  // Watch for dark/light theme toggling.
+  $: if (terminal && theme) terminal.options.theme = { ...theme };
 </script>
 
 <Window view="terminal">
@@ -59,8 +56,8 @@
   <div
     class="terminal-box monospace"
     style="
-      --background: {combinedColors.background};
-      --foreground: {combinedColors.foreground};
+      --background: {theme.background};
+      --foreground: {theme.foreground};
     "
   >
     <div class="terminal-box-content" bind:this={terminalElement} />

@@ -178,7 +178,7 @@
       <img src={$nsfw ? "/_fs/.nsfw/banner.webp" : "/_assets/banner.webp"} alt="Banner" />
     </section>
 
-    <section class="about">
+    <section class="about card">
       <div class="intro">
         <img src={$nsfw ? "/_fs/.nsfw/avatar.jpg" : "/_assets/avatar.webp"} alt="Diamond" />
         <div>
@@ -207,13 +207,13 @@
       </p>
     </section>
 
-    <section class="annoyance">
+    <section class="annoyance card">
       <b>Hey!!</b> You should totally check out the <b><u>xterm.js</u></b> window underneath!
     </section>
 
     <section class="links">
       <h2>Links</h2>
-      <div class="content links-list" role="list">
+      <div class="links-list card" role="list">
         {#each links.filter((link) => !link.hidden) as link}
           <a
             style={`--color: ${link.color};`}
@@ -245,7 +245,7 @@
 
     <section class="resume">
       <h2>Resume</h2>
-      <div class="content links">
+      <div class="links card" role="list">
         <a
           role="button"
           href="https://github.com/diamondburned/resume/blob/main/resume.pdf"
@@ -269,10 +269,9 @@
     {#await resume}
       <span class="loading">Give me a bit, I'm loading the rest!</span>
     {:then resume}
-      <!--
-      <section class="work">
+      <section class="work hidden">
         <h2>Experience</h2>
-        <ol class="content work-list">
+        <ol class="work-list card">
           {#each resume.work as work}
             <li class="work-item">
               <h4>
@@ -296,11 +295,10 @@
           {/each}
         </ol>
       </section>
-	  -->
 
       <section class="projects">
         <h2>Projects</h2>
-        <ul class="content projects-list">
+        <ul class="projects-list card">
           {#each resume.projects as project}
             <li class="project-item">
               <div class="header">
@@ -336,7 +334,7 @@
     {:then doc}
       <section class="webring">
         <h2>Webrings</h2>
-        <div class="content">
+        <div class="content card">
           {#each doc.self["libdb:webring"] as webring}
             {#await usingContext(doc, webring, "https://0xd14.id#Webring/") then webring}
               <Webring data={webring} />
@@ -352,7 +350,7 @@
       {/await}
     {:catch}
       <span class="loading">
-        I couldn't load my JSON-LD information either {":("}
+        I couldn't load my JSON card-LD information either {":("}
         <br />
         Maybe the console can help?
       </span>
@@ -388,220 +386,220 @@
     & > * {
       margin-bottom: 1em;
     }
+  }
 
-    @mixin content {
-      box-shadow: 0 2px 16px -6px var(--adw-card-shade-color);
-      box-sizing: border-box;
+  @mixin content {
+    box-sizing: border-box;
+    min-height: 32px; /* should be tall even when only containing a label */
+    overflow: hidden;
+  }
 
-      background-color: var(--adw-card-bg-color);
-      min-height: 32px; /* should be tall even when only containing a label */
+  @mixin content-item {
+    margin: 0;
+    padding: var(--adw-menu-padding);
+    min-height: 32px;
+    box-sizing: border-box;
 
-      border-radius: var(--adw-card-radius);
-      overflow: hidden;
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--adw-card-shade-color);
+    }
+  }
+
+  section {
+    margin: 0 0.5em;
+    box-sizing: border-box;
+
+    :global(h1),
+    :global(h2),
+    :global(h3),
+    :global(h4),
+    :global(h5),
+    :global(h6) {
+      font-size: 1em;
     }
 
-    @mixin content-item {
+    & > :global(h1),
+    & > :global(h2),
+    & > :global(h3) {
+      // line-height: 1.25;
+
+      padding: 2px;
+      padding-top: 18px;
+      padding-bottom: 6px;
+
       margin: 0;
-      padding: var(--adw-menu-padding);
-      min-height: 32px;
-      box-sizing: border-box;
-
-      &:not(:last-child) {
-        border-bottom: 1px solid var(--adw-card-shade-color);
-      }
+      margin-bottom: 6px;
     }
 
-    section {
-      margin: 0 0.5em;
-      box-sizing: border-box;
+    @media (max-width: 400px) {
+      font-size: 1em;
+    }
 
-      :global(h1),
-      :global(h2),
-      :global(h3),
-      :global(h4),
-      :global(h5),
-      :global(h6) {
-        font-size: 1em;
+    button,
+    a[role="button"] {
+      background-color: var(--adw-card-bg-color);
+
+      &:hover {
+        background-color: var(--adw-hover-color);
       }
+    }
+  }
 
-      & > :global(h1),
-      & > :global(h2),
-      & > :global(h3) {
-        // line-height: 1.25;
+  section.banner {
+    height: clamp(150px, 20vw, 250px);
 
-        padding: 2px;
-        padding-top: 18px;
-        padding-bottom: 6px;
+    &.nsfw {
+      border-color: rgba(var(--pink-rgb), 0.4);
+    }
 
-        margin: 0;
-        margin-bottom: 6px;
-      }
+    img {
+      image-rendering: pixelated;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+  }
+
+  section.about {
+    @include content;
+    padding: 0 var(--adw-menu-padding);
+
+    div.intro {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      gap: 1em;
+      line-height: 1.15;
+      margin-top: var(--adw-menu-padding);
 
       @media (max-width: 400px) {
-        font-size: 1em;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      & > img {
+        grid-area: img;
+        width: 120px;
+        aspect-ratio: 1/1;
+        border-radius: 10px 0 10px 0;
+      }
+
+      & > div {
+        flex: 1;
+
+        & > span {
+          grid-area: span;
+          font-size: 1.5em;
+          font-weight: lighter;
+        }
+
+        & > h1 {
+          grid-area: h2;
+          font-weight: 700;
+          font-size: 2.5em;
+          margin: 0;
+        }
       }
     }
 
-    section.banner {
-      height: clamp(150px, 20vw, 250px);
-
-      &.nsfw {
-        border-color: rgba(var(--pink-rgb), 0.4);
-      }
-
-      img {
-        image-rendering: pixelated;
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        object-fit: cover;
-        border-radius: 10px;
-      }
+    ul {
+      list-style: "🌟  ";
+      padding-left: 2em;
+      margin: 0;
     }
 
-    section.about {
-      @include content;
-      padding: 0 var(--adw-menu-padding);
-
-      div.intro {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-end;
-        gap: 1em;
-        line-height: 1.15;
-        margin-top: var(--adw-menu-padding);
-
-        @media (max-width: 400px) {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-
-        & > img {
-          grid-area: img;
-          width: 120px;
-          aspect-ratio: 1/1;
-          border-radius: 10px 0 10px 0;
-        }
-
-        & > div {
-          flex: 1;
-
-          & > span {
-            grid-area: span;
-            font-size: 1.5em;
-            font-weight: lighter;
-          }
-
-          & > h1 {
-            grid-area: h2;
-            font-weight: 700;
-            font-size: 2.5em;
-            margin: 0;
-          }
-        }
-      }
-
-      ul {
-        list-style: "🌟  ";
-        padding-left: 2em;
-        margin: 0;
-      }
-
-      p.i-am {
-        margin-bottom: var(--adw-menu-margin);
-      }
+    p.i-am {
+      margin-bottom: var(--adw-menu-margin);
     }
+  }
 
-    section.annoyance {
+  section.annoyance {
+    @include content;
+
+    border: 1.5px solid rgba(var(--pink-rgb), 0.4);
+    padding: var(--adw-card-padding);
+    background-color: rgba(var(--pink-rgb), 0.1);
+  }
+
+  section.links {
+    .links-list {
       @include content;
 
-      border: 1.5px solid rgba(var(--pink-rgb), 0.4);
-      padding: var(--adw-card-padding);
-      background-color: rgba(var(--pink-rgb), 0.1);
+      list-style: none;
+
+      width: 100%;
+      display: grid;
+      grid-template-columns: auto auto 1fr;
     }
 
-    section.links {
+    a[role="button"] {
+      @include content-item;
+
+      width: 100%;
+
+      display: grid;
+      grid-gap: 0.5em;
+      grid-column: span 3;
+      grid-template-columns: subgrid;
+      /* grid-template-columns: auto auto 1fr auto; */
+
+      &.nsfw .value::after {
+        content: "(NSFW)";
+        color: rgba(var(--pink-rgb), 0.75);
+        text-shadow: var(--pink-glow);
+        font-size: 0.75em;
+        margin-left: 0.5em;
+      }
+
+      &.icon-invert .icon {
+        filter: invert(1);
+      }
+    }
+
+    .icon {
+      user-select: none;
+      min-width: 1.75em;
+    }
+
+    .name {
+      font-weight: bold;
+      margin-right: 0.5em;
+    }
+
+    :global(img),
+    :global(svg) {
+      width: 1.5em;
+      height: 1.5em;
+      vertical-align: bottom;
+    }
+
+    :global(svg) {
+      color: rgb(var(--color));
+    }
+
+    :global(img) {
+      border-radius: 40px;
+    }
+
+    @media (max-width: 400px) {
       .links-list {
-        @include content;
-
-        list-style: none;
-
-        width: 100%;
-        display: grid;
-        grid-template-columns: auto auto 1fr;
-      }
-
-      a[role="button"] {
-        @include content-item;
-
-        width: 100%;
-
-        display: grid;
-        grid-gap: 0.5em;
-        grid-column: span 3;
-        grid-template-columns: subgrid;
-        /* grid-template-columns: auto auto 1fr auto; */
-
-        &.nsfw .value::after {
-          content: "(NSFW)";
-          color: rgba(var(--pink-rgb), 0.75);
-          text-shadow: var(--pink-glow);
-          font-size: 0.75em;
-          margin-left: 0.5em;
-        }
-
-        &.icon-invert .icon {
-          filter: invert(1);
-        }
-      }
-
-      .icon {
-        user-select: none;
-        min-width: 1.75em;
+        grid-template-columns: auto 1fr;
       }
 
       .name {
-        font-weight: bold;
-        margin-right: 0.5em;
-      }
-
-      .value {
-        color: rgba(255, 255, 255, 0.75);
-      }
-
-      :global(img),
-      :global(svg) {
-        width: 1.5em;
-        height: 1.5em;
-        vertical-align: bottom;
-      }
-
-      :global(svg) {
-        color: rgb(var(--color));
-      }
-
-      :global(img) {
-        border-radius: 40px;
-      }
-
-      @media (max-width: 400px) {
-        .links-list {
-          grid-template-columns: auto 1fr;
-        }
-
-        .name {
-          display: none;
-        }
+        display: none;
       }
     }
+  }
 
-    section.resume {
-      .content {
-        @include content;
+  section.resume {
+    .links {
+      @include content;
 
-        display: flex;
-        flex-direction: row;
-      }
+      display: flex;
+      flex-direction: row;
 
       a[role="button"] {
         @include content-item;
@@ -610,181 +608,172 @@
         width: 100%;
         align-self: center;
       }
+    }
 
-      .source {
-        display: inline;
-        font-size: 0.8em;
-        vertical-align: baseline;
-        opacity: 0.65;
-      }
+    .source {
+      display: inline;
+      font-size: 0.8em;
+      vertical-align: baseline;
+      opacity: 0.65;
+    }
 
-      .links {
-        display: flex;
-        flex-direction: column;
+    .links {
+      display: flex;
+      flex-direction: column;
 
-        @media (max-width: 400px) {
-          flex-wrap: wrap;
-        }
-      }
-
-      :global(svg) {
-        vertical-align: top;
-        margin-right: 0.5em;
-        min-width: 1.75em;
+      @media (max-width: 400px) {
+        flex-wrap: wrap;
       }
     }
 
-    section.work {
-      .work-list {
-        @include content;
+    :global(svg) {
+      vertical-align: top;
+      margin-right: 0.5em;
+      min-width: 1.75em;
+    }
+  }
 
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
+  section.work {
+    .work-list {
+      @include content;
 
-      .work-item {
-        @include content-item;
-
-        h4 {
-          margin: 0;
-
-          display: grid;
-          grid-template-columns: 1fr auto;
-          grid-template-rows: auto auto;
-
-          & > *:nth-child(-n + 2) {
-            font-weight: bold;
-          }
-
-          & > *:nth-last-child(-n + 2) {
-            font-weight: normal;
-            opacity: 0.75;
-            font-size: 0.9em;
-          }
-
-          @media (max-width: 400px) {
-            grid-template-columns: 1fr;
-          }
-        }
-      }
-
-      .highlights-list {
-        padding-left: 1em;
-        padding-right: 0.5em;
-        list-style: disc;
-      }
-
-      .highlight-item {
-        margin: var(--adw-menu-margin) 0;
-        padding-left: 0.25em;
-
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
+      list-style: none;
+      padding: 0;
+      margin: 0;
     }
 
-    section.projects {
-      .projects-list {
-        @include content;
+    .work-item {
+      @include content-item;
 
-        list-style: none;
-        padding: 0;
+      h4 {
         margin: 0;
-      }
 
-      .project-item {
-        @include content-item;
-
-        p {
-          margin: 0;
-          margin-top: var(--adw-menu-margin);
-        }
-      }
-
-      .header {
         display: grid;
-        grid-template-areas: "name keywords url";
-        grid-template-rows: 1fr;
-        grid-template-columns: auto 1fr auto;
-        grid-gap: 0.5em;
-        align-items: baseline;
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto auto;
 
-        .name {
-          grid-area: name;
+        & > *:nth-child(-n + 2) {
+          font-weight: bold;
         }
 
-        .keywords {
-          grid-area: keywords;
-
-          &:not(:empty) {
-            opacity: 0.75;
-            border-left: 1px solid rgba(255, 255, 255, 0.35);
-            padding-left: 0.5em;
-          }
-        }
-
-        .url {
-          grid-area: url;
-        }
-
-        .url,
-        .keywords {
+        & > *:nth-last-child(-n + 2) {
+          font-weight: normal;
+          opacity: 0.75;
           font-size: 0.9em;
         }
 
-        @media (max-width: 500px) {
-          grid-gap: 0;
-          grid-template-areas:
-            "name url"
-            "keywords keywords";
-          grid-template-columns: 1fr auto;
-          grid-template-rows: auto auto;
+        @media (max-width: 400px) {
+          grid-template-columns: 1fr;
+        }
+      }
+    }
 
-          .keywords,
-          .keywords:not(:empty) {
-            border-left: none;
-            padding: 0;
-          }
+    .highlights-list {
+      padding-left: 1em;
+      padding-right: 0.5em;
+      list-style: disc;
+    }
+
+    .highlight-item {
+      margin: var(--adw-menu-margin) 0;
+      padding-left: 0.25em;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  section.projects {
+    .projects-list {
+      @include content;
+
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .project-item {
+      @include content-item;
+
+      p {
+        margin: 0;
+        margin-top: var(--adw-menu-margin);
+      }
+    }
+
+    .header {
+      display: grid;
+      grid-template-areas: "name keywords url";
+      grid-template-rows: 1fr;
+      grid-template-columns: auto 1fr auto;
+      grid-gap: 0.5em;
+      align-items: baseline;
+
+      .name {
+        grid-area: name;
+      }
+
+      .keywords {
+        grid-area: keywords;
+
+        &:not(:empty) {
+          opacity: 0.75;
+          border-left: 1px solid rgba(255, 255, 255, 0.35);
+          padding-left: 0.5em;
         }
       }
 
-      .description {
-        margin-top: 0.5em;
+      .url {
+        grid-area: url;
+      }
+
+      .url,
+      .keywords {
+        font-size: 0.9em;
+      }
+
+      @media (max-width: 500px) {
+        grid-gap: 0;
+        grid-template-areas:
+          "name url"
+          "keywords keywords";
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto auto;
+
+        .keywords,
+        .keywords:not(:empty) {
+          border-left: none;
+          padding: 0;
+        }
       }
     }
 
-    section.webring {
-      .content {
-        @include content;
-      }
+    .description {
+      margin-top: 0.5em;
+    }
+  }
 
-      :global(webring-element) {
-        @include content-item;
-      }
+  section.webring {
+    .content {
+      @include content;
     }
 
-    .loading {
-      opacity: 0.5;
-      font-size: 0.9em;
-      text-align: center;
+    :global(webring-element) {
+      @include content-item;
     }
+  }
 
-    .badges {
-      margin: 0 0.5em;
-      margin-top: 1em;
-      padding: 1em;
-      border-top: 1px solid #fff3;
-    }
+  .loading {
+    opacity: 0.5;
+    font-size: 0.9em;
+    text-align: center;
+  }
 
-    footer {
-      margin: 0 calc(0.5em + 1px);
-      border-radius: 10px;
-      border: 1px solid rgba(var(--blue-rgb), 0.4);
-      background-color: rgba(var(--blue-rgb), 0.1);
-      padding: 1em;
-      font-size: 0.9em;
-    }
+  .badges {
+    margin: 0 0.5em;
+    margin-top: 1em;
+    padding: 1em;
+    border-top: 1px solid #fff3;
   }
 </style>

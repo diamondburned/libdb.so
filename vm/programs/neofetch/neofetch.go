@@ -63,7 +63,7 @@ func colorfulHex(hex string) colorful.Color {
 var transColors = []colorful.Color{
 	colorfulHex("#55CDFC"),
 	colorfulHex("#F7A8B8"),
-	colorfulHex("#FFFFFF"),
+	colorfulHex("#EEEEEC"),
 }
 
 func transBand(inverted bool) string {
@@ -93,9 +93,9 @@ func info() string {
 	var b strings.Builder
 	b.WriteByte('\n')
 
-	pronouns := "(she/they)"
+	pronouns := "(she/it)"
 	if nsfw.IsEnabled() {
-		pronouns = "(she/they/it)"
+		pronouns = "(it/she)"
 	}
 
 	fmt.Fprintln(&b,

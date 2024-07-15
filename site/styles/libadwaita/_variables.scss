@@ -27,11 +27,7 @@
 
   // Window
   $window-bg-color: if($variant == "light", #fafafa, #242424);
-  $window-fg-color: if(
-    $variant == "light",
-    color.mix($window-bg-color, black, 80%),
-    white
-  );
+  $window-fg-color: if($variant == "light", color.mix($window-bg-color, black, 20%), white);
   // $window-fg-color: if($variant == "light", rgba(0 0 0 / 80%), white);
 
   // Views - e.g. text view or tree view
@@ -43,58 +39,26 @@
   $headerbar-fg-color: if($variant == "light", rgba(0 0 0 / 80%), white);
   $headerbar-border-color: if($variant == "light", rgba(0 0 0 / 80%), white);
   $headerbar-backdrop-color: $window-bg-color;
-  $headerbar-shade-color: if(
-    $variant == "light",
-    rgba(0 0 0 / 12%),
-    rgba(0 0 0 / 36%)
-  );
-  $headerbar-darker-shade-color: if(
-    $variant == "light",
-    rgba(0 0 0 / 12%),
-    rgba(0 0 0 / 90%)
-  );
+  $headerbar-shade-color: if($variant == "light", rgba(0 0 0 / 12%), rgba(0 0 0 / 36%));
+  $headerbar-darker-shade-color: if($variant == "light", rgba(0 0 0 / 12%), rgba(0 0 0 / 90%));
 
   // Split pane views
   $sidebar-bg-color: if($variant == "light", #ebebeb, #303030);
   $sidebar-fg-color: if($variant == "light", rgba(0 0 0 / 80%), white);
   $sidebar-backdrop-color: if($variant == "light", #f2f2f2, #2a2a2a);
-  $sidebar-shade-color: if(
-    $variant == "light",
-    rgba(0 0 0 / 7%),
-    rgba(0 0 0 / 25%)
-  );
-  $sidebar-border-color: if(
-    $variant == "light",
-    rgba(0 0 0 / 7%),
-    rgba(0 0 0 / 36%)
-  );
+  $sidebar-shade-color: if($variant == "light", rgba(0 0 0 / 7%), rgba(0 0 0 / 25%));
+  $sidebar-border-color: if($variant == "light", rgba(0 0 0 / 7%), rgba(0 0 0 / 36%));
 
   $secondary-sidebar-bg-color: if($variant == "light", #f3f3f3, #2a2a2a);
-  $secondary-sidebar-fg-color: if(
-    $variant == "light",
-    rgba(0 0 0 / 80%),
-    white
-  );
+  $secondary-sidebar-fg-color: if($variant == "light", rgba(0 0 0 / 80%), white);
   $secondary-sidebar-backdrop-color: if($variant == "light", #f6f6f6, #272727);
-  $secondary-sidebar-shade-color: if(
-    $variant == "light",
-    rgba(0 0 0 / 7%),
-    rgba(0 0 0 / 25%)
-  );
-  $secondary-sidebar-border-color: if(
-    $variant == "light",
-    rgba(0 0 0 / 7%),
-    rgba(0 0 0 / 36%)
-  );
+  $secondary-sidebar-shade-color: if($variant == "light", rgba(0 0 0 / 7%), rgba(0 0 0 / 25%));
+  $secondary-sidebar-border-color: if($variant == "light", rgba(0 0 0 / 7%), rgba(0 0 0 / 36%));
 
   // Cards, boxed lists
   $card-bg-color: if($variant == "light", #ffffff, rgba(255 255 255 / 8%));
   $card-fg-color: if($variant == "light", rgba(0 0 0 / 80%), white);
-  $card-shade-color: if(
-    $variant == "light",
-    rgba(0 0 0 / 7%),
-    rgba(0 0 0 / 36%)
-  );
+  $card-shade-color: if($variant == "light", rgba(0 0 0 / 7%), rgba(0 0 0 / 36%));
 
   // Dialogs
   $dialog-bg-color: if($variant == "light", #fafafa, #383838);
@@ -103,11 +67,7 @@
   // Popovers
   $popover-bg-color: if($variant == "light", #ffffff, #383838);
   $popover-fg-color: if($variant == "light", rgba(0 0 0 / 80%), white);
-  $popover-shade-color: if(
-    $variant == "light",
-    rgba(0 0 0 / 7%),
-    rgba(0 0 0 / 25%)
-  );
+  $popover-shade-color: if($variant == "light", rgba(0 0 0 / 7%), rgba(0 0 0 / 25%));
 
   // Thumbnails
   $thumbnail-bg-color: if($variant == "light", #ffffff, #383838);
@@ -162,10 +122,7 @@
   $drop-target-color: $accent-bg-color;
 
   // Special cased widget colors
-  $focus-border-color: color.change(
-    $accent-color,
-    $alpha: $focus-border-opacity
-  );
+  $focus-border-color: color.change($accent-color, $alpha: $focus-border-opacity);
 
   $dim-label-opacity: #{if($contrast == "high", 0.9, 0.55)};
   $dimmer-opacity: #{if($contrast == "high", 0.8, 0.3)};
@@ -187,11 +144,7 @@
     color.adjust($fg-color, $alpha: 0.5),
     color.adjust($fg-color, $alpha: 0.25)
   );
-  $window-outline-color: #if(
-    $contrast == "high",
-    rgba(255 255 255 / 30%),
-    rgba(255 255 255 / 7%)
-  );
+  $window-outline-color: #if($contrast == "high", rgba(255 255 255 / 30%), rgba(255 255 255 / 7%));
 
   // sed -n 's/^  $\([^:]*\):.*/  --adw-\1: #{$\1};/p' site/styles/libadwaita/_variables.scss
   --adw-accent-bg-color: #{$accent-bg-color};

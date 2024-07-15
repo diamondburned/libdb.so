@@ -53,6 +53,7 @@
     position: relative;
 
     :global(.badge-image) {
+      border: 1px solid var(--adw-card-shade-color);
       aspect-ratio: 88 / 31;
       image-rendering: pixelated;
     }

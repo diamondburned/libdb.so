@@ -7,6 +7,6 @@
   }
 }
 
-[data-theme="dark"] {
+[data-prefers-dark="true"] {
   @include theme("dark");
 }

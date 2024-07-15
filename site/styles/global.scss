@@ -1,3 +1,8 @@
 @use "root";
 @use "buttons";
 @use "links";
+@use "cards";
+
+.hidden {
+  display: none;
+}

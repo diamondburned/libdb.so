@@ -13,6 +13,8 @@
 
 <style lang="scss">
   button.window-control {
+    --color: 255, 255, 255;
+
     color: white;
     border: none;
     border-radius: 99px;
@@ -21,7 +23,7 @@
     font-size: 0.75rem;
     font-weight: 900;
     line-height: 0;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(var(--color), 0.1);
     transition: all 0.1s ease-in-out;
     padding: 0;
 
@@ -30,19 +32,20 @@
     justify-content: center;
 
     &:hover {
-      background-color: rgba(255, 255, 255, 0.2);
+      background-color: rgba(var(--color), 0.2);
+    }
+
+    :global(svg *) {
+      fill: rgb(var(--color));
     }
 
     &.minimize {
-      :global(svg *) {
-        fill: var(--blue);
-      }
+      --color: var(--blue-rgb);
     }
 
     &.maximize {
-      :global(svg *) {
-        fill: var(--pink);
-      }
+      --color: var(--pink-rgb);
+
       @media (max-width: 500px) {
         /* Always maximize on mobile */
         display: none;

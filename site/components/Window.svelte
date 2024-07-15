@@ -210,8 +210,8 @@
 
     pointer-events: none;
 
-    --ease-function: cubic-bezier(0, 1.005, 0.165, 1);
-    --ease-duration: 0.2s;
+    --ease-function: var(--adw-ease-out-quad);
+    --ease-duration: 0.15s;
 
     @keyframes minimize-animation {
       /*
@@ -296,6 +296,7 @@
 
     color: var(--adw-window-fg-color);
     background-color: var(--adw-window-bg-color);
+    transition: var(--adw-backdrop-transition);
 
     position: absolute;
     top: 0;
@@ -342,15 +343,13 @@
       & > :global(*) {
         pointer-events: auto;
       }
+
+      transition: background-image 0.2s;
     }
 
     &.scrolled .overlays {
-      background-image: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.65) -8px,
-        transparent 4px,
-        transparent 100%
-      );
+      box-shadow: 0 1px rgba(black, 0.025) inset;
+      background-image: linear-gradient(to bottom, rgba(black, 0.0525), transparent 4px);
     }
 
     .content {
@@ -364,8 +363,6 @@
     }
 
     header.titlebar {
-      border-bottom: 1px solid transparent;
-
       color: var(--adw-headerbar-fg-color);
       position: relative;
 
@@ -416,10 +413,6 @@
           margin: 0 0.45rem;
         }
       }
-    }
-
-    &.scrolled header.titlebar {
-      border-bottom: 1px solid var(--adw-thin-border-color);
     }
   }
 </style>

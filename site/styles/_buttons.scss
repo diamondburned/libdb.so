@@ -26,14 +26,50 @@ a[role="button"] {
   border: none;
   cursor: pointer;
   box-sizing: border-box;
+  background-color: var(--adw-button-color);
 
   text-decoration: none;
-  transition: all 0.1s ease-in-out;
-  background-color: var(--adw-button-colorr);
+  transition: all 0.15s ease-in-out;
 
   &:hover {
-    background-color: var(--adw-hover-color);
+    background-color: var(--adw-button-hover-color);
     text-decoration: none;
+  }
+
+  &:active {
+    background-color: var(--adw-button-active-color);
+  }
+
+  &:checked {
+    background-color: var(--adw-button-checked-color);
+    &:hover {
+      background-color: var(--adw-button-checked-hover-color);
+    }
+    &:active {
+      background-color: var(--adw-button-checked-active-color);
+    }
+  }
+
+  &.destructive {
+    background-color: var(--adw-destructive-button-color);
+
+    &:hover {
+      background-color: var(--adw-destructive-button-hover-color);
+    }
+
+    &:active {
+      background-color: var(--adw-destructive-button-active-color);
+    }
+
+    &:checked {
+      background-color: var(--adw-destructive-button-checked-color);
+      &:hover {
+        background-color: var(--adw-destructive-button-checked-hover-color);
+      }
+      &:active {
+        background-color: var(--adw-destructive-button-checked-active-color);
+      }
+    }
   }
 }
 

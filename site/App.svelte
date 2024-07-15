@@ -9,7 +9,7 @@
     viewWindows,
     toggleShowDesktop,
   } from "#/libdb.so/site/lib/views.js";
-  import { onekoCursor, dragWindows, nsfw } from "#/libdb.so/site/lib/prefs.js";
+  import { onekoCursor, dragWindows, nsfw, theme, prefersDark } from "#/libdb.so/site/lib/prefs.js";
   import type * as libterminal from "#/libdb.so/site/lib/terminal.js";
 
   import Oneko from "#/libdb.so/site/components/Oneko/oneko.svelte";
@@ -76,7 +76,13 @@
   <meta name="author" content="diamondburned" />
 </svelte:head>
 
-<div class="screen" bind:clientWidth={screenWidth} bind:clientHeight={screenHeight}>
+<div
+  class="screen"
+  data-theme={$theme}
+  data-prefers-dark={$prefersDark}
+  bind:clientWidth={screenWidth}
+  bind:clientHeight={screenHeight}
+>
   <div class="backdrop" />
 
   {#if $onekoCursor}
@@ -202,8 +208,8 @@
   }
 
   #navbar {
-    background-color: rgba(0, 0, 0, 0.5);
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.65));
+    background-color: var(--adw-headerbar-bg-color);
+    color: var(--adw-headerbar-fg-color);
 
     display: flex;
     justify-content: space-between;
@@ -211,7 +217,6 @@
 
     font-weight: 700;
     user-select: none;
-    color: white;
 
     .left {
       flex: 1;
@@ -234,28 +239,14 @@
       grid-template-rows: 1fr;
 
       overflow: auto;
-
-      button.active {
-        background-color: var(--bg-active);
-        border-bottom: 2px solid white;
-
-        &:hover {
-          background-color: var(--bg-active-hover);
-        }
-      }
     }
 
     button {
-      --bg-hover: rgba(255, 255, 255, 0.05);
-      --bg-active: rgba(255, 255, 255, 0.1);
-      --bg-active-hover: rgba(255, 255, 255, 0.15);
-
       border: none;
-      background-color: transparent;
       font-weight: inherit;
       font-family: inherit;
       font-size: 0.9em;
-      color: white;
+      background-color: var(--adw-headerbar-bg-color);
 
       display: flex;
       align-items: center;
@@ -265,11 +256,17 @@
       border-top: 2px solid transparent;
       border-bottom: 2px solid transparent;
 
-      transition: all 0.075s ease-in-out;
+      &:hover {
+        background-color: var(--adw-button-hover-color);
+      }
 
-      &:hover:not(:disabled),
       &.active {
-        background-color: var(--bg-hover);
+        background-color: var(--adw-button-active-color);
+        border-bottom: 2px solid var(--adw-accent-color);
+
+        &:hover {
+          background-color: var(--adw-button-checked-hover-color);
+        }
       }
 
       &:disabled {
@@ -319,7 +316,7 @@
       hr {
         width: 100%;
         border: none;
-        border-top: 1px solid rgba(255, 255, 255, 0.25);
+        border-top: 1px solid var(--adw-card-shade-color);
       }
 
       small {
@@ -355,7 +352,7 @@
     .view-desktop {
       padding: 0;
       padding-left: 0.5em;
-      border-left: 1px solid rgba(255, 255, 255, 0.25);
+      border-left: 1px solid var(--adw-card-shade-color);
 
       &:hover {
         background-color: var(--bg-hover);

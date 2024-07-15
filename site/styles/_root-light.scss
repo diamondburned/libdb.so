@@ -2,6 +2,6 @@
 @use "libadwaita/variables" as *;
 
 :root,
-[data-theme="light"] {
+[data-prefers-dark="false"] {
   @include theme("light");
 }
