@@ -1,18 +1,24 @@
+<script lang="ts" context="module">
+  const libterminalModule = import("#/libdb.so/site/lib/terminal.js");
+  const vmModule = import("#/libdb.so/site/lib/vm.js");
+</script>
+
 <script lang="ts">
   import "@xterm/xterm/css/xterm.css";
 
   import * as svelte from "svelte";
+  import type * as libterminal from "#/libdb.so/site/lib/terminal.js";
+
   import colorScheme from "./color-schemes.json";
   import { fade } from "svelte/transition";
   import { isDark } from "#/libdb.so/site/lib/prefs.js";
-  import type * as libterminal from "#/libdb.so/site/lib/terminal.js";
 
   import Window from "#/libdb.so/site/components/Window.svelte";
   import { readable } from "svelte/store";
 
   let terminalElement: HTMLElement;
-
   let terminal: libterminal.Terminal;
+
   $: title = terminal?.title || readable("");
   $: theme = colorScheme[$isDark ? "dark" : "light"];
 
@@ -25,10 +31,7 @@
 
   async function initTerminal() {
     try {
-      const [libterminal, vm] = await Promise.all([
-        import("#/libdb.so/site/lib/terminal.js"),
-        import("#/libdb.so/site/lib/vm.js"),
-      ]);
+      const [libterminal, vm] = await Promise.all([libterminalModule, vmModule]);
 
       terminal = new libterminal.Terminal({
         theme,
@@ -80,10 +83,12 @@
 <style lang="scss">
   div.terminal-box {
     height: 100%;
-    box-sizing: border-box;
     background-color: var(--background);
-
+    box-sizing: border-box;
     position: relative;
+
+    display: flex;
+    flex-direction: column;
 
     p.status {
       position: absolute;
@@ -102,7 +107,8 @@
     }
 
     .terminal-box-content {
-      padding: clamp(4px, 1.5vh, 8px) clamp(0px, 0.5vw, 4px);
+      margin: clamp(4px, 2vh, 12px) clamp(0px, 0.5vw, 4px);
+      box-sizing: border-box;
     }
 
     .terminal-box-content,

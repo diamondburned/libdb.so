@@ -1,7 +1,5 @@
 import * as xterm from "@xterm/xterm";
 import FontFaceObserver from "fontfaceobserver";
-import { CanvasAddon } from "@xterm/addon-canvas";
-// import { WebglAddon } from "@xterm/addon-webgl";
 import { ImageAddon } from "@xterm/addon-image";
 import { FitAddon } from "@xterm/addon-fit";
 import { writable } from "svelte/store";
@@ -19,7 +17,17 @@ export type LinkHandlers = {
   [scheme: string]: (uri: string) => void;
 };
 
+// Load modules in parallel.
+const webglModule = import("@xterm/addon-webgl");
+const canvasModule = import("@xterm/addon-canvas");
+
 export class Terminal {
+  static supportsWebGL(): boolean {
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl");
+    return gl instanceof WebGLRenderingContext;
+  }
+
   linkHandlers: LinkHandlers = {
     https: (uri: string) => window.open(uri, "_blank"),
     http: (uri: string) => window.open(uri, "_blank"),
@@ -38,7 +46,6 @@ export class Terminal {
     sixelPaletteLimit: 4096,
     showPlaceholder: true,
   });
-  private canvasAddon = new CanvasAddon();
 
   private onResize_ = () => this.fit();
   private resizeObserver = new ResizeObserver(() => this.fit());
@@ -102,7 +109,21 @@ export class Terminal {
 
     this.xterm.loadAddon(this.fitAddon);
     this.xterm.loadAddon(this.imageAddon);
-    this.xterm.loadAddon(this.canvasAddon);
+
+    try {
+      const addonModule = await webglModule;
+      const addon = new addonModule.WebglAddon();
+      addon.onContextLoss(() => {
+        console.error("WebGL context lost, falling back to non-GL rendered terminal.");
+        addon.dispose();
+      });
+      this.xterm.loadAddon(addon);
+    } catch (err) {
+      console.info("WebGL is not supported on this browser.", err);
+      const addonModule = await canvasModule;
+      const addon = new addonModule.CanvasAddon();
+      this.xterm.loadAddon(addon);
+    }
 
     this.xterm.open(e);
     this.resizeObserver.observe(e);
@@ -134,7 +155,6 @@ export class Terminal {
       this.xterm.dispose();
       this.fitAddon.dispose();
       this.imageAddon.dispose();
-      this.canvasAddon.dispose();
     }
   }
 
