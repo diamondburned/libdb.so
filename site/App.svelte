@@ -10,6 +10,9 @@
   } from "#/libdb.so/site/lib/views.js";
   import { onekoCursor, dragWindows, nsfw, theme, prefersDark } from "#/libdb.so/site/lib/prefs.js";
 
+  import SystemUsersIcon from "#/libdb.so/site/assets/papirus/system-users.svg?url";
+  import TerminalIcon from "#/libdb.so/site/assets/papirus/terminal.svg?url";
+
   import Oneko from "#/libdb.so/site/components/Oneko/oneko.svelte";
   import Switch from "#/libdb.so/site/components/Switch.svelte";
   import Terminal from "#/libdb.so/site/components/Terminal/index.svelte";
@@ -94,11 +97,11 @@
       </button>
       <div class="window-list">
         <button class:active={$focusedView == "portfolio"} on:click={() => toggleView("portfolio")}>
-          <img src="./assets/papirus/system-users.svg" alt="Portfolio icon" />
+          <img src={SystemUsersIcon} alt="Portfolio icon" />
           About
         </button>
         <button class:active={$focusedView == "terminal"} on:click={() => toggleView("terminal")}>
-          <img src="./assets/papirus/terminal.svg" alt="Terminal icon" />
+          <img src={TerminalIcon} alt="Terminal icon" />
           xterm.js
         </button>
       </div>
