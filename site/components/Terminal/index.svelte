@@ -94,12 +94,15 @@
       position: absolute;
       width: 100%;
       height: 100%;
+      margin: 0;
 
       background-color: var(--background);
 
       display: flex;
       align-items: center;
       justify-content: center;
+
+      z-index: 5;
 
       &.error {
         color: var(--adw-destructive-color);
