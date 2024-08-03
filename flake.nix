@@ -1,130 +1,142 @@
 {
-	inputs = {
-		nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-		flake-utils.url = "github:numtide/flake-utils";
-		flake-compat.url = "https://flakehub.com/f/edolstra/flake-compat/1.tar.gz";
-		gomod2nix = {
-			url = "github:nix-community/gomod2nix";
-			inputs = {
-				nixpkgs.follows = "nixpkgs";
-				flake-utils.follows = "flake-utils";
-			};
-		};
-		npmlock2nix = {
-			url = "github:nix-community/npmlock2nix";
-			flake = false;
-		};
-	};
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    flake-compat.url = "https://flakehub.com/f/edolstra/flake-compat/1.tar.gz";
+    gomod2nix = {
+      url = "github:nix-community/gomod2nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
+    npmlock2nix = {
+      url = "github:nix-community/npmlock2nix";
+      flake = false;
+    };
+  };
 
-	outputs =
-		{ self, nixpkgs, gomod2nix, npmlock2nix, flake-utils, flake-compat }:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      gomod2nix,
+      npmlock2nix,
+      flake-utils,
+      flake-compat,
+    }:
 
-		flake-utils.lib.eachDefaultSystem (system:
-			let
-				overlays = [
-					(self: super: {
-						npmlock2nix = import npmlock2nix {
-							pkgs = super;
-							lib = super.lib;
-						};
-					})
-					(gomod2nix.overlays.default)
-				];
+    flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        overlays = [
+          (self: super: {
+            npmlock2nix = import npmlock2nix {
+              pkgs = super;
+              lib = super.lib;
+            };
+          })
+          (gomod2nix.overlays.default)
+        ];
 
-				pkgs = import nixpkgs {
-					inherit system overlays;
-				};
+        pkgs = import nixpkgs { inherit system overlays; };
 
-				go = pkgs.go_1_22;
-				nodejs = pkgs.nodejs;
+        go = pkgs.go_1_22;
+        nodejs = pkgs.nodejs;
 
-				version =
-					if self ? rev then
-						builtins.substring 0 7 self.rev
-					else
-						"dirty";
-			in
-			{
-				devShells.default = pkgs.mkShell {
-					packages = with pkgs; [
-						nodejs
-						go
-						gopls
-						jq
-						# tinygo
-						gomod2nix.packages.${system}.default
-					];
+        version = if self ? rev then builtins.substring 0 7 self.rev else "dirty";
+      in
+      {
+        devShells.default = pkgs.mkShell {
+          packages = with pkgs; [
+            nodejs
+            go
+            gopls
+            jq
+            # tinygo
+            self.formatter.${system}
+            gomod2nix.packages.${system}.default
+          ];
 
-					GOOS = "js";
-					GOARCH = "wasm";
+          GOOS = "js";
+          GOARCH = "wasm";
 
-					shellHook = ''
-						export PATH="$PATH:$(git rev-parse --show-toplevel)/node_modules/.bin"
-					'';
-				};
+          shellHook = ''
+            export PATH="$PATH:$(git rev-parse --show-toplevel)/node_modules/.bin"
+          '';
+        };
 
-				packages.default = pkgs.stdenv.mkDerivation rec {
-					inherit version;
-					pname = "libdb.so";
-					src = self;
-				
-					nativeBuildInputs = with pkgs; [
-						coreutils
-						bash
-						jq
-						nodejs
-					];
+        packages.default = pkgs.stdenv.mkDerivation rec {
+          inherit version;
+          pname = "libdb.so";
+          src = self;
 
-					nodeModules = pkgs.npmlock2nix.v2.node_modules {
-						inherit src;
-						nodejs = pkgs.nodejs;
-						# mkDerivation hates us because we have a Makefile. We'll override
-						# installPhase to fix that.
-						installPhase = "mv node_modules $out/";
-					};
-				
-					preBuild = ''
-						set -x
-				
-						mkdir -p build
-						cp -r ${self.packages.${system}.vm}/bin/vm.wasm build/vm.wasm
-				
-						cp -r ${nodeModules} node_modules
-						chown -R $(id -u):$(id -g) node_modules
-						chmod -R +w node_modules
-						export PATH="$PATH:$PWD/node_modules/.bin"
-						export VERSION="$version"
-				
-						set +x
-					'';
-				
-					installPhase = ''
-						cp -r build/dist $out
-					'';
-				};
+          nativeBuildInputs = with pkgs; [
+            coreutils
+            bash
+            jq
+            nodejs
+          ];
 
-				packages.vm = (pkgs.buildGoApplication {
-					inherit version go;
-					pname = "libdb.so-vm-wasm";
-					src = self;
-					modules = ./gomod2nix.toml;
-					subPackages = [ "vm/cmd/vm-wasm" ];
+          nodeModules = pkgs.npmlock2nix.v2.node_modules {
+            inherit src;
+            nodejs = pkgs.nodejs;
+            # mkDerivation hates us because we have a Makefile. We'll override
+            # installPhase to fix that.
+            installPhase = "mv node_modules $out/";
+          };
 
-					CGO_ENABLED = 0;
-					doCheck = false; # none to run
+          preBuild = ''
+            set -x
 
-					ldflags =
-						[ "-s" "-w" ]
-						++ (if version != "dirty" then [ "-X main.gitrev=${version}" ] else [ ]);
+            mkdir -p build
+            cp -r ${self.packages.${system}.vm}/bin/vm.wasm build/vm.wasm
 
-					postInstall = ''
-						mv $out/bin/js_wasm/vm-wasm $out/bin/vm.wasm
-						rmdir $out/bin/js_wasm
-					'';
-				}).overrideAttrs (old: old // {
-					GOOS = "js";
-					GOARCH = "wasm";
-				});
-			}
-		);
+            cp -r ${nodeModules} node_modules
+            chown -R $(id -u):$(id -g) node_modules
+            chmod -R +w node_modules
+            export PATH="$PATH:$PWD/node_modules/.bin"
+            export VERSION="$version"
+
+            set +x
+          '';
+
+          installPhase = ''
+            cp -r build/dist $out
+          '';
+        };
+
+        packages.vm =
+          (pkgs.buildGoApplication {
+            inherit version go;
+            pname = "libdb.so-vm-wasm";
+            src = self;
+            modules = ./gomod2nix.toml;
+            subPackages = [ "vm/cmd/vm-wasm" ];
+
+            CGO_ENABLED = 0;
+            doCheck = false; # none to run
+
+            ldflags = [
+              "-s"
+              "-w"
+            ] ++ (if version != "dirty" then [ "-X main.gitrev=${version}" ] else [ ]);
+
+            postInstall = ''
+              mv $out/bin/js_wasm/vm-wasm $out/bin/vm.wasm
+              rmdir $out/bin/js_wasm
+            '';
+          }).overrideAttrs
+            (
+              old:
+              old
+              // {
+                GOOS = "js";
+                GOARCH = "wasm";
+              }
+            );
+
+        formatter = pkgs.nixfmt-rfc-style;
+      }
+    );
 }
