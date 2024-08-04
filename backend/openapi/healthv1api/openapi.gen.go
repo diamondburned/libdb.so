@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/oapi-codegen/runtime"
 	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
 )
 
@@ -30,16 +31,32 @@ type DataPoint struct {
 	Value float64 `json:"value"`
 }
 
+// EstrogenData Estrogen level of the pet
+type EstrogenData struct {
+	// DosageHistory When the estrogen was administered, represented as a list of
+	// timestamps.
+	DosageHistory []Timestamp `json:"dosageHistory"`
+
+	// Levels Estimated estrogen levels of the pet
+	Levels Measurement `json:"levels"`
+
+	// Type Type of estrogen (e.g. patches, pills, injection)
+	Type string `json:"type"`
+}
+
 // HealthData defines model for HealthData.
 type HealthData struct {
+	// Estrogen Estrogen level of the pet
+	Estrogen *EstrogenData `json:"estrogen,omitempty"`
+
 	// HeartRate Heart rate of the pet
-	HeartRate Measurement `json:"heartRate"`
+	HeartRate *Measurement `json:"heartRate,omitempty"`
 
 	// Sleep Sleep data of the pet
-	Sleep SleepData `json:"sleep"`
+	Sleep *SleepData `json:"sleep,omitempty"`
 
 	// Steps Steps taken by the pet
-	Steps Measurement `json:"steps"`
+	Steps *Measurement `json:"steps,omitempty"`
 }
 
 // Measurement defines model for Measurement.
@@ -66,11 +83,18 @@ type SleepType string
 // Timestamp Unix timestamp in seconds
 type Timestamp = int64
 
+// GetLatestHealthDataParams defines parameters for GetLatestHealthData.
+type GetLatestHealthDataParams struct {
+	// Range The time range to fetch the data for in days as a floating point
+	// number.
+	Range *float32 `form:"range,omitempty" json:"range,omitempty"`
+}
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 
 	// (GET /latest.json)
-	GetLatestHealthData(w http.ResponseWriter, r *http.Request)
+	GetLatestHealthData(w http.ResponseWriter, r *http.Request, params GetLatestHealthDataParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -78,7 +102,7 @@ type ServerInterface interface {
 type Unimplemented struct{}
 
 // (GET /latest.json)
-func (_ Unimplemented) GetLatestHealthData(w http.ResponseWriter, r *http.Request) {
+func (_ Unimplemented) GetLatestHealthData(w http.ResponseWriter, r *http.Request, params GetLatestHealthDataParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -95,8 +119,21 @@ type MiddlewareFunc func(http.Handler) http.Handler
 func (siw *ServerInterfaceWrapper) GetLatestHealthData(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetLatestHealthDataParams
+
+	// ------------- Optional query parameter "range" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "range", r.URL.Query(), &params.Range)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "range", Err: err})
+		return
+	}
+
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetLatestHealthData(w, r)
+		siw.Handler.GetLatestHealthData(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -227,6 +264,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 }
 
 type GetLatestHealthDataRequestObject struct {
+	Params GetLatestHealthDataParams
 }
 
 type GetLatestHealthDataResponseObject interface {
@@ -279,8 +317,10 @@ type strictHandler struct {
 }
 
 // GetLatestHealthData operation middleware
-func (sh *strictHandler) GetLatestHealthData(w http.ResponseWriter, r *http.Request) {
+func (sh *strictHandler) GetLatestHealthData(w http.ResponseWriter, r *http.Request, params GetLatestHealthDataParams) {
 	var request GetLatestHealthDataRequestObject
+
+	request.Params = params
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetLatestHealthData(ctx, request.(GetLatestHealthDataRequestObject))

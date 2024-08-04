@@ -11,6 +11,17 @@ paths:
     summary: Get the latest health data
     get:
       operationId: getLatestHealthData
+      parameters:
+        - name: range
+          in: query
+          description: |
+            The time range to fetch the data for in days as a floating point
+            number.
+          schema:
+            type: number
+            default: 1
+            minimum: 0
+            maximum: 7
       responses:
         "200":
           description: |
@@ -24,10 +35,6 @@ components:
   schemas:
     HealthData:
       type: object
-      required:
-        - heartRate
-        - steps
-        - sleep
       properties:
         heartRate:
           description: Heart rate of the pet
@@ -41,6 +48,10 @@ components:
           description: Sleep data of the pet
           allOf:
             - $ref: "#/components/schemas/SleepData"
+        estrogen:
+          description: Estrogen level of the pet
+          allOf:
+            - $ref: "#/components/schemas/EstrogenData"
 
     SleepData:
       description: Sleep data of the pet
@@ -64,6 +75,29 @@ components:
         - light
         - rem
         - awake
+
+    EstrogenData:
+      description: Estrogen level of the pet
+      type: object
+      required:
+        - type
+        - levels
+        - dosageHistory
+      properties:
+        type:
+          type: string
+          description: Type of estrogen (e.g. patches, pills, injection)
+        levels:
+          description: Estimated estrogen levels of the pet
+          allOf:
+            - $ref: "#/components/schemas/Measurement"
+        dosageHistory:
+          type: array
+          description: |
+            When the estrogen was administered, represented as a list of
+            timestamps.
+          items:
+            $ref: "#/components/schemas/Timestamp"
 
     Measurement:
       type: object
