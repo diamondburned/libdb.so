@@ -1,0 +1,99 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/ba055ca00cbd735dceef4ed7c9db024cd9bfcd1a/schemas/v3.1/schema.json
+openapi: 3.1.0
+info:
+  title: Health API
+  version: 1.0.0
+  servers:
+    - url: https://libdb.so/api/health/v1
+
+paths:
+  /latest.json:
+    summary: Get the latest health data
+    get:
+      operationId: getLatestHealthData
+      responses:
+        "200":
+          description: |
+            Pet's latest health data in JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthData"
+
+components:
+  schemas:
+    HealthData:
+      type: object
+      required:
+        - heartRate
+        - steps
+        - sleep
+      properties:
+        heartRate:
+          description: Heart rate of the pet
+          allOf:
+            - $ref: "#/components/schemas/Measurement"
+        steps:
+          description: Steps taken by the pet
+          allOf:
+            - $ref: "#/components/schemas/Measurement"
+        sleep:
+          description: Sleep data of the pet
+          allOf:
+            - $ref: "#/components/schemas/SleepData"
+
+    SleepData:
+      description: Sleep data of the pet
+      type: array
+      items:
+        type: object
+        required:
+          - timestamp
+          - sleepType
+        properties:
+          timestamp:
+            $ref: "#/components/schemas/Timestamp"
+          sleepType:
+            $ref: "#/components/schemas/SleepType"
+
+    SleepType:
+      description: Type of sleep
+      type: string
+      enum:
+        - deep
+        - light
+        - rem
+        - awake
+
+    Measurement:
+      type: object
+      required:
+        - unit
+        - points
+      properties:
+        unit:
+          type: string
+          description: Unit of the data points
+        points:
+          type: array
+          description: List of data points
+          items:
+            $ref: "#/components/schemas/DataPoint"
+
+    DataPoint:
+      type: object
+      required:
+        - timestamp
+        - value
+      properties:
+        timestamp:
+          $ref: "#/components/schemas/Timestamp"
+        value:
+          type: number
+          format: double
+          description: Value of the data point
+
+    Timestamp:
+      type: integer
+      format: int64
+      description: Unix timestamp in seconds

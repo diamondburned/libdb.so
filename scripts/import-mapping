@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+if [[ ! "$1" ]]; then
+	echo "Usage: $0 <openapi-spec-file>" >&2
+	exit 1
+fi
+
+importMappingArgs=()
+importMappingObject="{"
+while read -r path; do
+	name=$(basename "$path" .yml)
+	importMappingObject+="\"./${name}.yml\": \"libdb.so/backend/openapi/${name}api\","
+done < <(find backend/openapi -name '*.yml' -a -not -name '_*')
+importMappingObject+="}"
+importMapping=$(jq -n "$importMappingObject")
+
+yq ".import-mapping = $importMapping" "$1"

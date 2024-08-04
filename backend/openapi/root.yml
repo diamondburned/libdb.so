@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/ba055ca00cbd735dceef4ed7c9db024cd9bfcd1a/schemas/v3.1/schema.json
+openapi: 3.1.0
+info:
+  title: Base API
+  version: 1.0.0
+  servers:
+    - url: https://libdb.so/api
+paths:
+  /api/_all.json:
+    summary: Get all data
+    get:
+      responses:
+        "200":
+          description: |
+            Endpoint that fetches all data locally then returns it to avoid
+            roundtrip time.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - health
+                properties:
+                  health:
+                    $ref: "./healthv1.yml#/components/schemas/HealthData"

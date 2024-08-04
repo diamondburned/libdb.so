@@ -14,6 +14,10 @@
       url = "github:nix-community/npmlock2nix";
       flake = false;
     };
+    yaml-language-server-src = {
+      url = "github:okybr/yaml-language-server";
+      flake = false;
+    };
   };
 
   outputs =
@@ -24,6 +28,7 @@
       npmlock2nix,
       flake-utils,
       flake-compat,
+      yaml-language-server-src,
     }:
 
     flake-utils.lib.eachDefaultSystem (
@@ -40,22 +45,54 @@
         ];
 
         pkgs = import nixpkgs { inherit system overlays; };
+        lib = pkgs.lib;
 
         go = pkgs.go_1_22;
 
         nodejs = pkgs.nodejs;
 
-        tinygo = pkgs.tinygo.overrideAttrs (old: rec {
-          version = "0.32.0";
-          src = pkgs.fetchFromGitHub {
-            owner = "tinygo-org";
-            repo = "tinygo";
-            rev = "v${version}";
-            hash = "sha256-zoXruGoWitx6kietF3HKTYCtUrXp5SOrf2FEGgVPzkQ=";
-            fetchSubmodules = true;
+        tinygo = pkgs.tinygo;
+        # let
+        #   overrides = rec {
+        #     version = "0.32.0";
+        #     src = pkgs.fetchFromGitHub {
+        #       owner = "tinygo-org";
+        #       repo = "tinygo";
+        #       rev = "v${version}";
+        #       hash = "sha256-zoXruGoWitx6kietF3HKTYCtUrXp5SOrf2FEGgVPzkQ=";
+        #       fetchSubmodules = true;
+        #     };
+        #     doCheck = false;
+        #     patches = [ ];
+        #   };
+        # in
+        # (pkgs.tinygo.overrideAttrs (_: overrides)).override {
+        #   buildGoModule =
+        #     args:
+        #     pkgs.buildGoModule (
+        #       args // overrides // { vendorHash = "sha256-rJ8AfJkIpxDkk+9Tf7ORnn7ueJB1kjJUBiLMDV5tias="; }
+        #     );
+        # };
+
+        yaml-language-server = pkgs.yaml-language-server.overrideAttrs (old: rec {
+          version = "1.15.0-ajv-draft-04";
+          src = yaml-language-server-src;
+          offlineCache = pkgs.fetchYarnDeps {
+            yarnLock = "${src}/yarn.lock";
+            hash = "sha256-thJ3aU52yCusfjBCD2QvLynwiM32lq0IT9WaNJjfu6E=";
           };
-          doCheck = false;
         });
+
+        gopls =
+          let
+            GOOS = "js";
+            GOARCH = "wasm";
+          in
+          pkgs.writeShellScriptBin "gopls" ''
+            export GOOS=${GOOS}
+            export GOARCH=${GOARCH}
+            exec ${lib.getExe pkgs.gopls} "$@"
+          '';
 
         version = if self ? rev then builtins.substring 0 7 self.rev else "dirty";
       in
@@ -66,13 +103,13 @@
             go
             gopls
             jq
-            tinygo
+            yq-go
+            # tinygo
+            oapi-codegen
+            yaml-language-server
             self.formatter.${system}
             gomod2nix.packages.${system}.default
           ];
-
-          GOOS = "js";
-          GOARCH = "wasm";
 
           shellHook = ''
             export PATH="$PATH:$(git rev-parse --show-toplevel)/node_modules/.bin"
@@ -148,6 +185,14 @@
                 GOARCH = "wasm";
               }
             );
+
+        packages.backend = pkgs.buildGoApplication {
+          inherit version go;
+          pname = "libdb.so-backend";
+          src = self;
+          modules = ./gomod2nix.toml;
+          subPackages = [ "backend/cmd/backend" ];
+        };
 
         formatter = pkgs.nixfmt-rfc-style;
       }
