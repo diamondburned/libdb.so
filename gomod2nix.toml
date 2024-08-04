@@ -7,6 +7,9 @@ schema = 3
   [mod."github.com/alecthomas/repr"]
     version = "v0.3.0"
     hash = "sha256-Epq2as8dLnFyOBEcMG8eh89cZXY8rbP8PKbMLyu2qeU="
+  [mod."github.com/apapsch/go-jsonmerge/v2"]
+    version = "v2.0.0"
+    hash = "sha256-xp/1B6XUN2EbddBfoUkTV3oTk+34m4kOZP+66HhfLg4="
   [mod."github.com/cpuguy83/go-md2man/v2"]
     version = "v2.0.2"
     hash = "sha256-OvWCtDsVrYzM84SMQwOXPLBxnWnMC1hDm+KiI6zm3uk="
@@ -19,6 +22,9 @@ schema = 3
   [mod."github.com/go-chi/chi/v5"]
     version = "v5.1.0"
     hash = "sha256-DpVfbPlJe4zQNdBrirWq9Q37/awSu5zb3IJgcuyEED8="
+  [mod."github.com/google/uuid"]
+    version = "v1.5.0"
+    hash = "sha256-DasOte4xANR1VND5XEHKGhpGiyYq74TJmNrgWeIRX4U="
   [mod."github.com/hexops/gotextdiff"]
     version = "v1.0.3"
     hash = "sha256-wVs5uJs2KHU1HnDCDdSe0vIgNZylvs8oNidDxwA3+O0="
