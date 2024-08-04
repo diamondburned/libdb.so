@@ -42,7 +42,20 @@
         pkgs = import nixpkgs { inherit system overlays; };
 
         go = pkgs.go_1_22;
+
         nodejs = pkgs.nodejs;
+
+        tinygo = pkgs.tinygo.overrideAttrs (old: rec {
+          version = "0.32.0";
+          src = pkgs.fetchFromGitHub {
+            owner = "tinygo-org";
+            repo = "tinygo";
+            rev = "v${version}";
+            hash = "sha256-zoXruGoWitx6kietF3HKTYCtUrXp5SOrf2FEGgVPzkQ=";
+            fetchSubmodules = true;
+          };
+          doCheck = false;
+        });
 
         version = if self ? rev then builtins.substring 0 7 self.rev else "dirty";
       in
@@ -53,7 +66,7 @@
             go
             gopls
             jq
-            # tinygo
+            tinygo
             self.formatter.${system}
             gomod2nix.packages.${system}.default
           ];
