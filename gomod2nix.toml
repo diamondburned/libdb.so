@@ -16,6 +16,9 @@ schema = 3
   [mod."github.com/fatih/color"]
     version = "v1.15.0"
     hash = "sha256-7b+scFVQeEUoXfeCDd8X2gS8GMoWA+HxjK8wfbypa5s="
+  [mod."github.com/go-chi/chi/v5"]
+    version = "v5.1.0"
+    hash = "sha256-DpVfbPlJe4zQNdBrirWq9Q37/awSu5zb3IJgcuyEED8="
   [mod."github.com/hexops/gotextdiff"]
     version = "v1.0.3"
     hash = "sha256-wVs5uJs2KHU1HnDCDdSe0vIgNZylvs8oNidDxwA3+O0="
@@ -29,14 +32,17 @@ schema = 3
     version = "v0.1.13"
     hash = "sha256-qb3Qbo0CELGRIzvw7NVM1g/aayaz4Tguppk9MD2/OI8="
   [mod."github.com/mattn/go-isatty"]
-    version = "v0.0.17"
-    hash = "sha256-c1u9eiMF9wLXgGvPTB5DH6S8uuCPqWZJTa6tCGuB3Ek="
+    version = "v0.0.20"
+    hash = "sha256-qhw9hWtU5wnyFyuMbKx+7RB8ckQaFQ8D+8GKPkN3HHQ="
   [mod."github.com/mattn/go-runewidth"]
     version = "v0.0.3"
     hash = "sha256-70SPSC1DLVOVKuHo5ynvuMTHEvlvBj/2gGf33M1Kg1E="
   [mod."github.com/mattn/go-sixel"]
     version = "v0.0.5"
     hash = "sha256-G1nzUOVCD0gIHJe4XLHzqbThKxF+5olO/NUH4ht5G40="
+  [mod."github.com/oapi-codegen/runtime"]
+    version = "v1.1.1"
+    hash = "sha256-GRvzpQngQPAy59KvvcwhjYqjx4gttIhOtQKjqfQcNvI="
   [mod."github.com/pkg/errors"]
     version = "v0.9.1"
     hash = "sha256-mNfQtcrQmu3sNg/7IwiieKWOgFQOVVe2yXgKBpe/wZw="
@@ -59,8 +65,8 @@ schema = 3
     version = "v0.0.0-20230407082541-a6924ecdc0d4"
     hash = "sha256-XSSQXi6y4kDGl5WeKJAWULVfhNaCnk4JCv9l9nIEIMw="
   [mod."golang.org/x/crypto"]
-    version = "v0.7.0"
-    hash = "sha256-Yc4casCQyfOgIr48FV+NI9qhanhBuYnkph5iI7rDyZE="
+    version = "v0.17.0"
+    hash = "sha256-/vzBaeD/Ymyc7cpjBvSfJfuZ57zWa9LOaZM7b33eIx0="
   [mod."golang.org/x/image"]
     version = "v0.6.0"
     hash = "sha256-fZc2Jfh6EqsjmMBUMaGHn8+bSMetuZ7K4AxU8BRXt94="
