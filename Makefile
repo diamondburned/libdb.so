@@ -28,6 +28,9 @@ clean:
 jsonld: $(shell find jsonld -type f)
 	tsx jsonld/_render.ts > public/_fs/0xd14.jsonld
 
+.PHONY: openapi
+openapi: backend/openapi
+
 # real paths
 
 OPENAPI_SCHEMAS = $(shell find backend/openapi -name '*.yml' -a -not -name '_*')

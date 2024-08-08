@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/runtime"
@@ -22,87 +23,171 @@ const (
 	Rem   SleepType = "rem"
 )
 
+// CurrentHealth Current health data of the pet.
+type CurrentHealth struct {
+	// Estrogen Current estrogen level of the pet
+	Estrogen *EstrogenLevel `json:"estrogen,omitempty"`
+
+	// HeartRate Current heart rate of the pet
+	HeartRate *HeartRate `json:"heartRate,omitempty"`
+
+	// Sleep Current sleep status of the pet
+	Sleep *SleepStatus `json:"sleep,omitempty"`
+
+	// Steps Current steps taken by the pet
+	Steps *StepsTaken `json:"steps,omitempty"`
+}
+
 // DataPoint defines model for DataPoint.
 type DataPoint struct {
-	// Timestamp Unix timestamp in seconds
 	Timestamp Timestamp `json:"timestamp"`
 
 	// Value Value of the data point
 	Value float64 `json:"value"`
 }
 
-// EstrogenData Estrogen level of the pet
-type EstrogenData struct {
-	// DosageHistory When the estrogen was administered, represented as a list of
+// EstrogenHistory Estimated estrogen levels.
+//
+// The estrogen levels are represented as a list of data points describing
+// the estrogen levels in ng/dL at different timestamps. The timestamps may
+// not be equally spaced.
+type EstrogenHistory struct {
+	// Dosages When the estrogen was administered, represented as a list of
 	// timestamps.
-	DosageHistory []Timestamp `json:"dosageHistory"`
+	Dosages *[]Timestamp `json:"dosages,omitempty"`
 
-	// Levels Estimated estrogen levels of the pet
-	Levels Measurement `json:"levels"`
+	// Levels Estimated estrogen levels of the pet over time in ng/dL.
+	Levels *[]DataPoint `json:"levels,omitempty"`
 
-	// Type Type of estrogen (e.g. patches, pills, injection)
+	// Type Type of estrogen (e.g. patches, pills, injection).
 	Type string `json:"type"`
 }
 
-// HealthData defines model for HealthData.
-type HealthData struct {
+// EstrogenLevel Current estimated estrogen level in ng/dL
+type EstrogenLevel = float64
+
+// HealthHistory History of the pet's health data.
+//
+// This data is returned from /history.json and may cover the time range
+// given in the parameters.
+type HealthHistory struct {
 	// Estrogen Estrogen level of the pet
-	Estrogen *EstrogenData `json:"estrogen,omitempty"`
+	Estrogen *EstrogenHistory `json:"estrogen,omitempty"`
 
 	// HeartRate Heart rate of the pet
-	HeartRate *Measurement `json:"heartRate,omitempty"`
+	HeartRate *HeartRateHistory `json:"heartRate,omitempty"`
 
 	// Sleep Sleep data of the pet
-	Sleep *SleepData `json:"sleep,omitempty"`
+	Sleep *SleepHistory `json:"sleep,omitempty"`
 
 	// Steps Steps taken by the pet
-	Steps *Measurement `json:"steps,omitempty"`
+	Steps *StepsHistory `json:"steps,omitempty"`
 }
 
-// Measurement defines model for Measurement.
-type Measurement struct {
-	// Points List of data points
-	Points []DataPoint `json:"points"`
+// HeartRate Current heart rate of the pet in beats per minute.
+type HeartRate = float64
 
-	// Unit Unit of the data points
-	Unit string `json:"unit"`
+// HeartRateHistory Heart rate of the pet over time.
+type HeartRateHistory struct {
+	// Data Data points of the heart rate at different timestamps.
+	//
+	// Each data point is the average heart rate in beats per minute over a
+	// period of time, usually the delta between a timestamp and its previous
+	// one.
+	Data []DataPoint `json:"data"`
 }
 
-// SleepData Sleep data of the pet
-type SleepData = []struct {
+// SleepHistory Sleep history of the pet.
+//
+// The sleep history is represented as a list of sleep or awake periods,
+// optionally labeled with the sleep type.
+type SleepHistory = []struct {
+	// Asleep Whether the pet is asleep
+	Asleep bool `json:"asleep"`
+
+	// From Start of the sleep period
+	From Timestamp `json:"from"`
+
 	// SleepType Type of sleep
-	SleepType SleepType `json:"sleepType"`
+	SleepType *SleepType `json:"sleepType,omitempty"`
 
-	// Timestamp Unix timestamp in seconds
-	Timestamp Timestamp `json:"timestamp"`
+	// To End of the sleep period
+	To Timestamp `json:"to"`
+}
+
+// SleepStatus The current sleep status of the pet.
+//
+// The sleep status is represented as a single sleep or awake period,
+// optionally labeled with the sleep type. It is meant to be used to
+// describe the current sleep state of the pet.
+type SleepStatus struct {
+	// Asleep Whether the pet is asleep
+	Asleep bool `json:"asleep"`
+
+	// SleepType Type of sleep
+	SleepType *SleepType `json:"sleepType,omitempty"`
 }
 
 // SleepType Type of sleep
 type SleepType string
 
-// Timestamp Unix timestamp in seconds
-type Timestamp = int64
+// StepsHistory Steps taken by the pet over time.
+type StepsHistory struct {
+	// Data Data points of the number of steps taken at different timestamps.
+	Data []DataPoint `json:"data"`
+}
 
-// GetLatestHealthDataParams defines parameters for GetLatestHealthData.
-type GetLatestHealthDataParams struct {
-	// Range The time range to fetch the data for in days as a floating point
-	// number.
-	Range *float32 `form:"range,omitempty" json:"range,omitempty"`
+// StepsTaken Number of steps taken by the pet over a period of time.
+type StepsTaken struct {
+	// Count Number of steps taken
+	Count *int32 `json:"count,omitempty"`
+
+	// From Start of the period
+	From *Timestamp `json:"from,omitempty"`
+
+	// To End of the period
+	To *Timestamp `json:"to,omitempty"`
+}
+
+// Timestamp defines model for Timestamp.
+type Timestamp = time.Time
+
+// GetHealthHistoryParams defines parameters for GetHealthHistory.
+type GetHealthHistoryParams struct {
+	// Form The start of the time range to fetch data from.
+	//
+	// The server may reject `from` parameters that are too far in the past.
+	Form *Timestamp `form:"form,omitempty" json:"form,omitempty"`
+
+	// To The end of the time range to fetch data from. This timestamp must be
+	// after `from`.
+	//
+	// The server may reject `to` parameters and only return data up to the
+	// present time.
+	To *Timestamp `form:"to,omitempty" json:"to,omitempty"`
 }
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 
-	// (GET /latest.json)
-	GetLatestHealthData(w http.ResponseWriter, r *http.Request, params GetLatestHealthDataParams)
+	// (GET /current.json)
+	GetCurrentHealth(w http.ResponseWriter, r *http.Request)
+
+	// (GET /history.json)
+	GetHealthHistory(w http.ResponseWriter, r *http.Request, params GetHealthHistoryParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
 
-// (GET /latest.json)
-func (_ Unimplemented) GetLatestHealthData(w http.ResponseWriter, r *http.Request, params GetLatestHealthDataParams) {
+// (GET /current.json)
+func (_ Unimplemented) GetCurrentHealth(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// (GET /history.json)
+func (_ Unimplemented) GetHealthHistory(w http.ResponseWriter, r *http.Request, params GetHealthHistoryParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -115,25 +200,48 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(http.Handler) http.Handler
 
-// GetLatestHealthData operation middleware
-func (siw *ServerInterfaceWrapper) GetLatestHealthData(w http.ResponseWriter, r *http.Request) {
+// GetCurrentHealth operation middleware
+func (siw *ServerInterfaceWrapper) GetCurrentHealth(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetCurrentHealth(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetHealthHistory operation middleware
+func (siw *ServerInterfaceWrapper) GetHealthHistory(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var err error
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params GetLatestHealthDataParams
+	var params GetHealthHistoryParams
 
-	// ------------- Optional query parameter "range" -------------
+	// ------------- Optional query parameter "form" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "range", r.URL.Query(), &params.Range)
+	err = runtime.BindQueryParameter("form", true, false, "form", r.URL.Query(), &params.Form)
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "range", Err: err})
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "form", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "to", r.URL.Query(), &params.To)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
 		return
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetLatestHealthData(w, r, params)
+		siw.Handler.GetHealthHistory(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -257,34 +365,64 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/latest.json", wrapper.GetLatestHealthData)
+		r.Get(options.BaseURL+"/current.json", wrapper.GetCurrentHealth)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/history.json", wrapper.GetHealthHistory)
 	})
 
 	return r
 }
 
-type GetLatestHealthDataRequestObject struct {
-	Params GetLatestHealthDataParams
+type GetCurrentHealthRequestObject struct {
 }
 
-type GetLatestHealthDataResponseObject interface {
-	VisitGetLatestHealthDataResponse(w http.ResponseWriter) error
+type GetCurrentHealthResponseObject interface {
+	VisitGetCurrentHealthResponse(w http.ResponseWriter) error
 }
 
-type GetLatestHealthData200JSONResponse HealthData
+type GetCurrentHealth200JSONResponse CurrentHealth
 
-func (response GetLatestHealthData200JSONResponse) VisitGetLatestHealthDataResponse(w http.ResponseWriter) error {
+func (response GetCurrentHealth200JSONResponse) VisitGetCurrentHealthResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
+type GetHealthHistoryRequestObject struct {
+	Params GetHealthHistoryParams
+}
+
+type GetHealthHistoryResponseObject interface {
+	VisitGetHealthHistoryResponse(w http.ResponseWriter) error
+}
+
+type GetHealthHistory200JSONResponse HealthHistory
+
+func (response GetHealthHistory200JSONResponse) VisitGetHealthHistoryResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetHealthHistory501Response struct {
+}
+
+func (response GetHealthHistory501Response) VisitGetHealthHistoryResponse(w http.ResponseWriter) error {
+	w.WriteHeader(501)
+	return nil
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 
-	// (GET /latest.json)
-	GetLatestHealthData(ctx context.Context, request GetLatestHealthDataRequestObject) (GetLatestHealthDataResponseObject, error)
+	// (GET /current.json)
+	GetCurrentHealth(ctx context.Context, request GetCurrentHealthRequestObject) (GetCurrentHealthResponseObject, error)
+
+	// (GET /history.json)
+	GetHealthHistory(ctx context.Context, request GetHealthHistoryRequestObject) (GetHealthHistoryResponseObject, error)
 }
 
 type StrictHandlerFunc = strictnethttp.StrictHTTPHandlerFunc
@@ -316,25 +454,49 @@ type strictHandler struct {
 	options     StrictHTTPServerOptions
 }
 
-// GetLatestHealthData operation middleware
-func (sh *strictHandler) GetLatestHealthData(w http.ResponseWriter, r *http.Request, params GetLatestHealthDataParams) {
-	var request GetLatestHealthDataRequestObject
-
-	request.Params = params
+// GetCurrentHealth operation middleware
+func (sh *strictHandler) GetCurrentHealth(w http.ResponseWriter, r *http.Request) {
+	var request GetCurrentHealthRequestObject
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetLatestHealthData(ctx, request.(GetLatestHealthDataRequestObject))
+		return sh.ssi.GetCurrentHealth(ctx, request.(GetCurrentHealthRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetLatestHealthData")
+		handler = middleware(handler, "GetCurrentHealth")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetLatestHealthDataResponseObject); ok {
-		if err := validResponse.VisitGetLatestHealthDataResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetCurrentHealthResponseObject); ok {
+		if err := validResponse.VisitGetCurrentHealthResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetHealthHistory operation middleware
+func (sh *strictHandler) GetHealthHistory(w http.ResponseWriter, r *http.Request, params GetHealthHistoryParams) {
+	var request GetHealthHistoryRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetHealthHistory(ctx, request.(GetHealthHistoryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetHealthHistory")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetHealthHistoryResponseObject); ok {
+		if err := validResponse.VisitGetHealthHistoryResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
