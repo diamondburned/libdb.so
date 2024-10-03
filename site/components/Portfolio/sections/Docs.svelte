@@ -10,12 +10,12 @@
   <div class="card content">
     <div class="content-item yap">
       <p>
-        A <b>User manual</b> exists to help you understand the basics of operating, interacting with,
-        and using Diamond. This
+        A <b>user manual</b> exists to help you understand the basics of operating, interacting with,
+        and using Diamond.
       </p>
       <p>
         The guide is maintained by Diamond
-        {pronoun("herself")}.You may access it via the link below:
+        {pronoun("herself")}. You may access it via the link below:
       </p>
     </div>
     <a class="content-item" role="button" href="https://docs.0xd14.id" target="_blank">
