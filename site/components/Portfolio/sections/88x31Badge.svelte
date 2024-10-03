@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  export type Badge = {
+  export type _88x31Badge = {
     image: string;
     link?: string;
     alt?: string;
@@ -7,13 +7,12 @@
 </script>
 
 <script lang="ts">
-  import PopoverButton from "../PopoverButton.svelte";
+  import PopoverButton from "#/libdb.so/site/components/PopoverButton.svelte";
   import OpenInNew from "#/libdb.so/site/components/MaterialIcons/open_in_new.svelte";
 
-  export let badge: Badge;
+  export let badge: _88x31Badge;
 
   let hover = false;
-  let popoverAnchor: HTMLElement;
 
   function hostname(url: string): string | null {
     try {
@@ -38,7 +37,7 @@
 >
   <PopoverButton open={hover} fly={{ y: 2 }}>
     <a href={badge.link} slot="button" role="button" target="_blank" class="badge popover-button">
-      <img class="badge-image" bind:this={popoverAnchor} src={badge.image} alt={badge.alt} />
+      <img class="badge-image" src={badge.image} alt={badge.alt} />
     </a>
     <div slot="popover">
       <span class="alt">{badge.alt ?? "88x31 badge"}</span>

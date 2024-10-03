@@ -8,6 +8,9 @@
     self?: string;
   };
 
+  let className: string;
+  export { className as class };
+
   let element: HTMLElement;
   $: {
     if (element) {
@@ -23,7 +26,7 @@
   }
 </script>
 
-<webring-element name={typedData.self ?? "diamond"} bind:this={element}>
+<webring-element class={className} name={typedData.self ?? "diamond"} bind:this={element}>
   <a href={"#"} target="_blank" class="ring">...</a>
   <div class="links">
     <a class="left" target="_blank" href={"#"}>_</a>
