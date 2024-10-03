@@ -6,8 +6,8 @@
   import { nsfw } from "#/libdb.so/site/lib/prefs.js";
   import { ToastStore } from "#/libdb.so/site/lib/toasts.js";
 
-  import Avatar from "#/libdb.so/site/assets/avatar.webp?url";
-  import Banner from "#/libdb.so/site/assets/banner.webp?url";
+  import Avatar from "#/libdb.so/public/_fs/pics/portfolio/avatar.webp?url";
+  import Banner from "#/libdb.so/public/_fs/pics/portfolio/banner.webp?url";
 
   import Badges from "./Badges.svelte";
   import Toasts from "#/libdb.so/site/components/Toasts.svelte";

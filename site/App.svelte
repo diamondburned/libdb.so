@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as svelte from "svelte";
-  import favicon from "#/libdb.so/site/assets/favicon.ico?url";
+  import favicon from "#/libdb.so/site/favicon.ico?url";
   import normalizeCSS from "normalize.css/normalize.css?url";
   import {
     toggleView,
@@ -10,8 +10,8 @@
   } from "#/libdb.so/site/lib/views.js";
   import { onekoCursor, dragWindows, nsfw, theme, prefersDark } from "#/libdb.so/site/lib/prefs.js";
 
-  import SystemUsersIcon from "#/libdb.so/site/assets/papirus/system-users.svg?url";
-  import TerminalIcon from "#/libdb.so/site/assets/papirus/terminal.svg?url";
+  import SystemUsersIcon from "#/libdb.so/public/_fs/.icons/papirus/system-users.svg?url";
+  import TerminalIcon from "#/libdb.so/public/_fs/.icons/papirus/terminal.svg?url";
 
   import Oneko from "#/libdb.so/site/components/Oneko/oneko.svelte";
   import Switch from "#/libdb.so/site/components/Switch.svelte";
