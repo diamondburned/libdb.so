@@ -1,2 +1,0 @@
-/public/** filter=lfs diff=lfs merge=lfs -text
-/public/** !text !filter !merge !diff
