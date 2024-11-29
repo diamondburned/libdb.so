@@ -1,7 +1,7 @@
 import { nsfw } from "#/libdb.so/site/lib/prefs.js";
 import { derived } from "svelte/store";
 
-export const pronouns = derived(nsfw, (nsfw) => (nsfw ? "she/her/hers" : "it/its/its"));
+export const pronouns = derived(nsfw, (nsfw) => (!nsfw ? "she/her/hers" : "it/its/its"));
 
 export const selectPronouns = (content: string, option: string) => {
   const pronoun = content.toLowerCase();
