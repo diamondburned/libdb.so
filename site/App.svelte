@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as svelte from "svelte";
-  import favicon from "#/libdb.so/site/favicon.ico?url";
+  import favicon from "#/libdb.so/public/_fs/.icons/favicon.ico?url";
   import normalizeCSS from "normalize.css/normalize.css?url";
   import {
     toggleView,

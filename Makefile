@@ -53,7 +53,7 @@ node_modules: package-lock.json package.json
 
 build/public/_fs: $(PUBLIC)
 	rm -rf $@ && mkdir -p $@
-	cp -r public/_fs/* $@
+	cp -r public/_fs $(dirname $@)
 
 build/openapi.config.yml: backend/openapi/_config.yml $(OPENAPI_SCHEMAS)
 	./scripts/import-mapping "$<" > "$@"
