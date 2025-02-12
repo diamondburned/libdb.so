@@ -3,7 +3,6 @@ import { type WebringData } from "libwebring/lib/webring.js";
 import context from "./_context.json";
 
 const _88x31 = (name: string) => "https://libdb.so/_fs/pics/88x31/" + name;
-const _88x31s = [];
 
 const graph = [
   {
@@ -70,6 +69,11 @@ const graph = [
         "libdb:88x31Badge/alt": 'unit ⎈-657a7269, "ezri"',
         "libdb:88x31Badge/link": "https://ezri.pet",
         "libdb:88x31Badge/image": _88x31("ezri.pet.png"),
+      },
+      {
+        "libdb:88x31Badge/alt": "bunbun.dev",
+        "libdb:88x31Badge/link": "https://bunbun.dev",
+        "libdb:88x31Badge/image": _88x31("bunbun.dev.gif"),
       },
       {
         "libdb:88x31Badge/alt": "joel's website",
