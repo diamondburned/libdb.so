@@ -86,6 +86,11 @@ const graph = [
         "libdb:88x31Badge/image": _88x31("nap.png"),
       },
       {
+        "libdb:88x31Badge/alt": "i'm a hypnoslut! <3 // made by bunbun",
+        "libdb:88x31Badge/link": "#",
+        "libdb:88x31Badge/image": _88x31("hypnoslut.png"),
+      },
+      {
         "libdb:88x31Badge/alt": "Mozilla",
         "libdb:88x31Badge/link": "https://www.mozilla.org",
         "libdb:88x31Badge/image": _88x31("www.mozilla.org.png"),
