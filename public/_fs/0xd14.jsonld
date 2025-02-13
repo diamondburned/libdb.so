@@ -80,6 +80,11 @@
           "libdb:88x31Badge/link": "https://ezri.pet"
         },
         {
+          "libdb:88x31Badge/alt": "bunbun.dev",
+          "libdb:88x31Badge/image": "https://libdb.so/_fs/pics/88x31/bunbun.dev.gif",
+          "libdb:88x31Badge/link": "https://bunbun.dev"
+        },
+        {
           "libdb:88x31Badge/alt": "joel's website",
           "libdb:88x31Badge/image": "https://libdb.so/_fs/pics/88x31/jdr.sh.png",
           "libdb:88x31Badge/link": "https://jdr.sh"
@@ -88,6 +93,11 @@
           "libdb:88x31Badge/alt": "Not A Person",
           "libdb:88x31Badge/image": "https://libdb.so/_fs/pics/88x31/nap.png",
           "libdb:88x31Badge/link": "https://voidgoddess.org/emptyspaces/notaperson/"
+        },
+        {
+          "libdb:88x31Badge/alt": "i'm a hypnoslut! <3 // made by bunbun",
+          "libdb:88x31Badge/image": "https://libdb.so/_fs/pics/88x31/hypnoslut.png",
+          "libdb:88x31Badge/link": "#"
         },
         {
           "libdb:88x31Badge/alt": "Mozilla",
@@ -144,13 +154,13 @@
             },
             {
               "@id": "https://stellophiliac.github.io/roboring#stel",
-              "libdb:Webring/link": "https://moondvsted.neocities.org",
+              "libdb:Webring/link": "https://moondvsted.space",
               "libdb:Webring/name": "moondvsted"
             },
             {
               "@id": "https://stellophiliac.github.io/roboring#sneexy",
-              "libdb:Webring/link": "https://sneexy.pages.gay",
-              "libdb:Webring/name": "sneexy dot pages dot gay"
+              "libdb:Webring/link": "https://synth.download",
+              "libdb:Webring/name": "synth download!"
             },
             {
               "@id": "https://stellophiliac.github.io/roboring#unnick",
@@ -199,8 +209,128 @@
             },
             {
               "@id": "https://stellophiliac.github.io/roboring#0x5fbe",
-              "libdb:Webring/link": "https://melody.codes",
+              "libdb:Webring/link": "https://0x5fbe.id",
               "libdb:Webring/name": "ꙮ-5fbe (melody)"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#0x191E32",
+              "libdb:Webring/link": "https://elke.cafe",
+              "libdb:Webring/name": "0x191E32 \"elke\""
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#5225225",
+              "libdb:Webring/link": "https://www.5snb.club/",
+              "libdb:Webring/name": "5225225"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#junko",
+              "libdb:Webring/link": "https://lavenderfield.xyz",
+              "libdb:Webring/name": "Junko"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#beeps",
+              "libdb:Webring/link": "https://beeps.website",
+              "libdb:Webring/name": "beeps"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#nelle",
+              "libdb:Webring/link": "https://nelle.observer/",
+              "libdb:Webring/name": "nelle observer"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#vars",
+              "libdb:Webring/link": "https://chromaeleon.neocities.org/",
+              "libdb:Webring/name": "Vars"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#calicobot",
+              "libdb:Webring/link": "https://calicocore.space",
+              "libdb:Webring/name": "mia calicocore"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#Ex6C69747279",
+              "libdb:Webring/link": "https://exlitry.world/",
+              "libdb:Webring/name": "Exlitry.World"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#CyberBirb",
+              "libdb:Webring/link": "https://cybird.nekoweb.org",
+              "libdb:Webring/name": "Cybird"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#cascade",
+              "libdb:Webring/link": "https://cascading.space",
+              "libdb:Webring/name": "cascading space"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#thermia",
+              "libdb:Webring/link": "https://girlthi.ng/~thermia",
+              "libdb:Webring/name": "thermia"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#kfcman",
+              "libdb:Webring/link": "https://kunfucutsman.neocities.org",
+              "libdb:Webring/name": "KunFuCutsMan"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#5TR4Y",
+              "libdb:Webring/link": "https://strayos.nekoweb.org",
+              "libdb:Webring/name": "strayOS"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#rabbithawk256",
+              "libdb:Webring/link": "https://rabbithawk256.dev",
+              "libdb:Webring/name": "rabbithawk256"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#meluwudy",
+              "libdb:Webring/link": "https://meluhdy.dev",
+              "libdb:Webring/name": "meluhdy"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#0x6e6174",
+              "libdb:Webring/link": "https://natalieee.net",
+              "libdb:Webring/name": "natalie[ee]"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#12abca3d-8",
+              "libdb:Webring/link": "https://gze.neocities.org/",
+              "libdb:Webring/name": "The Silvermoon Team"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#DERG",
+              "libdb:Webring/link": "https://analoguecatalogue.neocities.org//",
+              "libdb:Webring/name": "Analogue Catalogue"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#quarc",
+              "libdb:Webring/link": "https://x86cu.be",
+              "libdb:Webring/name": "QuARC's personal website"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#393q658",
+              "libdb:Webring/link": "https://cybergothic.neocities.org/",
+              "libdb:Webring/name": "HUNTER-393q658"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#abbieoverflight",
+              "libdb:Webring/link": "https://abbie.moe/",
+              "libdb:Webring/name": "abbie 507131"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#0x4d6165",
+              "libdb:Webring/link": "https://0x4d6165.wanderingwires.net",
+              "libdb:Webring/name": "0x4d6165"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#0x42",
+              "libdb:Webring/link": "https://synthesis0x42.digital",
+              "libdb:Webring/name": "＊-42λ"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#riflesniper",
+              "libdb:Webring/link": "https://riflesniper.art/",
+              "libdb:Webring/name": "sprite"
             }
           ],
           "libdb:Webring/root": "https://stellophiliac.github.io/roboring",
