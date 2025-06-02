@@ -26,6 +26,10 @@ jobs:
             echo "updated=1" >> $GITHUB_OUTPUT
           fi
 
+      - name: Update jsonld
+        run: |-
+          nix develop -c make jsonld
+
       - name: Commit changes (if any)
         id: commit
         uses: stefanzweifel/git-auto-commit-action@v5
