@@ -25,7 +25,7 @@ clean:
 	rm -r build
 
 .PHONY: jsonld
-jsonld: $(shell find jsonld -type f)
+jsonld: node_modules $(shell find jsonld -type f)
 	tsx jsonld/_render.ts > public/_fs/0xd14.jsonld
 
 .PHONY: openapi
