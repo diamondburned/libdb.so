@@ -2,21 +2,11 @@
   import * as svelte from "svelte";
   import favicon from "#/libdb.so/public/_fs/.icons/favicon.ico?url";
   import normalizeCSS from "normalize.css/normalize.css?url";
-  import {
-    toggleView,
-    focusedView,
-    viewWindows,
-    toggleShowDesktop,
-  } from "#/libdb.so/site/lib/views.js";
+  import { windows, toggleVisibility } from "#/libdb.so/site/lib/views.js";
   import { onekoCursor, dragWindows, nsfw, theme, prefersDark } from "#/libdb.so/site/lib/prefs.js";
-
-  import SystemUsersIcon from "#/libdb.so/public/_fs/.icons/papirus/system-users.svg?url";
-  import TerminalIcon from "#/libdb.so/public/_fs/.icons/papirus/terminal.svg?url";
 
   import Oneko from "#/libdb.so/site/components/Oneko/oneko.svelte";
   import Switch from "#/libdb.so/site/components/Switch.svelte";
-  import Terminal from "#/libdb.so/site/components/Terminal/index.svelte";
-  import Portfolio from "#/libdb.so/site/components/Portfolio/index.svelte";
   import PopoverButton from "#/libdb.so/site/components/PopoverButton.svelte";
   import AccessibilityIcon from "#/libdb.so/site/components/Papirus/preferences-desktop-accessibility-symbolic.svg?raw";
 
@@ -44,8 +34,6 @@
 
   let screenWidth = 0;
   let screenHeight = 0;
-
-  $: activeWindow = $viewWindows[$focusedView!] || null;
 </script>
 
 <svelte:head>
@@ -74,20 +62,23 @@
   {#if $onekoCursor}
     <Oneko
       windows={[
-        activeWindow,
+        ...$windows.filter((w) => w.focused).map((w) => w.dimensions),
         {
           x: screenWidth - navbarWidth,
           y: screenHeight - navbarHeight,
           width: navbarWidth,
           height: navbarHeight,
         },
-      ].filter((w) => w != null)}
+      ]}
     />
   {/if}
 
   <div class="content">
-    <Terminal />
-    <Portfolio />
+    {#each $windows as window}
+      {#if window.visible}
+        <svelte:component this={window.component} state={window} />
+      {/if}
+    {/each}
   </div>
 
   <nav id="navbar" bind:clientWidth={navbarWidth} bind:clientHeight={navbarHeight}>
@@ -96,16 +87,15 @@
         <img src={favicon} alt="diamondburned's eye" />
       </button>
       <div class="window-list">
-        <button class:active={$focusedView == "portfolio"} on:click={() => toggleView("portfolio")}>
-          <img src={SystemUsersIcon} alt="Portfolio icon" />
-          About
-        </button>
-        <button class:active={$focusedView == "terminal"} on:click={() => toggleView("terminal")}>
-          <img src={TerminalIcon} alt="Terminal icon" />
-          xterm.js
-        </button>
+        {#each $windowComponents as window}
+          <button class:active={window.focused} on:click={() => toggleVisibility(window)}>
+            <img src={window.iconURL} alt="{window.title} icon" />
+            <span class="window-title">{window.title}</span>
+          </button>
+        {/each}
       </div>
     </div>
+
     <div class="right">
       <PopoverButton class="icon toggle-features" title="Toggle Features">
         {@html AccessibilityIcon}
@@ -123,7 +113,6 @@
         </div>
       </PopoverButton>
       <span class="clock">{currentTime}</span>
-      <button class="view-desktop" on:click={() => toggleShowDesktop()} />
     </div>
   </nav>
 </div>

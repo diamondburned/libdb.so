@@ -60,7 +60,7 @@
   $: if (terminal && theme) terminal.setTheme(theme);
 </script>
 
-<Window view="terminal">
+<Window>
   <h3 slot="title">{$title ? `${$title} – xterm.js` : "xterm.js"}</h3>
   <div
     class="terminal-box"

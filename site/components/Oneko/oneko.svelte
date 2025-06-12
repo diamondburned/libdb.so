@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as svelte from "svelte";
-  import type { Window } from "#/libdb.so/site/lib/views.js";
+  import type { Dimensions } from "#/libdb.so/site/lib/views.js";
   import { speed, sakura } from "./oneko.js";
   import { fade } from "svelte/transition";
 
@@ -23,9 +23,9 @@
   let idleAnimation: string | null = null;
   let idleAnimationFrame = 0;
 
-  export let windows: Window[] = [];
+  export let windows: Dimensions[] = [];
 
-  function windowToRect(window: Window) {
+  function windowToRect(window: Dimensions) {
     return {
       top: window.y,
       left: window.x,
@@ -116,10 +116,7 @@
     for (let i = 1; i < rectangles.length; i++) {
       const rect = rectangles[i];
       const mid = midpoints[i];
-      if (
-        i == 1 ||
-        Math.abs(mid.y - mouseY) < Math.abs(nearestMid.y - mouseY)
-      ) {
+      if (i == 1 || Math.abs(mid.y - mouseY) < Math.abs(nearestMid.y - mouseY)) {
         nearest = rect;
       }
     }
@@ -213,7 +210,6 @@
     z-index: 9999;
     left: calc(var(--x) - 16px);
     top: calc(var(--y) - 16px);
-    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.5))
-      drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35));
+    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.5)) drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35));
   }
 </style>

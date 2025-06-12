@@ -7,24 +7,15 @@
 </script>
 
 <script lang="ts">
-  import {
-    View,
-    DragState,
-    toggleView,
-    viewWindows,
-    bringToFocus,
-    viewIsActive,
-    viewIsFocused,
-  } from "#/libdb.so/site/lib/views.js";
+  import { type WindowState, DragState, bringToFocus } from "#/libdb.so/site/lib/views";
   import { dragWindows } from "#/libdb.so/site/lib/prefs.js";
+  import { Writable } from "svelte/store";
   import WindowMinimize from "#/libdb.so/site/components/Papirus/window-minimize.svelte";
   import WindowMaximize from "#/libdb.so/site/components/Papirus/window-maximize.svelte";
   import WindowRestore from "#/libdb.so/site/components/Papirus/window-restore.svelte";
   import WindowControl from "#/libdb.so/site/components/WindowControl.svelte";
 
-  export let view: View;
-  export let maximized = false;
-  export let scrollable = false; // allows content scrolling up and down
+  export let state: Writable<WindowState>;
 
   export let windowClass = "";
   export let headerClass = "";
@@ -69,16 +60,17 @@
   let content: HTMLElement | null = null; // content element
   let contentScrolled = false; // scroll position of the content
 
+  // Keep the window state up to date via {x, y, windowWidth, windowHeight}.
   $: {
-    viewWindows.update((windows) => {
-      windows[view] = {
+    state.update((state) => ({
+      ...state,
+      dimensions: {
         x,
         y,
         width: windowWidth,
         height: windowHeight,
-      };
-      return windows;
-    });
+      },
+    }));
   }
 
   function clamp(min: number, val: number, max: number) {
@@ -140,18 +132,18 @@
   bind:clientWidth={containerWidth}
   bind:clientHeight={containerHeight}
   class="window-container {windowClass}"
-  class:maximized
+  class:maximized={state.maximized}
   class:focused={$focused}
   class:active={$active}
 >
   <main
-    id={view}
+    data-application={state.applicationID}
     role="presentation"
     bind:clientWidth={windowWidth}
     bind:clientHeight={windowHeight}
-    on:mousedown={() => bringToFocus(view)}
+    on:mousedown={() => bringToFocus(state)}
     class="window"
-    class:maximized
+    class:maximized={state.maximized}
     class:dragging={dragState !== null}
     class:scrolled={contentScrolled}
     style="
@@ -179,7 +171,7 @@
         {/if}
         {#if maximize !== null}
           <WindowControl class="maximize" clicked={onMaximize}>
-            {#if maximized}
+            {#if state.maximized}
               <WindowRestore />
             {:else}
               <WindowMaximize />
@@ -194,7 +186,6 @@
       </div>
       <div
         class="content {contentClass}"
-        class:scrollable
         bind:this={content}
         on:scroll={() => (contentScrolled = !!content && content.scrollTop > 0)}
       >
@@ -383,11 +374,12 @@
     .content {
       height: 100%;
       overflow: hidden;
+      overflow-y: auto;
 
-      &.scrollable {
-        overflow-y: auto;
-        height: 100%;
-      }
+      /* &.scrollable { */
+      /*   overflow-y: auto; */
+      /*   height: 100%; */
+      /* } */
     }
 
     header.titlebar {

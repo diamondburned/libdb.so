@@ -2,7 +2,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    flake-compat.url = "https://flakehub.com/f/edolstra/flake-compat/1.tar.gz";
     gomod2nix = {
       url = "github:nix-community/gomod2nix";
       inputs = {
@@ -27,7 +26,6 @@
       gomod2nix,
       npmlock2nix,
       flake-utils,
-      flake-compat,
       yaml-language-server-src,
     }:
 
@@ -51,7 +49,7 @@
 
         nodejs = pkgs.nodejs;
 
-        tinygo = pkgs.tinygo;
+        # tinygo = pkgs.tinygo;
         # let
         #   overrides = rec {
         #     version = "0.32.0";
@@ -100,6 +98,7 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             nodejs
+            pnpm
             go
             gopls
             jq

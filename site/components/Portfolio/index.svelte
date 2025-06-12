@@ -23,7 +23,7 @@
     });
 </script>
 
-<Window view="portfolio" maxWidth="max(50vw, 700px)" maxHeight="max(90vh, 1000px)" scrollable>
+<Window maxWidth="max(50vw, 700px)" maxHeight="max(90vh, 1000px)" scrollable>
   <h3 slot="title">About</h3>
 
   <div slot="overlay">

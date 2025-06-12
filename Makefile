@@ -49,7 +49,7 @@ site/components/Terminal/color-schemes.json: ./scripts/xtermjs-colors
 	./scripts/xtermjs-colors > $@
 
 node_modules: package-lock.json package.json
-	npm install
+	pnpm install
 
 build/public/_fs: $(PUBLIC)
 	rm -rf $@ && mkdir -p $@

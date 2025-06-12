@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import * as path from "path";
 import viteCompression from "vite-plugin-compression";
-import sveltePreprocess from "svelte-preprocess";
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
 const root = path.resolve(__dirname);
 
@@ -14,7 +14,7 @@ export default defineConfig({
       filter: /\.(js|mjs|json|css|html|wasm)$/i,
     }),
     svelte({
-      preprocess: sveltePreprocess(),
+      preprocess: vitePreprocess(),
       onwarn: (warning, handler) => {
         const ignoredCodes = ["css-unused-selector", "a11y/no-noninteractive-element-interactions"];
         if (ignoredCodes.find((code) => code == warning.code)) return;
@@ -25,7 +25,9 @@ export default defineConfig({
   root: path.join(root, "site"),
   publicDir: path.join(root, "build", "public"),
   server: {
+    host: "0.0.0.0",
     port: 5001,
+    allowedHosts: true,
   },
   build: {
     outDir: path.join(root, "build", "dist"),
