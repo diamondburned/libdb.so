@@ -71,14 +71,14 @@ const graph = [
         "libdb:88x31Badge/image": _88x31("ezri.pet.png"),
       },
       {
-        "libdb:88x31badge/alt": "bunbun.dev",
-        "libdb:88x31badge/link": "https://bunbun.dev",
-        "libdb:88x31badge/image": _88x31("bunbun.dev.gif"),
+        "libdb:88x31Badge/alt": "bunbun.dev",
+        "libdb:88x31Badge/link": "https://bunbun.dev",
+        "libdb:88x31Badge/image": _88x31("bunbun.dev.gif"),
       },
       {
-        "libdb:88x31badge/alt": "Haylin Moore",
-        "libdb:88x31badge/link": "https://hayl.in",
-        "libdb:88x31badge/image": _88x31("haylin.png"),
+        "libdb:88x31Badge/alt": "Haylin Moore",
+        "libdb:88x31Badge/link": "https://hayl.in",
+        "libdb:88x31Badge/image": _88x31("haylin.png"),
       },
       {
         "libdb:88x31Badge/alt": "joel's website",
