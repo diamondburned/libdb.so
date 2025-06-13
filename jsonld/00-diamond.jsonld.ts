@@ -81,6 +81,11 @@ const graph = [
         "libdb:88x31Badge/image": _88x31("haylin.png"),
       },
       {
+        "libdb:88x31Badge/alt": "nc pinecone",
+        "libdb:88x31Badge/link": "https://pineco.net",
+        "libdb:88x31Badge/image": _88x31("pineconet.png"),
+      },
+      {
         "libdb:88x31Badge/alt": "joel's website",
         "libdb:88x31Badge/link": "https://jdr.sh",
         "libdb:88x31Badge/image": _88x31("jdr.sh.png"),

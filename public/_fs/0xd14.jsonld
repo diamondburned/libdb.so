@@ -90,6 +90,11 @@
           "libdb:88x31Badge/link": "https://hayl.in"
         },
         {
+          "libdb:88x31Badge/alt": "nc pinecone",
+          "libdb:88x31Badge/image": "https://libdb.so/_fs/pics/88x31/pineconet.png",
+          "libdb:88x31Badge/link": "https://pineco.net"
+        },
+        {
           "libdb:88x31Badge/alt": "joel's website",
           "libdb:88x31Badge/image": "https://libdb.so/_fs/pics/88x31/jdr.sh.png",
           "libdb:88x31Badge/link": "https://jdr.sh"
