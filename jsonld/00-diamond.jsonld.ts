@@ -83,7 +83,7 @@ const graph = [
       {
         "libdb:88x31Badge/alt": "umbresp.cat",
         "libdb:88x31Badge/link": "https://umbresp.cat",
-        "libdb:88x31Badge/image": _88x31("umbresp.cat.png"),
+        "libdb:88x31Badge/image": _88x31("umbresp.cat.gif"),
       },
       {
         "libdb:88x31Badge/alt": "nc pinecone",
