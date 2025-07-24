@@ -90,6 +90,11 @@
           "libdb:88x31Badge/link": "https://hayl.in"
         },
         {
+          "libdb:88x31Badge/alt": "umbresp.cat",
+          "libdb:88x31Badge/image": "https://libdb.so/_fs/pics/88x31/umbresp.cat.png",
+          "libdb:88x31Badge/link": "https://umbresp.cat"
+        },
+        {
           "libdb:88x31Badge/alt": "nc pinecone",
           "libdb:88x31Badge/image": "https://libdb.so/_fs/pics/88x31/pineconet.png",
           "libdb:88x31Badge/link": "https://pineco.net"
@@ -223,11 +228,6 @@
               "libdb:Webring/name": "ꙮ-5fbe (melody)"
             },
             {
-              "@id": "https://stellophiliac.github.io/roboring#0x191E32",
-              "libdb:Webring/link": "https://elke.cafe",
-              "libdb:Webring/name": "0x191E32 \"elke\""
-            },
-            {
               "@id": "https://stellophiliac.github.io/roboring#5225225",
               "libdb:Webring/link": "https://www.5snb.club/",
               "libdb:Webring/name": "5225225"
@@ -241,11 +241,6 @@
               "@id": "https://stellophiliac.github.io/roboring#beeps",
               "libdb:Webring/link": "https://beeps.website",
               "libdb:Webring/name": "beeps"
-            },
-            {
-              "@id": "https://stellophiliac.github.io/roboring#nelle",
-              "libdb:Webring/link": "https://nelle.observer/",
-              "libdb:Webring/name": "nelle observer"
             },
             {
               "@id": "https://stellophiliac.github.io/roboring#vars",
