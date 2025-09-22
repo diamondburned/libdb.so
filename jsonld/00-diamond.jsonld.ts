@@ -81,6 +81,11 @@ const graph = [
         "libdb:88x31Badge/image": _88x31("haylin.png"),
       },
       {
+        "libdb:88x31Badge/alt": "Azalea Colburn",
+        "libdb:88x31Badge/link": "https://azaleacolburn.dev",
+        "libdb:88x31Badge/image": _88x31("azalea.png"),
+      },
+      {
         "libdb:88x31Badge/alt": "umbresp.cat",
         "libdb:88x31Badge/link": "https://umbresp.cat",
         "libdb:88x31Badge/image": _88x31("umbresp.cat.gif"),
