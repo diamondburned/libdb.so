@@ -90,6 +90,11 @@
           "libdb:88x31Badge/link": "https://hayl.in"
         },
         {
+          "libdb:88x31Badge/alt": "Azalea Colburn",
+          "libdb:88x31Badge/image": "https://libdb.so/_fs/pics/88x31/azalea.png",
+          "libdb:88x31Badge/link": "https://azaleacolburn.dev"
+        },
+        {
           "libdb:88x31Badge/alt": "umbresp.cat",
           "libdb:88x31Badge/image": "https://libdb.so/_fs/pics/88x31/umbresp.cat.gif",
           "libdb:88x31Badge/link": "https://umbresp.cat"
@@ -249,7 +254,7 @@
             },
             {
               "@id": "https://stellophiliac.github.io/roboring#calicobot",
-              "libdb:Webring/link": "https://calicocore.space",
+              "libdb:Webring/link": "https://miawrenmck.co.za",
               "libdb:Webring/name": "mia calicocore"
             },
             {
@@ -396,6 +401,21 @@
               "@id": "https://stellophiliac.github.io/roboring#31a05b9c",
               "libdb:Webring/link": "https://www.31a05b.net/",
               "libdb:Webring/name": "31a05b"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#551724",
+              "libdb:Webring/link": "https://index.551724.dev/",
+              "libdb:Webring/name": "Δ-551724"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#Vv1428-30.INK",
+              "libdb:Webring/link": "https://inkbi0tic-silly.nekoweb.org/",
+              "libdb:Webring/name": "INKBI0TIC.SILLY"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#0x7e5ac6",
+              "libdb:Webring/link": "https://astreaprtcl.dev",
+              "libdb:Webring/name": "λ-0x7e5ac6 [Astreaprtcl]"
             }
           ],
           "libdb:Webring/root": "https://stellophiliac.github.io/roboring",
