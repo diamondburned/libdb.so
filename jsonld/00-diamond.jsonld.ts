@@ -76,6 +76,11 @@ const graph = [
         "libdb:88x31Badge/image": _88x31("bunbun.dev.gif"),
       },
       {
+        "libdb:88x31Badge/alt": "stella - strange doll thing",
+        "libdb:88x31Badge/link": "https://stella.lifeless.space",
+        "libdb:88x31Badge/image": _88x31("stella.png"),
+      },
+      {
         "libdb:88x31Badge/alt": "Haylin Moore",
         "libdb:88x31Badge/link": "https://hayl.in",
         "libdb:88x31Badge/image": _88x31("haylin.png"),

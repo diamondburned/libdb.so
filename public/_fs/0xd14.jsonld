@@ -85,6 +85,11 @@
           "libdb:88x31Badge/link": "https://bunbun.dev"
         },
         {
+          "libdb:88x31Badge/alt": "stella - strange doll thing",
+          "libdb:88x31Badge/image": "https://libdb.so/_fs/pics/88x31/stella.png",
+          "libdb:88x31Badge/link": "https://stella.lifeless.space"
+        },
+        {
           "libdb:88x31Badge/alt": "Haylin Moore",
           "libdb:88x31Badge/image": "https://libdb.so/_fs/pics/88x31/haylin.png",
           "libdb:88x31Badge/link": "https://hayl.in"
@@ -189,7 +194,7 @@
             },
             {
               "@id": "https://stellophiliac.github.io/roboring#tulpenkiste",
-              "libdb:Webring/link": "https://tulpenkiste.codeberg.page",
+              "libdb:Webring/link": "https://retcinder.codeberg.page",
               "libdb:Webring/name": "Tulpenkiste"
             },
             {
@@ -200,7 +205,7 @@
             {
               "@id": "https://stellophiliac.github.io/roboring#zvava",
               "libdb:Webring/link": "https://zvava.org",
-              "libdb:Webring/name": "sophia"
+              "libdb:Webring/name": "737A6F6669E1"
             },
             {
               "@id": "https://stellophiliac.github.io/roboring#44203",
@@ -254,7 +259,7 @@
             },
             {
               "@id": "https://stellophiliac.github.io/roboring#calicobot",
-              "libdb:Webring/link": "https://miawrenmck.co.za",
+              "libdb:Webring/link": "https://calicomia.dev",
               "libdb:Webring/name": "mia calicocore"
             },
             {
@@ -415,7 +420,37 @@
             {
               "@id": "https://stellophiliac.github.io/roboring#0x7e5ac6",
               "libdb:Webring/link": "https://astreaprtcl.dev",
-              "libdb:Webring/name": "λ-0x7e5ac6 [Astreaprtcl]"
+              "libdb:Webring/name": "⬡-0x7e5ac6 [Astreaprtcl]"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#ARLATIUS",
+              "libdb:Webring/link": "https://arlatius.nekoweb.org/index.html",
+              "libdb:Webring/name": "arlatius_"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#0xda157",
+              "libdb:Webring/link": "https://da157.id",
+              "libdb:Webring/name": "0xda157"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#6B74-4",
+              "libdb:Webring/link": "https://beeping.pet",
+              "libdb:Webring/name": "6B74-4"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#0x3f4f3e",
+              "libdb:Webring/link": "https://0x3f4f3e.org",
+              "libdb:Webring/name": "0x3f4f3e"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#gravepaw",
+              "libdb:Webring/link": "https://graveyardpaws.web.fc2.com/",
+              "libdb:Webring/name": "Ashe"
+            },
+            {
+              "@id": "https://stellophiliac.github.io/roboring#toaster",
+              "libdb:Webring/link": "https://alfieking.dev/",
+              "libdb:Webring/name": "Toaster"
             }
           ],
           "libdb:Webring/root": "https://stellophiliac.github.io/roboring",
