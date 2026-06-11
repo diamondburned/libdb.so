@@ -1,7 +1,0 @@
-@use "sass:meta";
-@use "libadwaita/variables" as *;
-
-:root,
-[data-prefers-dark="false"] {
-  @include theme("light");
-}

@@ -2,7 +2,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    flake-compat.url = "https://flakehub.com/f/edolstra/flake-compat/1.tar.gz";
+
     gomod2nix = {
       url = "github:nix-community/gomod2nix";
       inputs = {
@@ -10,12 +10,9 @@
         flake-utils.follows = "flake-utils";
       };
     };
+
     npmlock2nix = {
       url = "github:nix-community/npmlock2nix";
-      flake = false;
-    };
-    yaml-language-server-src = {
-      url = "github:okybr/yaml-language-server";
       flake = false;
     };
   };
@@ -27,8 +24,6 @@
       gomod2nix,
       npmlock2nix,
       flake-utils,
-      flake-compat,
-      yaml-language-server-src,
     }:
 
     flake-utils.lib.eachDefaultSystem (
@@ -47,41 +42,8 @@
         pkgs = import nixpkgs { inherit system overlays; };
         lib = pkgs.lib;
 
-        go = pkgs.go_1_22;
-
+        go = pkgs.go_1_26;
         nodejs = pkgs.nodejs;
-
-        tinygo = pkgs.tinygo;
-        # let
-        #   overrides = rec {
-        #     version = "0.32.0";
-        #     src = pkgs.fetchFromGitHub {
-        #       owner = "tinygo-org";
-        #       repo = "tinygo";
-        #       rev = "v${version}";
-        #       hash = "sha256-zoXruGoWitx6kietF3HKTYCtUrXp5SOrf2FEGgVPzkQ=";
-        #       fetchSubmodules = true;
-        #     };
-        #     doCheck = false;
-        #     patches = [ ];
-        #   };
-        # in
-        # (pkgs.tinygo.overrideAttrs (_: overrides)).override {
-        #   buildGoModule =
-        #     args:
-        #     pkgs.buildGoModule (
-        #       args // overrides // { vendorHash = "sha256-rJ8AfJkIpxDkk+9Tf7ORnn7ueJB1kjJUBiLMDV5tias="; }
-        #     );
-        # };
-
-        yaml-language-server = pkgs.yaml-language-server.overrideAttrs (old: rec {
-          version = "1.15.0-ajv-draft-04";
-          src = yaml-language-server-src;
-          offlineCache = pkgs.fetchYarnDeps {
-            yarnLock = "${src}/yarn.lock";
-            hash = "sha256-thJ3aU52yCusfjBCD2QvLynwiM32lq0IT9WaNJjfu6E=";
-          };
-        });
 
         gopls =
           let
@@ -99,16 +61,16 @@
       {
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
-            nodejs
+            esbuild
             go
+            gomod2nix.packages.${system}.default
             gopls
             jq
-            yq-go
-            # tinygo
-            oapi-codegen
-            yaml-language-server
+            nodejs
+            pnpm
             self.formatter.${system}
-            gomod2nix.packages.${system}.default
+            yaml-language-server
+            yq-go
           ];
 
           shellHook = ''
@@ -170,7 +132,8 @@
             ldflags = [
               "-s"
               "-w"
-            ] ++ (if version != "dirty" then [ "-X main.gitrev=${version}" ] else [ ]);
+            ]
+            ++ (if version != "dirty" then [ "-X main.gitrev=${version}" ] else [ ]);
 
             postInstall = ''
               mv $out/bin/js_wasm/vm-wasm $out/bin/vm.wasm
@@ -185,14 +148,6 @@
                 GOARCH = "wasm";
               }
             );
-
-        packages.backend = pkgs.buildGoApplication {
-          inherit version go;
-          pname = "libdb.so-backend";
-          src = self;
-          modules = ./gomod2nix.toml;
-          subPackages = [ "backend/cmd/backend" ];
-        };
 
         formatter = pkgs.nixfmt-rfc-style;
       }
