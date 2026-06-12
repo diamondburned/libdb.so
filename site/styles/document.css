@@ -74,6 +74,7 @@ h2 {
 
 h3 {
   font-weight: 400;
+  color: var(--h2-color);
 }
 
 h4,

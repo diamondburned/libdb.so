@@ -1,0 +1,135 @@
+---
+import "@styles/document.css";
+
+import { Font } from "astro:assets";
+import SelfASCII from "@lib/components/SelfASCII.astro";
+
+const { frontmatter } = Astro.props;
+const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7) || "unknown";
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="generator" content={Astro.generator} />
+<Font cssVariable="--font-inconsolata" preload />
+<title>{frontmatter.title ? `${frontmatter.title} - libdb.so` : "libdb.so"}</title>
+<script is:inline src="@scripts/index.ts" type="module" defer></script>
+
+<aside id="self" class="self-ascii-container" style="height: 34ch">
+  <SelfASCII />
+  <a role="button" class="a-expand" href="#self">[expand]</a>
+  <a role="button" class="a-collapse" href="#">[collapse]</a>
+</aside>
+
+<main class="content">
+  <slot />
+</main>
+
+<footer>
+  <p>| &lt;3 | site running rev <span class="revision">{version}</span> |</p>
+</footer>
+
+<style>
+  .self-ascii-container {
+    position: relative;
+    scroll-margin-top: 1em; /* account for body margin */
+
+    :global(.self-ascii) {
+      overflow: hidden;
+      position: absolute;
+
+      width: 100%;
+      height: inherit;
+      text-align: center;
+      line-height: 1;
+
+      margin: 0;
+      padding: 2ch;
+      background-color: var(--bg2-color);
+    }
+
+    .a-expand {
+      display: block;
+
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      z-index: 99;
+    }
+
+    .a-collapse {
+      display: none;
+
+      position: absolute;
+      top: 52em;
+      right: 0;
+    }
+
+    &:target,
+    &[data-expanded] {
+      :global(.self-ascii) {
+        height: calc(100svh - 2em);
+      }
+
+      .a-expand {
+        display: none;
+      }
+
+      .a-collapse {
+        display: block;
+      }
+    }
+  }
+
+  .content > :global(*):not(:first-child) {
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    .content > :global(*) {
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+<script>
+  async function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  function groupElements(children: Element[]): HTMLElement[][] {
+    const groups = [];
+    for (const child of children) {
+      if (child instanceof HTMLElement === false) {
+        continue;
+      }
+      if (!groups.length || ["h1", "h2"].some((sel) => child.matches(sel))) {
+        groups.push([child]);
+      } else {
+        groups[groups.length - 1].push(child);
+      }
+    }
+    return groups;
+  }
+
+  (async () => {
+    const content = document.querySelector(".content")!;
+    const groups = groupElements([...content.children]);
+
+    const selfASCII = document.getElementById("self")! as HTMLElement;
+
+    selfASCII.dataset.expanded = "true";
+    await sleep(1000);
+    delete selfASCII.dataset.expanded;
+
+    for (const group of groups) {
+      group[0].style.setProperty("opacity", "1");
+      await sleep(250);
+
+      group.slice(1).forEach((child) => child.style.setProperty("opacity", "1"));
+      await sleep(250);
+    }
+  })();
+</script>
