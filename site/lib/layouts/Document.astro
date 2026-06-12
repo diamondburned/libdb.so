@@ -2,9 +2,11 @@
 import "@styles/document.css";
 
 import { Font } from "astro:assets";
+import { execSync } from "child_process";
 import SelfASCII from "@lib/components/SelfASCII.astro";
 
 const { frontmatter } = Astro.props;
+const version = execSync(`git describe --tags --always --dirty`).toString().trim();
 ---
 
 <meta charset="utf-8" />
@@ -34,6 +36,10 @@ const { frontmatter } = Astro.props;
   </header>
   <slot />
 </main>
+
+<footer>
+  <p>| &lt;3 | site running rev <span class="revision">{version}</span> |</p>
+</footer>
 
 <script>
   async function sleep(ms: number): Promise<void> {

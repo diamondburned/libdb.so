@@ -12,6 +12,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.9",
     "@astrojs/markdown-satteri": "^0.3.0",
     "@astrojs/mdx": "^6.0.3",
     "@astrojs/node": "^10.1.4",
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@astrojs/language-server": "^2.16.10",
     "@mdx-js/language-server": "^0.6.3",
+    "@types/node": "^25.9.3",
     "ansi-to-html": "^0.7.2",
     "prettier": "^3.8.4",
     "prettier-plugin-astro": "0.14.1",
