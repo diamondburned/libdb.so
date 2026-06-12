@@ -1,155 +1,110 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
-
-    gomod2nix = {
-      url = "github:nix-community/gomod2nix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
-    };
-
-    npmlock2nix = {
-      url = "github:nix-community/npmlock2nix";
-      flake = false;
-    };
+    flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
   outputs =
     {
       self,
       nixpkgs,
-      gomod2nix,
-      npmlock2nix,
-      flake-utils,
-    }:
+      flake-parts,
+    }@inputs:
 
-    flake-utils.lib.eachDefaultSystem (
-      system:
-      let
-        overlays = [
-          (self: super: {
-            npmlock2nix = import npmlock2nix {
-              pkgs = super;
-              lib = super.lib;
-            };
-          })
-          (gomod2nix.overlays.default)
-        ];
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
 
-        pkgs = import nixpkgs { inherit system overlays; };
-        lib = pkgs.lib;
+      perSystem =
+        {
+          self',
+          pkgs,
+          lib,
+          ...
+        }:
+        let
+          nodejs' = pkgs.nodejs_24;
+          pnpm' = pkgs.pnpm_11;
 
-        go = pkgs.go_1_26;
-        nodejs = pkgs.nodejs;
+          buildEnv = {
+            PUBLIC_SITE_VERSION = self.rev or "unknown";
+            PUBLIC_INCONSOLATA_PATH = "${pkgs.inconsolata}/share/fonts/truetype/inconsolata/";
+          };
+        in
+        {
+          devShells.default = pkgs.mkShell {
+            packages = with pkgs; [
+              esbuild
+              go
+              gopls
+              jq
+              nodejs'
+              pnpm'
+              self.formatter.${system}
+              yaml-language-server
+              yq-go
+            ];
 
-        gopls =
-          let
-            GOOS = "js";
-            GOARCH = "wasm";
-          in
-          pkgs.writeShellScriptBin "gopls" ''
-            export GOOS=${GOOS}
-            export GOARCH=${GOARCH}
-            exec ${lib.getExe pkgs.gopls} "$@"
-          '';
+            shellHook = ''
+              export PATH="$PATH:$(git rev-parse --show-toplevel)/node_modules/.bin"
+            '';
 
-        version = if self ? rev then builtins.substring 0 7 self.rev else "dirty";
-      in
-      {
-        devShells.default = pkgs.mkShell {
-          packages = with pkgs; [
-            esbuild
-            go
-            gomod2nix.packages.${system}.default
-            gopls
-            jq
-            nodejs
-            pnpm
-            self.formatter.${system}
-            yaml-language-server
-            yq-go
-          ];
-
-          shellHook = ''
-            export PATH="$PATH:$(git rev-parse --show-toplevel)/node_modules/.bin"
-          '';
-        };
-
-        packages.default = pkgs.stdenv.mkDerivation rec {
-          inherit version;
-          pname = "libdb.so";
-          src = self;
-
-          nativeBuildInputs = with pkgs; [
-            coreutils
-            bash
-            jq
-            nodejs
-          ];
-
-          nodeModules = pkgs.npmlock2nix.v2.node_modules {
-            inherit src;
-            nodejs = pkgs.nodejs;
-            # mkDerivation hates us because we have a Makefile. We'll override
-            # installPhase to fix that.
-            installPhase = "mv node_modules $out/";
+            env = buildEnv;
           };
 
-          preBuild = ''
-            set -x
+          packages.default = self'.packages.site;
 
-            mkdir -p build
-            cp -r ${self.packages.${system}.vm}/bin/vm.wasm build/vm.wasm
+          packages.site = pkgs.stdenv.mkDerivation (finalAttrs: {
+            pname = "libdb-site";
+            version = self.rev or "dirty";
+            src = lib.cleanSource ./.;
+            env = buildEnv;
 
-            cp -r ${nodeModules} node_modules
-            chown -R $(id -u):$(id -g) node_modules
-            chmod -R +w node_modules
-            export PATH="$PATH:$PWD/node_modules/.bin"
-            export VERSION="$version"
+            pnpmDeps = pkgs.fetchPnpmDeps {
+              inherit (finalAttrs) pname version src;
+              pnpm = pnpm';
+              hash = lib.fileContents ./nix/pnpm-lock.sri;
+              fetcherVersion = 4;
+            };
 
-            set +x
-          '';
+            nativeBuildInputs = with pkgs; [
+              nodejs'
+              pnpm'
+              pnpmConfigHook
+            ];
 
-          installPhase = ''
-            cp -r build/dist $out
-          '';
-        };
-
-        packages.vm =
-          (pkgs.buildGoApplication {
-            inherit version go;
-            pname = "libdb.so-vm-wasm";
-            src = self;
-            modules = ./gomod2nix.toml;
-            subPackages = [ "vm/cmd/vm-wasm" ];
-
-            CGO_ENABLED = 0;
-            doCheck = false; # none to run
-
-            ldflags = [
-              "-s"
-              "-w"
-            ]
-            ++ (if version != "dirty" then [ "-X main.gitrev=${version}" ] else [ ]);
-
-            postInstall = ''
-              mv $out/bin/js_wasm/vm-wasm $out/bin/vm.wasm
-              rmdir $out/bin/js_wasm
+            buildPhase = ''
+              runHook preBuild
+              pnpm build
+              runHook postBuild
             '';
-          }).overrideAttrs
-            (
-              old:
-              old
-              // {
-                GOOS = "js";
-                GOARCH = "wasm";
-              }
-            );
 
-        formatter = pkgs.nixfmt-rfc-style;
-      }
-    );
+            installPhase = ''
+              runHook preInstall
+
+              mkdir -p $out/share/libdb-site
+              mkdir -p $out/bin
+
+              cp -r dist/* $out/share/libdb-site/
+
+              cat<<EOF > $out/bin/libdb-site
+              #!/bin/sh
+              exec ${lib.getExe nodejs'} ${placeholder "out"}/share/libdb-site/server/entry.mjs
+              EOF
+              chmod +x $out/bin/libdb-site
+
+              runHook postInstall
+            '';
+
+            meta = {
+              homepage = "https://v2.libdb.so";
+              mainProgram = "libdb-site";
+            };
+          });
+
+          formatter = pkgs.nixfmt-rfc-style;
+        };
+    };
 }

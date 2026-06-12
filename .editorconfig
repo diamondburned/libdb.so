@@ -1,19 +1,7 @@
-[{*.ts,*.js}]
+[{*.ts,*.js,*.astro,*.json,*.nix,*.md,*.mdx}]
 indent_style = space
 indent_size = 2
 
 [*.go]
 indent_style = tab
 indent_size = 4
-
-[*.nix]
-indent_style = tab
-indent_size = 2
-
-[*.json]
-indent_style = space
-indent_size = 2
-
-[*.svelte]
-indent_style = space
-indent_size = 2

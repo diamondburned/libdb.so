@@ -4,6 +4,8 @@ import { satteri } from "@astrojs/markdown-satteri";
 import node from "@astrojs/node";
 import mdx from "@astrojs/mdx";
 
+const { PUBLIC_INCONSOLATA_PATH } = process.env;
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://libdb.so",
@@ -17,18 +19,27 @@ export default defineConfig({
     },
   },
 
-  fonts: [
-    {
-      provider: fontProviders.google(),
-      name: "Inconsolata",
-      cssVariable: "--font-inconsolata",
-      fallbacks: ["monospace"],
-      optimizedFallbacks: false,
-      // https://docs.astro.build/en/guides/fonts/#using-variable-fonts
-      styles: ["normal"],
-      weights: ["200 900"],
-    },
-  ],
+  fonts: PUBLIC_INCONSOLATA_PATH
+    ? [
+        {
+          provider: fontProviders.local(),
+          name: "Inconsolata",
+          cssVariable: "--font-inconsolata",
+          fallbacks: ["monospace"],
+          optimizedFallbacks: false,
+          options: {
+            variants: [
+              {
+                weight: "200 900",
+                style: "normal",
+                src: [`${PUBLIC_INCONSOLATA_PATH}/Inconsolata[wdth,wght].ttf`],
+                featureSettings: "'dlig' on",
+              },
+            ],
+          },
+        },
+      ]
+    : undefined,
 
   integrations: [mdx()],
 
