@@ -7,11 +7,42 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^6.4.6"
+    "@astrojs/markdown-satteri": "^0.3.0",
+    "@astrojs/mdx": "^6.0.3",
+    "@astrojs/node": "^10.1.4",
+    "@astrojs/ts-plugin": "^1.10.9",
+    "astro": "^6.4.6",
+    "lightningcss": "^1.32.0",
+    "the-new-css-reset": "^1.11.3"
+  },
+  "devDependencies": {
+    "@astrojs/language-server": "^2.16.10",
+    "@mdx-js/language-server": "^0.6.3",
+    "ansi-to-html": "^0.7.2",
+    "prettier": "^3.8.4",
+    "prettier-plugin-astro": "0.14.1",
+    "prettier-plugin-markdown-html": "^1.4.1",
+    "typescript": "^6.0.3"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "proseWrap": "always",
+    "plugins": [
+      "prettier-plugin-astro",
+      "prettier-plugin-markdown-html"
+    ],
+    "overrides": [
+      {
+        "files": "*.astro",
+        "options": {
+          "parser": "astro"
+        }
+      }
+    ]
   }
 }

@@ -1,0 +1,61 @@
+---
+import SelfASCIIContent from "./SelfASCIIContent.astro";
+---
+
+<style is:global>
+  .self-ascii {
+    position: relative;
+    scroll-margin-top: 1em; /* account for body margin */
+
+    .self-ascii-content {
+      overflow: hidden;
+      position: absolute;
+
+      width: 100%;
+      height: inherit;
+      text-align: center;
+      line-height: 1;
+
+      margin: 0;
+      padding: 2ch;
+      background-color: var(--bg2-color);
+    }
+
+    .a-expand {
+      display: block;
+
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      z-index: 99;
+    }
+
+    .a-collapse {
+      display: none;
+
+      position: absolute;
+      top: 52em;
+      right: 0;
+    }
+
+    &:target {
+      .self-ascii-content {
+        height: calc(100svh - 2em);
+      }
+
+      .a-expand {
+        display: none;
+      }
+
+      .a-collapse {
+        display: block;
+      }
+    }
+  }
+</style>
+
+<div class="self-ascii" id="self" style="height: 34ch">
+  <SelfASCIIContent />
+  <a role="button" class="a-expand" href="#self">[expand me!]</a>
+  <a role="button" class="a-collapse" href="#">[collapse me.]</a>
+</div>

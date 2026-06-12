@@ -1,0 +1,169 @@
+@import "the-new-css-reset/css/reset.css";
+
+:root {
+  --bg-color: var(--bg1-color);
+  --bg1-color: black;
+  --bg2-color: black;
+
+  --fg-color: var(--fg1-color);
+  --fg1-color: oklch(0.95 0 0);
+  --fg2-color: oklch(0.99 0 0);
+  --fg3-color: oklch(0.65 0 0);
+
+  --a-color: var(--a1-color);
+  --a1-color: oklch(from #00f 0.8 c h);
+  --a2-color: oklch(from #60f 0.8 c h);
+
+  --h-color: var(--h1-color);
+  --h1-color: oklch(from green 0.8 c h);
+  --h2-color: oklch(from green 0.7 c h);
+
+  --y-color: oklch(from yellow 0.9 c h);
+  --r-color: oklch(from red 0.9 c h);
+}
+
+html {
+  background-color: var(--bg1-color);
+  height: 100%;
+}
+
+body {
+  color: var(--fg1-color);
+  background-color: var(--bg2-color);
+
+  font-family: var(--font-inconsolata, "Inconsolata");
+  /* https://freshjuice.dev/tools/font-size-clamp-generator/ */
+  /* font-size [14, 16], viewport [400, 800] */
+  font-size: clamp(0.875rem, 0.75rem + 0.5vw, 1rem);
+  width: 56ch;
+  min-height: 100%;
+  margin: auto;
+  padding: 1em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+section,
+p {
+  margin: 1em 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--h-color);
+}
+
+h1 {
+  text-align: center;
+  font-weight: 800;
+  margin-top: 2em;
+}
+
+h2 {
+  font-weight: 700;
+  margin-top: 2em;
+}
+
+h3 {
+  font-weight: 400;
+}
+
+h4,
+h5,
+h6 {
+  font-weight: 300;
+  color: var(--h2-color);
+}
+
+em {
+  font-style: italic;
+}
+
+strong,
+b {
+  color: var(--fg2-color);
+  font-weight: 700;
+}
+
+a {
+  color: var(--a-color);
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+  }
+  &:not([href^="#"]):visited {
+    color: var(--a2-color);
+  }
+}
+
+small {
+  color: var(--fg3-color);
+}
+
+table,
+blockquote {
+  border-left: 0.2ch solid var(--fg3-color);
+  margin-left: 0.5ch;
+  padding-left: 1.7ch;
+}
+
+details {
+  summary {
+    color: var(--a-color);
+    cursor: pointer;
+  }
+
+  summary::before {
+    content: "⯈ ";
+  }
+
+  &[open] summary::before {
+    content: "⯆ ";
+  }
+
+  & > .content {
+    border-left: 0.2ch solid var(--a-color);
+    margin-left: 0.5ch;
+    padding-left: 1.7ch;
+  }
+}
+
+.warning {
+  color: var(--y-color);
+}
+
+table {
+  display: block;
+}
+
+/* Select tables that specifically only have 2 columns and assume they're
+ * key-value tables. */
+table:has(td:first-child:nth-last-child(2)) td:first-child {
+  text-align: right;
+  &::after {
+    content: "=";
+    margin: 0 0.5em;
+  }
+}
+
+footer {
+  width: fit-content;
+
+  text-align: center;
+  font-size: small;
+  color: var(--fg-color);
+
+  margin: 4em auto;
+
+  border: 0.2ch dashed var(--fg3-color);
+  border-left-width: 0;
+  border-right-width: 0;
+}

@@ -1,0 +1,77 @@
+---
+import "@styles/document.css";
+
+import { Font } from "astro:assets";
+import SelfASCII from "@lib/components/SelfASCII.astro";
+
+const { frontmatter } = Astro.props;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="generator" content={Astro.generator} />
+<Font cssVariable="--font-inconsolata" preload />
+<title>{frontmatter.title ? `${frontmatter.title} - libdb.so` : "libdb.so"}</title>
+<script is:inline src="@scripts/index.ts" type="module" defer></script>
+
+<style>
+  .content.animated > :global(*):not(:first-child) {
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    .content.animated > :global(*) {
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+<main class={`content ${frontmatter.animated ? "animated" : ""}`}>
+  <header>
+    <SelfASCII />
+  </header>
+  <slot />
+</main>
+
+<script>
+  async function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  function groupElements(children: Element[]): HTMLElement[][] {
+    const groups = [];
+    for (const child of children) {
+      if (child instanceof HTMLElement === false) {
+        continue;
+      }
+      if (!groups.length || ["h1", "h2"].some((sel) => child.matches(sel))) {
+        groups.push([child]);
+      } else {
+        groups[groups.length - 1].push(child);
+      }
+    }
+    return groups;
+  }
+
+  (async () => {
+    const content = document.querySelector(".content.animated");
+    if (!content) {
+      return;
+    }
+
+    const children = [...content.children];
+    const groups = groupElements(children);
+
+    await sleep(1000);
+
+    for (const group of groups.slice(1)) {
+      group[0].style.setProperty("opacity", "1");
+      await sleep(250);
+
+      group.slice(1).forEach((child) => child.style.setProperty("opacity", "1"));
+      await sleep(250);
+    }
+  })();
+</script>
