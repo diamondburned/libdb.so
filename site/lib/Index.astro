@@ -5,7 +5,7 @@ import { Font } from "astro:assets";
 import SelfASCII from "@lib/components/SelfASCII.astro";
 
 const { frontmatter } = Astro.props;
-const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7) || "unknown";
+const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7);
 ---
 
 <meta charset="utf-8" />
@@ -26,7 +26,17 @@ const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7) || "unkn
 </main>
 
 <footer>
-  <p>| &lt;3 | site running rev <span class="revision">{version}</span> |</p>
+  <p>
+    [&lt;3] site running rev {
+      version && version != "unknown" ? (
+        <a class="version" href={`https://github.com/diamondburned/libdb/commit/${version}`}>
+          {version}
+        </a>
+      ) : (
+        "unknown"
+      )
+    }
+  </p>
 </footer>
 
 <style>
