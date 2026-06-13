@@ -105,6 +105,24 @@ a {
   }
 }
 
+button,
+a[role="button"] {
+  color: var(--a-color);
+  cursor: pointer;
+
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+  }
+
+  &::before {
+    content: "[";
+  }
+  &::after {
+    content: "]";
+  }
+}
+
 small {
   color: var(--fg3-color);
 }
@@ -141,6 +159,10 @@ details {
   color: var(--y-color);
 }
 
+.hidden {
+  display: none !important;
+}
+
 table {
   display: block;
 }
@@ -163,8 +185,4 @@ footer {
   color: var(--fg-color);
 
   margin: 4em auto;
-
-  border: 0.2ch dashed var(--fg3-color);
-  border-left-width: 0;
-  border-right-width: 0;
 }

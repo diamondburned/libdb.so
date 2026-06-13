@@ -17,27 +17,35 @@ const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7);
 
 <aside id="self" class="self-ascii-container" style="height: 34ch">
   <SelfASCII />
-  <a role="button" class="a-expand" href="#self">[expand]</a>
-  <a role="button" class="a-collapse" href="#">[collapse]</a>
+  <button class="hidden" id="a-show">show</button>
+  <button class="hidden" id="a-hide">hide</button>
 </aside>
 
-<main class="content">
-  <slot />
-</main>
+<main id="content">
+  <script is:inline>
+    // Immediately begin animation by marking content as animated in JS before
+    // more elements come in to prevent content blink. The inline part is
+    // important, as it inserts this script tag as-is and halts rendering.
+    document.getElementById("content").classList.add("animated");
+    document.getElementById("self").dataset.expanded = "true";
+  </script>
 
-<footer>
-  <p>
-    [&lt;3] site running rev {
-      version && version != "unknown" ? (
-        <a class="version" href={`https://github.com/diamondburned/libdb/commit/${version}`}>
-          {version}
-        </a>
-      ) : (
-        "unknown"
-      )
-    }
-  </p>
-</footer>
+  <slot />
+
+  <footer id="footer">
+    <p>
+      [&lt;3] site running rev {
+        version && version != "unknown" ? (
+          <a class="version" href={`https://github.com/diamondburned/libdb/commit/${version}`}>
+            {version}
+          </a>
+        ) : (
+          "unknown"
+        )
+      }
+    </p>
+  </footer>
+</main>
 
 <style>
   .self-ascii-container {
@@ -58,7 +66,7 @@ const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7);
       background-color: var(--bg2-color);
     }
 
-    .a-expand {
+    #a-show {
       display: block;
 
       position: absolute;
@@ -67,7 +75,7 @@ const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7);
       z-index: 99;
     }
 
-    .a-collapse {
+    #a-hide {
       display: none;
 
       position: absolute;
@@ -75,38 +83,62 @@ const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7);
       right: 0;
     }
 
-    &:target,
     &[data-expanded] {
       :global(.self-ascii) {
-        height: calc(100svh - 2em);
+        height: calc(100dvh - 1rem);
       }
 
-      .a-expand {
+      #a-show {
         display: none;
       }
 
-      .a-collapse {
+      #a-hide {
         display: block;
       }
     }
   }
 
-  .content > :global(*):not(:first-child) {
+  #content.animated > :global(*):not(:first-child) {
     opacity: 0;
   }
 </style>
 
-<noscript>
-  <style>
-    .content > :global(*) {
-      opacity: 1;
-    }
-  </style>
-</noscript>
-
 <script>
-  async function sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+  async function animate() {
+    const content = document.getElementById("content")!;
+    const contentGroups = groupElements([...content.children]);
+
+    for (const group of contentGroups) {
+      group.forEach((child) => child.style.setProperty("opacity", "0"));
+    }
+
+    const ascii = document.getElementById("self")! as HTMLElement;
+
+    ascii.querySelectorAll("button").forEach((btn) => {
+      btn.classList.remove("hidden");
+      btn.addEventListener("click", () => {
+        if (ascii.dataset.expanded) {
+          delete ascii.dataset.expanded;
+        } else {
+          ascii.dataset.expanded = "true";
+        }
+      });
+    });
+
+    ascii.dataset.expanded = "true";
+    await sleep(1000);
+    delete ascii.dataset.expanded;
+
+    for (const group of contentGroups) {
+      group[0].style.setProperty("opacity", "1");
+      await sleep(250);
+
+      group.slice(1).forEach((child) => child.style.setProperty("opacity", "1"));
+      await sleep(250);
+    }
+
+    const footer = document.getElementById("footer")! as HTMLElement;
+    footer.style.setProperty("opacity", "1");
   }
 
   function groupElements(children: Element[]): HTMLElement[][] {
@@ -124,22 +156,9 @@ const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7);
     return groups;
   }
 
-  (async () => {
-    const content = document.querySelector(".content")!;
-    const groups = groupElements([...content.children]);
+  async function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 
-    const selfASCII = document.getElementById("self")! as HTMLElement;
-
-    selfASCII.dataset.expanded = "true";
-    await sleep(1000);
-    delete selfASCII.dataset.expanded;
-
-    for (const group of groups) {
-      group[0].style.setProperty("opacity", "1");
-      await sleep(250);
-
-      group.slice(1).forEach((child) => child.style.setProperty("opacity", "1"));
-      await sleep(250);
-    }
-  })();
+  animate();
 </script>
