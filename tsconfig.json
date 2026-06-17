@@ -8,6 +8,7 @@
       "@pages/*": ["./site/pages/*"],
       "@styles/*": ["./site/styles/*"],
       "@scripts/*": ["./site/scripts/*"],
+      "@layouts/*": ["./site/layouts/*"],
       "@dist/*": ["./dist/*"]
     },
     "plugins": [
