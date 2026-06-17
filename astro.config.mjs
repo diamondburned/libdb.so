@@ -3,6 +3,7 @@ import { defineConfig, fontProviders } from "astro/config";
 import { satteri } from "@astrojs/markdown-satteri";
 import node from "@astrojs/node";
 import mdx from "@astrojs/mdx";
+import svelte from "@astrojs/svelte";
 
 const { PUBLIC_INCONSOLATA_PATH } = process.env;
 
@@ -41,7 +42,7 @@ export default defineConfig({
       ]
     : undefined,
 
-  integrations: [mdx()],
+  integrations: [mdx(), svelte()],
 
   markdown: {
     processor: satteri({

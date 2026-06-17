@@ -109,6 +109,7 @@ button,
 a[role="button"] {
   color: var(--a-color);
   cursor: pointer;
+  user-select: none;
 
   &:hover,
   &:focus {
@@ -161,6 +162,10 @@ details {
 
 .hidden {
   display: none !important;
+}
+
+.ascii-art {
+  line-height: 1;
 }
 
 table {

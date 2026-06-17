@@ -3,6 +3,7 @@ import "@styles/document.css";
 
 import { Font } from "astro:assets";
 import SelfASCII from "@lib/components/SelfASCII.astro";
+import Spiral from "@lib/components/Spiral.svelte";
 
 const { frontmatter } = Astro.props;
 const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7);
@@ -15,11 +16,15 @@ const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7);
 <title>{frontmatter.title ? `${frontmatter.title} - libdb.so` : "libdb.so"}</title>
 <script is:inline src="@scripts/index.ts" type="module" defer></script>
 
-<aside id="self" class="self-ascii-container" style="height: 34ch">
+<header id="header" class="self-ascii-container" style="height: 18em">
   <SelfASCII />
-  <button class="hidden" id="a-show">show</button>
-  <button class="hidden" id="a-hide">hide</button>
-</aside>
+  <div id="spiral" class="spiral-container">
+    <Spiral client:only="svelte" width={52} height={18} spinSpeed={2.0} blur={1.5} zoom={1.0} />
+  </div>
+  <button class="hidden control" id="a-stop">stop spiral</button>
+  <button class="hidden control" id="a-show">reveal</button>
+  <button class="hidden control" id="a-continue">continue to site</button>
+</header>
 
 <main id="content">
   <script is:inline>
@@ -27,7 +32,7 @@ const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7);
     // more elements come in to prevent content blink. The inline part is
     // important, as it inserts this script tag as-is and halts rendering.
     document.getElementById("content").classList.add("animated");
-    document.getElementById("self").dataset.expanded = "true";
+    document.getElementById("header").dataset.expanded = "true";
   </script>
 
   <slot />
@@ -48,7 +53,7 @@ const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7);
 </main>
 
 <style>
-  .self-ascii-container {
+  #header {
     position: relative;
     scroll-margin-top: 1em; /* account for body margin */
 
@@ -58,87 +63,162 @@ const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7);
 
       width: 100%;
       height: inherit;
-      text-align: center;
-      line-height: 1;
-
       margin: 0;
-      padding: 2ch;
+      filter: brightness(1.1);
+      text-align: center;
+
+      z-index: 2;
+
+      :global(span:not([style="color:#000000"])) {
+        background-color: var(--bg2-color);
+      }
+    }
+
+    .spiral-container {
+      position: absolute;
+      color: var(--fg3-color);
+    }
+
+    .control {
+      position: absolute;
+      z-index: 99;
       background-color: var(--bg2-color);
+    }
+
+    #a-stop {
+      display: block;
+      bottom: 0;
+      left: 0;
     }
 
     #a-show {
       display: block;
-
-      position: absolute;
       bottom: 0;
       right: 0;
-      z-index: 99;
     }
 
-    #a-hide {
+    #a-continue {
       display: none;
-
-      position: absolute;
       top: 52em;
       right: 0;
+      width: 100%;
+      text-align: center;
     }
 
     &[data-expanded] {
       :global(.self-ascii) {
         height: calc(100dvh - 1rem);
+        background-color: var(--bg2-color);
       }
 
+      .spiral-container {
+        display: none;
+      }
+
+      #a-stop,
       #a-show {
         display: none;
       }
 
-      #a-hide {
+      #a-continue {
         display: block;
       }
     }
   }
 
-  #content.animated > :global(*):not(:first-child) {
-    opacity: 0;
+  #spiral {
+    animation: spiral-fade-in 4s ease-out;
+  }
+
+  @keyframes spiral-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 </style>
 
 <script>
-  async function animate() {
-    const content = document.getElementById("content")!;
-    const contentGroups = groupElements([...content.children]);
+  import { get } from "svelte/store";
 
-    for (const group of contentGroups) {
-      group.forEach((child) => child.style.setProperty("opacity", "0"));
+  const content = document.getElementById("content")!;
+  const contentGroups = groupElements([...content.children]);
+
+  const spiral = document.getElementById("spiral")!;
+
+  const header = document.getElementById("header")! as HTMLElement;
+  header.querySelectorAll(".controls.hidden").forEach((el) => el.classList.remove("hidden"));
+
+  const stopSpiralButton = document.getElementById("a-stop")!;
+  stopSpiralButton.addEventListener("click", () => {
+    const wasAnimating = get(window.animate);
+    window.animate.set(!wasAnimating);
+  });
+
+  const showButton = document.getElementById("a-show")!;
+  showButton.addEventListener("click", () => {
+    header.dataset.expanded = "true";
+  });
+
+  let animated = false;
+
+  const continueButton = document.getElementById("a-continue")!;
+  continueButton.addEventListener("click", () => {
+    animateContinue(!animated);
+  });
+
+  [stopSpiralButton, showButton, continueButton].forEach((btn) => {
+    btn.classList.remove("hidden");
+  });
+
+  for (const group of contentGroups) {
+    group.forEach((child) => setVisible(child, false));
+  }
+
+  async function animateContinue(animate = true) {
+    delete header.dataset.expanded;
+
+    if (!animate) {
+      for (const group of contentGroups) {
+        group.forEach((child) => setVisible(child, true));
+      }
+      return;
     }
 
-    const ascii = document.getElementById("self")! as HTMLElement;
-
-    ascii.querySelectorAll("button").forEach((btn) => {
-      btn.classList.remove("hidden");
-      btn.addEventListener("click", () => {
-        if (ascii.dataset.expanded) {
-          delete ascii.dataset.expanded;
-        } else {
-          ascii.dataset.expanded = "true";
-        }
-      });
-    });
-
-    ascii.dataset.expanded = "true";
-    await sleep(1000);
-    delete ascii.dataset.expanded;
+    spiral.style.setProperty("display", "none");
+    setVisible(stopSpiralButton, false);
 
     for (const group of contentGroups) {
-      group[0].style.setProperty("opacity", "1");
+      group.forEach((child) => setVisible(child, false));
+    }
+
+    // Animate the first 3 groups.
+    for (let i = 0; i < 3; i++) {
+      const group = contentGroups[i];
+
+      setVisible(group[0], true);
       await sleep(250);
 
-      group.slice(1).forEach((child) => child.style.setProperty("opacity", "1"));
+      group.slice(1).forEach((child) => setVisible(child, true));
       await sleep(250);
+    }
+
+    // Show the rest to hurry the animation.
+    for (const group of contentGroups.slice(3)) {
+      group.forEach((child) => setVisible(child, true));
     }
 
     const footer = document.getElementById("footer")! as HTMLElement;
-    footer.style.setProperty("opacity", "1");
+    setVisible(footer, true);
+
+    spiral.style.setProperty("display", "block");
+    setVisible(stopSpiralButton, true);
+  }
+
+  function setVisible(element: HTMLElement, visible: boolean): void {
+    element.style.setProperty("visibility", visible ? "visible" : "hidden");
   }
 
   function groupElements(children: Element[]): HTMLElement[][] {
@@ -159,6 +239,4 @@ const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7);
   async function sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
-
-  animate();
 </script>

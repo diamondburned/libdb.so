@@ -31,15 +31,19 @@
           buildEnv = {
             PUBLIC_SITE_VERSION = self.rev or "unknown";
             PUBLIC_INCONSOLATA_PATH = "${pkgs.inconsolata}/share/fonts/truetype/inconsolata/";
+            GOOS = "js";
+            GOARCH = "wasm";
           };
         in
         {
           devShells.default = pkgs.mkShell {
             packages = with pkgs; [
               esbuild
+              tinygo
               go
               gopls
               jq
+              just
               nodejs'
               pnpm'
               self.formatter.${system}
