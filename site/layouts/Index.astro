@@ -22,8 +22,8 @@ const { frontmatter } = Astro.props;
     <Spiral client:only="svelte" width={52} height={18} spinSpeed={2.0} blur={1.5} zoom={1.0} />
   </div>
   <button class="hidden control" id="a-stop">stop spiral</button>
-  <button class="hidden control" id="a-show">reveal</button>
-  <button class="hidden control" id="a-continue">continue to site</button>
+  <button class="hidden control" id="a-show">show body</button>
+  <button class="hidden control" id="a-hide">hide body</button>
 </header>
 
 <main id="content">
@@ -32,7 +32,6 @@ const { frontmatter } = Astro.props;
     // more elements come in to prevent content blink. The inline part is
     // important, as it inserts this script tag as-is and halts rendering.
     document.getElementById("content").classList.add("animated");
-    document.getElementById("header").dataset.expanded = "true";
   </script>
 
   <slot />
@@ -85,7 +84,7 @@ const { frontmatter } = Astro.props;
       right: 0;
     }
 
-    #a-continue {
+    #a-hide {
       display: none;
       top: 52em;
       right: 0;
@@ -108,7 +107,7 @@ const { frontmatter } = Astro.props;
         display: none;
       }
 
-      #a-continue {
+      #a-hide {
         display: block;
       }
     }
@@ -126,10 +125,15 @@ const { frontmatter } = Astro.props;
       opacity: 1;
     }
   }
+
+  #content.animated > :global(*) {
+    visibility: hidden;
+  }
 </style>
 
 <script>
   import { get } from "svelte/store";
+  import { animate, shouldAnimate } from "@lib/motion.svelte";
 
   const content = document.getElementById("content")!;
   const contentGroups = groupElements([...content.children]);
@@ -141,8 +145,8 @@ const { frontmatter } = Astro.props;
 
   const stopSpiralButton = document.getElementById("a-stop")!;
   stopSpiralButton.addEventListener("click", () => {
-    const wasAnimating = get(window.animate);
-    window.animate.set(!wasAnimating);
+    const wasAnimating = get(animate);
+    animate.set(!wasAnimating);
   });
 
   const showButton = document.getElementById("a-show")!;
@@ -150,47 +154,34 @@ const { frontmatter } = Astro.props;
     header.dataset.expanded = "true";
   });
 
-  let animated = false;
-
-  const continueButton = document.getElementById("a-continue")!;
-  continueButton.addEventListener("click", () => {
-    animateContinue(!animated);
+  const hideButton = document.getElementById("a-hide")!;
+  hideButton.addEventListener("click", () => {
+    animateContinue(false);
   });
 
-  [stopSpiralButton, showButton, continueButton].forEach((btn) => {
+  [stopSpiralButton, showButton, hideButton].forEach((btn) => {
     btn.classList.remove("hidden");
   });
 
-  for (const group of contentGroups) {
-    group.forEach((child) => setVisible(child, false));
-  }
+  animateContinue();
 
   async function animateContinue(animate = true) {
-    delete header.dataset.expanded;
+    const animateMs = animate && get(shouldAnimate) ? 250 : 0;
 
-    if (!animate) {
-      for (const group of contentGroups) {
-        group.forEach((child) => setVisible(child, true));
-      }
-      return;
-    }
+    delete header.dataset.expanded;
 
     spiral.style.setProperty("display", "none");
     setVisible(stopSpiralButton, false);
-
-    for (const group of contentGroups) {
-      group.forEach((child) => setVisible(child, false));
-    }
 
     // Animate the first 3 groups.
     for (let i = 0; i < 3; i++) {
       const group = contentGroups[i];
 
       setVisible(group[0], true);
-      await sleep(250);
+      await sleep(animateMs);
 
       group.slice(1).forEach((child) => setVisible(child, true));
-      await sleep(250);
+      await sleep(animateMs);
     }
 
     // Show the rest to hurry the animation.
