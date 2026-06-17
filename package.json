@@ -26,13 +26,16 @@
     "@astrojs/ts-plugin": "^1.10.9",
     "astro": "^6.4.6",
     "browserslist": "^4.28.2",
+    "jsonld": "^9.0.0",
     "lightningcss": "^1.32.0",
+    "libwebring": "github:diamondburned/libwebring#nightly",
     "svelte": "^5.56.3",
     "the-new-css-reset": "^1.11.3"
   },
   "devDependencies": {
     "@astrojs/language-server": "^2.16.10",
     "@mdx-js/language-server": "^0.6.3",
+    "@types/jsonld": "^1.5.15",
     "@types/node": "^25.9.3",
     "ansi-to-html": "^0.7.2",
     "prettier": "^3.8.4",

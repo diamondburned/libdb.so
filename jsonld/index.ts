@@ -1,40 +1,19 @@
-import * as fs from "fs/promises";
-import * as path from "path";
 import { assert } from "./lib/jsonld.js";
-import context from "./_context.json";
-import jsonld, { ContextDefinition } from "jsonld";
+import context from "./context.json";
+import jsonld, { type ContextDefinition } from "jsonld";
 
-export const sourceFile = new URL(import.meta.url).pathname;
-export const baseDir = path.dirname(sourceFile);
+const jsonldFiles = import.meta.glob("./*.jsonld{.json,.js,.ts}", { eager: true }) as Record<
+  string,
+  { default: jsonld.NodeObject[] }
+>;
 
-async function main() {
-  const files = await fs.readdir(baseDir);
+export async function renderDocument(): Promise<jsonld.JsonLdDocument> {
   const allNodes: jsonld.NodeObject[] = [];
 
-  for (const file of files) {
-    const filePath = path.join(baseDir, file);
-    try {
-      if (file.startsWith("_")) {
-        continue;
-      }
-
-      if (file.endsWith(".jsonld.ts")) {
-        const nodes = (await import(filePath)).default;
-        assertNodeObjects(nodes);
-        allNodes.push(...nodes);
-        continue;
-      }
-
-      if (file.endsWith(".jsonld")) {
-        const content = await fs.readFile(filePath, "utf-8");
-        const graph = JSON.parse(content);
-        assertNodeObjects(graph);
-        allNodes.push(...graph);
-        continue;
-      }
-    } catch (err) {
-      throw new Error(`Failed to add TS graph ${file}`, { cause: err });
-    }
+  for (let [_, module] of Object.entries(jsonldFiles)) {
+    const node = module.default;
+    assertNodeObjects(node);
+    allNodes.push(...node);
   }
 
   let document: jsonld.JsonLdDocument = {
@@ -49,22 +28,21 @@ async function main() {
 
   // jsonld.compact messes up the key order of objects, so we need to reorder them.
   document["@graph"] = (document["@graph"] as jsonld.NodeObject[]).map((node, i) =>
-    reorderSameObject(node, allNodes[i])
+    reorderSameObject(node, allNodes[i]),
   );
 
-  const rendered = JSON.stringify(document, null, 2);
-  console.log(rendered);
+  return document;
 }
 
 function expandIDsRecursively<T extends jsonld.NodeObject | jsonld.NodeObject[]>(
   context: ContextDefinition,
-  obj: T
+  obj: T,
 ): T {
   if (Array.isArray(obj)) {
     return obj.map((item) =>
       typeof item === "object" //
         ? expandIDsRecursively(context, item as jsonld.NodeObject)
-        : item
+        : item,
     ) as T;
   }
 
@@ -114,11 +92,9 @@ function reorderSameObject<T extends Record<string, unknown>>(unordered: T, orde
 }
 
 function assertNodeObjects(doc: unknown): asserts doc is jsonld.NodeObject[] {
-  assert(Array.isArray(doc), "Expected document to be an array");
+  assert(Array.isArray(doc), `Expected document to be an array, got ${typeof doc}`);
   assert(
     doc.every((item) => typeof item === "object"),
-    "Expected document to be an array of objects"
+    "Expected document to be an array of objects",
   );
 }
-
-await main();

@@ -1,9 +1,11 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "site/env.d.ts", "**/*"],
-  "exclude": ["dist", "jsonld"],
+  "exclude": ["dist"],
   "compilerOptions": {
     "paths": {
+      "$/*": ["./*"],
+      "@/*": ["./site/*"],
       "@lib/*": ["./site/lib/*"],
       "@pages/*": ["./site/pages/*"],
       "@styles/*": ["./site/styles/*"],
