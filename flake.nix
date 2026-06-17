@@ -27,20 +27,22 @@
         let
           nodejs' = pkgs.nodejs_24;
           pnpm' = pkgs.pnpm_11;
+          go' = pkgs.go_1_26;
 
           buildEnv = {
             PUBLIC_SITE_VERSION = self.rev or "unknown";
             PUBLIC_INCONSOLATA_PATH = "${pkgs.inconsolata}/share/fonts/truetype/inconsolata/";
             GOOS = "js";
             GOARCH = "wasm";
+            CGO_ENABLED = 0;
+            WASM_DIST_PATH = "${go'}/share/go/lib/wasm/wasm_exec.js";
           };
         in
         {
           devShells.default = pkgs.mkShell {
             packages = with pkgs; [
               esbuild
-              tinygo
-              go
+              go'
               gopls
               jq
               just
@@ -73,15 +75,25 @@
               fetcherVersion = 4;
             };
 
-            nativeBuildInputs = with pkgs; [
+            buildInputs = [
               nodejs'
+            ];
+
+            nativeBuildInputs = with pkgs; [
               pnpm'
               pnpmConfigHook
+
+              esbuild
+              go'
+              just
             ];
 
             buildPhase = ''
               runHook preBuild
-              pnpm build
+
+              ln -s ${self'.packages.goModules} vendor
+              just goflags=-mod=vendor build
+
               runHook postBuild
             '';
 
@@ -107,6 +119,14 @@
               mainProgram = "libdb-site";
             };
           });
+
+          packages.goModules =
+            (pkgs.buildGoModule {
+              pname = "libdb-go-wasms";
+              version = self.rev or "dirty";
+              src = lib.cleanSource ./.;
+              vendorHash = lib.fileContents ./nix/go-mod.sri;
+            }).goModules;
 
           formatter = pkgs.nixfmt-rfc-style;
         };

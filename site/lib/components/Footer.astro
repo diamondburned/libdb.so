@@ -1,0 +1,17 @@
+---
+const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7);
+---
+
+<footer id="footer">
+  <p>
+    [&lt;3] site running rev {
+      version && version != "unknown" ? (
+        <a class="version" href={`https://github.com/diamondburned/libdb/commit/${version}`}>
+          {version}
+        </a>
+      ) : (
+        "unknown"
+      )
+    }
+  </p>
+</footer>

@@ -4,9 +4,9 @@ import "@styles/document.css";
 import { Font } from "astro:assets";
 import SelfASCII from "@lib/components/SelfASCII.astro";
 import Spiral from "@lib/components/Spiral.svelte";
+import Footer from "@lib/components/Footer.astro";
 
 const { frontmatter } = Astro.props;
-const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7);
 ---
 
 <meta charset="utf-8" />
@@ -36,21 +36,9 @@ const version = import.meta.env.PUBLIC_SITE_VERSION?.trim().slice(0, 7);
   </script>
 
   <slot />
-
-  <footer id="footer">
-    <p>
-      [&lt;3] site running rev {
-        version && version != "unknown" ? (
-          <a class="version" href={`https://github.com/diamondburned/libdb/commit/${version}`}>
-            {version}
-          </a>
-        ) : (
-          "unknown"
-        )
-      }
-    </p>
-  </footer>
 </main>
+
+<Footer />
 
 <style>
   #header {

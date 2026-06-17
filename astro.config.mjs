@@ -1,6 +1,8 @@
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
 import { satteri } from "@astrojs/markdown-satteri";
+import { browserslistToTargets } from "lightningcss";
+import browserslist from "browserslist";
 import node from "@astrojs/node";
 import mdx from "@astrojs/mdx";
 import svelte from "@astrojs/svelte";
@@ -15,8 +17,15 @@ export default defineConfig({
 
   vite: {
     clearScreen: false,
+    build: {
+      minify: true,
+      emptyOutDir: false, // required for wasm building
+    },
     css: {
       transformer: "lightningcss",
+      lightningcss: {
+        targets: browserslistToTargets(browserslist("since 2020")),
+      },
     },
   },
 
