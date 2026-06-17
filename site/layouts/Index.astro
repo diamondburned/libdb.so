@@ -166,7 +166,7 @@ const { frontmatter } = Astro.props;
   animateContinue();
 
   async function animateContinue(animate = true) {
-    const animateMs = animate && get(shouldAnimate) ? 250 : 0;
+    const animateMs = animate && get(shouldAnimate) ? 100 : 0;
 
     delete header.dataset.expanded;
 
